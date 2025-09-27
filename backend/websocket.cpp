@@ -5,12 +5,20 @@
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/server.hpp>
 #include <iostream>
+
+
 typedef websocketpp::server<websocketpp::config::asio> server;
 using json = nlohmann::json;
 
 void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr msg){
     std::string payload = msg->get_payload();
     json j = json::parse(payload);
+    std::string type = j["type"];
+    
+    if (type == "ChessboardState") {
+        
+    }
+
     s->send(hdl, "{big working:'wow'}", msg->get_opcode());
 }
 // void on_open(websocketpp::connection_hdl hdl){
