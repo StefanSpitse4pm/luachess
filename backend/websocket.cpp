@@ -1,11 +1,9 @@
-// Was working on: getting the data from the front end in json.
-// we should use meta data as the way of recoginising what is being send.
-// https://chatgpt.com/c/68d59f2e-ef50-832d-94cd-1d9d0d2dc563
 #include <nlohmann/json.hpp>
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/server.hpp>
 #include <iostream>
-
+#include "piece.h"
+#include <vector>
 
 typedef websocketpp::server<websocketpp::config::asio> server;
 using json = nlohmann::json;
@@ -16,7 +14,11 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
     std::string type = j["type"];
     
     if (type == "ChessboardState") {
-        
+
+        std::vector<Move> possibleMoves;
+        possibleMoves.push_back({1, 0, false, true});
+        Piece p(0, 1, "pawn", false, "/Chess_plt45.svg");
+        p.setPossibleMoves(possibleMoves);
     }
 
     s->send(hdl, "{big working:'wow'}", msg->get_opcode());
