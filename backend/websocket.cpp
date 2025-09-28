@@ -15,10 +15,14 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
     
     if (type == "ChessboardState") {
 
+
         std::vector<Move> possibleMoves;
         possibleMoves.push_back({1, 0, false, true});
         Piece p(0, 1, "pawn", false, "/Chess_plt45.svg");
         p.setPossibleMoves(possibleMoves);
+        json response;
+        p.to_json(response);
+        s->send(hdl, response.dump(), msg->get_opcode());
     }
 
     s->send(hdl, "{big working:'wow'}", msg->get_opcode());

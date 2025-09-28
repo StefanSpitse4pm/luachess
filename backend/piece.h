@@ -3,6 +3,10 @@
 
 #include <iostream>
 #include <vector>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
+
 struct Move {
     int dx;
     int dy;
@@ -10,10 +14,10 @@ struct Move {
     bool basedOnLastMove = false;
 };
 
+
 class Piece {
 public:
     Piece(int x, int y, std::string identifier, bool canJumpOverPieces,std::string image, std::vector<Move> possibleMoves = {}, std::vector<Move> possibleTakes = {});
-    ~Piece();
     int getX() const { return x; }
     void setX(int newX) { x = newX; }
 
@@ -34,6 +38,9 @@ public:
 
     std::vector<Move> getPossibleTakes() const { return possibleTakes; }
     void setPossibleTakes(const std::vector<Move>& takes) { possibleTakes = takes; }
+
+    void to_json(json& j);
+
 private:
     int x;
     int y;
