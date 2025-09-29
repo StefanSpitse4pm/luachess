@@ -4,6 +4,7 @@
 #include <iostream>
 #include "piece.h"
 #include <vector>
+#include <map>
 
 typedef websocketpp::server<websocketpp::config::asio> server;
 using json = nlohmann::json;
@@ -13,9 +14,8 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
     json j = json::parse(payload);
     std::string type = j["type"];
     
+
     if (type == "ChessboardState") {
-
-
         std::vector<Move> possibleMoves;
         possibleMoves.push_back({0, 1, false, true});
         Piece p1(1, 1, "pawn", false, "/Chess_plt45.svg");
@@ -33,8 +33,10 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
         }
 
 
-        s->send(hdl, response.dump(), websocketpp::frame::opcode::text);
         return;
+    }
+    else if (type == "LoadGame") {
+        
     }
 
     s->send(hdl, "{big working:'wow'}", msg->get_opcode());
