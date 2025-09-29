@@ -17,12 +17,24 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
 
 
         std::vector<Move> possibleMoves;
-        possibleMoves.push_back({1, 0, false, true});
-        Piece p(0, 1, "pawn", false, "/Chess_plt45.svg");
-        p.setPossibleMoves(possibleMoves);
-        json response;
-        p.to_json(response);
-        s->send(hdl, response.dump(), msg->get_opcode());
+        possibleMoves.push_back({0, 1, false, true});
+        Piece p1(1, 1, "pawn", false, "/Chess_plt45.svg");
+        Piece p2(1, 2, "pawn", false, "/Chess_plt45.svg");
+        p1.setPossibleMoves(possibleMoves);
+        p2.setPossibleMoves(possibleMoves);
+        std::vector<Piece> pieces = {p1, p2};
+        json response = json::array();
+
+        for (auto& piece : pieces) 
+        {
+            json pieceJson;
+            piece.to_json(pieceJson);
+            response.push_back(pieceJson);
+        }
+
+
+        s->send(hdl, response.dump(), websocketpp::frame::opcode::text);
+        return;
     }
 
     s->send(hdl, "{big working:'wow'}", msg->get_opcode());
@@ -55,7 +67,7 @@ int main() {
         chessServer.set_message_handler(bind(&on_message, &chessServer, std::placeholders::_1, std::placeholders::_2));
         // chessServer.set_open_handler(bind(&on_open, std::placeholders::_1));
         // chessServer.set_close_handler(bind(&on_close, std::placeholders::_1));
-
+        chessServer.set_reuse_addr(true);
         chessServer.listen(9002);
         chessServer.start_accept();
 

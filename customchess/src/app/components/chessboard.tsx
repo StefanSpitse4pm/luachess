@@ -7,22 +7,29 @@ import useWebsocket from '../service/socket'
 export default function Chessboard() {
 
     const { sendMessage, lastMessage } = useWebsocket("ws://localhost:9002")
-    const [posibleMoves, setPosibleMoves] = useState(new Set<string>());
+    const [possibleMoves, setPossibleMoves] = useState(new Set<string>());
     const [isPieceSelected, setIsPieceSelected] = useState(true);
     const [selectedPiece, setSelectedPiece] = useState<piece | null>(null);
     const size = 8;
 
     const [chessboard, setChessboard] = useState<(piece | null)[][]>(() => {
         const initialBoard = Array.from({ length: size }, () => Array(size).fill(null));
-        initialBoard[1][3] = { position: { row: 1, col: 3 }, image: '/Chess_plt45.svg', type: 'pawn', posibleMoves: [{ dx: 1, dy: 1, repeat: true, basedOnlastMove: false }], posibleTakes: [{ dx: 5, dy: 3 }], canJump:false };
-        initialBoard[3][5] = { position: { row: 3, col: 5 }, image: '/Chess_pdt45.svg', type: 'pawn', posibleMoves: [{ dx: 0, dy: 1, repeat: false, basedOnlastMove: false }, { dx: 1, dy: 1, repeat: true, basedOnlastMove: true }] };
+        initialBoard[1][3] = { position: { row: 1, col: 3 }, image: '/Chess_plt45.svg', type: 'pawn', possibleMoves: [{ dx: 1, dy: 1, repeat: true, basedOnlastMove: false }], posibleTakes: [{ dx: 5, dy: 3 }], canJump:false };
+        initialBoard[3][5] = { position: { row: 3, col: 5 }, image: '/Chess_pdt45.svg', type: 'pawn', possibleMoves: [{ dx: 0, dy: 1, repeat: false, basedOnlastMove: false }, { dx: 1, dy: 1, repeat: true, basedOnlastMove: true }] };
+
 
         return initialBoard;
     });
 
     useEffect(() => {
         if (lastMessage) {
-            console.log(lastMessage);
+            lastMessage.forEach((element: any) => {
+                setChessboard(prevBoard => {
+                    const newBoard = prevBoard.map(row => [...row]);
+                    newBoard[element.position.row][element.position.col] = element;
+                    return newBoard;
+                });
+            });
         }
     }, [lastMessage])
     
@@ -33,7 +40,7 @@ export default function Chessboard() {
             setSelectedPiece(piecePosition);
             let lastdx = 0;
             let lastdy = 0;
-            piecePosition.posibleMoves.forEach(move => {
+            piecePosition.possibleMoves.forEach(move => {
                 const r = piecePosition.position.row + move.dy + (move.basedOnlastMove ? lastdy : 0);
                 const c = piecePosition.position.col + move.dx + (move.basedOnlastMove ? lastdx : 0);
                 if (r < 0 || r >= size || c < 0 || c >= size) return; 
@@ -53,13 +60,13 @@ export default function Chessboard() {
                 lastdy = move.dy;
                 
             });
-            piecePosition.posibleTakes?.forEach(take => {
+            piecePosition.possibleTakes?.forEach(take => {
                 console.log(take);
                 if (take.dx < 0 || take.dy < 0 || take.dx >= size || take.dy >= size) return;
                 newPosibleMoves.add(`${take.dy},${take.dx}`);
                 console.log(newPosibleMoves);
             });
-            setPosibleMoves(newPosibleMoves);
+            setPossibleMoves(newPosibleMoves);
         }
         return;
         
@@ -71,9 +78,9 @@ export default function Chessboard() {
         if (selectedPiece) {
             const { row, col } = selectedPiece.position;
 
-            if (chessboard[moveTo.row][moveTo.col] !== null && selectedPiece.posibleTakes) {
+            if (chessboard[moveTo.row][moveTo.col] !== null && selectedPiece.possibleTakes) {
                 chessboard[moveTo.row][moveTo.col] = null;
-                selectedPiece.posibleTakes = selectedPiece.posibleTakes.filter((take) => !(moveTo.row === take.dy) && moveTo.col === take.dx);  
+                selectedPiece.possibleTakes = selectedPiece.possibleTakes.filter((take) => !(moveTo.row === take.dy) && moveTo.col === take.dx);  
             }
 
             setChessboard(prevBoard => {
@@ -83,7 +90,7 @@ export default function Chessboard() {
                 return newBoard;
             });
             setSelectedPiece(null);
-            setPosibleMoves(new Set<string>());
+            setPossibleMoves(new Set<string>());
             setIsPieceSelected(true);
             sendMessage({type: "ChessboardState", payload:{"test": "test"}})
         }
@@ -97,7 +104,7 @@ export default function Chessboard() {
                     {Array.from({ length: size }).map((_, col) => {
                         const isWhite = (row + col) % 2 === 0;
                         const posKey = `${row},${col}`;
-                        const isHighlighted = posibleMoves.has(posKey) && !isPieceSelected;
+                        const isHighlighted = possibleMoves.has(posKey) && !isPieceSelected;
                         return (
                             <div
                                 key={col}
@@ -105,11 +112,11 @@ export default function Chessboard() {
                                 onClick={() => handleSquareClick(chessboard[row][col])}
                             >
                                 {chessboard[row][col] ? (
-                                    <Piece image={chessboard[row][col].image} position={chessboard[row][col].position} type={chessboard[row][col].type} posibleMoves={chessboard[row][col].posibleMoves} chessboard={chessboard} />
+                                    <Piece image={chessboard[row][col].image} position={chessboard[row][col].position} type={chessboard[row][col].type} possibleMoves={chessboard[row][col].possibleMoves} chessboard={chessboard} />
                                 ) : (
                                     <div className={`w-8 h-8 rounded-full bg-gray-400 opacity-40 ${isHighlighted ? 'block' : 'hidden'}`} onClick={() => movePiece({ row, col })}></div>
                                 )}
-                                {chessboard[row][col] && posibleMoves.has(posKey) && (
+                                {chessboard[row][col] && possibleMoves.has(posKey) && (
                                     <div className={`w-24 h-24 rounded-full bg-transparent border-gray-500 border-7 opacity-40 z-20 absolute ${isHighlighted ? 'block' : 'hidden'}`} onClick={() => movePiece({ row, col })}></div>
                                 )}
 

@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
+import { piece } from '../types/piece';
 
 function useWebSocket<T = any>(url: string) {
   const ws = useRef<null | WebSocket>(null);
-    const [lastMessage, setLastMessage] = useState<T | null>(null);
+    const [lastMessage, setLastMessage] = useState<piece[] | null>(null);
 
   useEffect(() => {
     ws.current = new WebSocket(url);
@@ -21,8 +22,7 @@ function useWebSocket<T = any>(url: string) {
 
     ws.current.onmessage = (event) => {
       try {
-        // Parse JSON if your server sends JSON
-        const data = JSON.parse(event.data);
+        const data = JSON.parse(event.data) as piece[];
         setLastMessage(data);
       } catch (err) {
         console.error("Error parsing incoming message:", err);

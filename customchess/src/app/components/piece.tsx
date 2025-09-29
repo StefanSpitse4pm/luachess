@@ -5,7 +5,7 @@ type PieceProps = piece & {
     chessboard: (piece | null)[][];
 }
 
-export default function Piece({ position, image, posibleMoves, chessboard }: PieceProps) {
+export default function Piece({ position, image, possibleMoves: posibleMoves, chessboard }: PieceProps) {
     return (
         <div className={`piece w-24 h-24 relative z-10 `}
              style={{ backgroundImage: `url(${image})`,

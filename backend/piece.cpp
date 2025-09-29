@@ -5,14 +5,13 @@ Piece::Piece(int x, int y, std::string identifier, bool canJumpOverPieces, std::
 
 
 void Piece::to_json(json& j) {
-    j = json{
-        {"x", x},
-        {"y", y},
-        {"identifier", identifier},
-        {"canJumpOverPieces", canJumpOverPieces},
-        {"image", image},
-        {"possibleMoves", json::array()},
-        {"possibleTakes", json::array()}
+j = json{
+    {"position", {{"row", x}, {"col", y}}},
+    {"type", identifier},
+    {"canJumpOverPieces", canJumpOverPieces},
+    {"image", image},
+    {"possibleMoves", json::array()},
+    {"possibleTakes", json::array()}
     };
 
     for (const auto& move : possibleMoves) {
