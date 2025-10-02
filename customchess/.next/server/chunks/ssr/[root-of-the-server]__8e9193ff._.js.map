@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 6, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"","debugId":null}},
-    {"offset": {"line": 26, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/Stefa/Documents/projects/chess/customchess/src/app/page.tsx"],"sourcesContent":["import Image from \"next/image\";\nimport Chessboard from \"./components/chessboard\";\nexport default function Home() {\n  return (\n    <main className=\"flex min-h-screen flex-col items-center justify-between p-24\">\n      <h1 className=\"text-4xl font-bold\">Welcome to Custom Chess!</h1>\n      <Chessboard />\n      <p className=\"mt-4 text-lg\">Your personalized chess experience awaits.</p>\n    </main>\n  );\n}\n"],"names":[],"mappings":";;;;AACA;;;AACe,SAAS;IACtB,qBACE,8OAAC;QAAK,WAAU;;0BACd,8OAAC;gBAAG,WAAU;0BAAqB;;;;;;0BACnC,8OAAC,uIAAA,CAAA,UAAU;;;;;0BACX,8OAAC;gBAAE,WAAU;0BAAe;;;;;;;;;;;;AAGlC","debugId":null}}]
-}
