@@ -22,6 +22,7 @@ function useWebSocket<T = any>(url: string) {
 
     ws.current.onmessage = (event) => {
       try {
+        console.log(event.data);
         const data = JSON.parse(event.data) as piece[];
         setLastMessage(data);
       } catch (err) {

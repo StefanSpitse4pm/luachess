@@ -2,7 +2,7 @@
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/server.hpp>
 #include <iostream>
-#include "piece.h"
+#include "chessboard.h"
 #include <vector>
 #include <map>
 
@@ -16,23 +16,12 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
     
 
     if (type == "ChessboardState") {
-        std::vector<Move> possibleMoves;
-        possibleMoves.push_back({0, 1, false, true});
-        Piece p1(1, 1, "pawn", false, "/Chess_plt45.svg");
-        Piece p2(1, 2, "pawn", false, "/Chess_plt45.svg");
-        p1.setPossibleMoves(possibleMoves);
-        p2.setPossibleMoves(possibleMoves);
-        std::vector<Piece> pieces = {p1, p2};
-        json response = json::array();
-
-        for (auto& piece : pieces) 
-        {
-            json pieceJson;
-            piece.to_json(pieceJson);
-            response.push_back(pieceJson);
-        }
-
-
+        Chessboard chessboard(8, 8);
+        chessboard.setPieceAt(0,  0, { {0, 0}, "rook", "Chess_rlt45.svg", { {1, 0, true, false}, {0, 1, true, false}, {-1, 0, true, false}, {0, -1, true, false} }, {}, false });
+        
+        json response;
+        chessboard.to_json(response);
+        s->send(hdl, response.dump(), msg->get_opcode());
         return;
     }
     else if (type == "LoadGame") {

@@ -14,8 +14,8 @@ export default function Chessboard() {
 
     const [chessboard, setChessboard] = useState<(piece | null)[][]>(() => {
         const initialBoard = Array.from({ length: size }, () => Array(size).fill(null));
-        initialBoard[1][3] = { position: { row: 1, col: 3 }, image: '/Chess_plt45.svg', type: 'pawn', possibleMoves: [{ dx: 1, dy: 1, repeat: true, basedOnlastMove: false }], posibleTakes: [{ dx: 5, dy: 3 }], canJump:false };
-        initialBoard[3][5] = { position: { row: 3, col: 5 }, image: '/Chess_pdt45.svg', type: 'pawn', possibleMoves: [{ dx: 0, dy: 1, repeat: false, basedOnlastMove: false }, { dx: 1, dy: 1, repeat: true, basedOnlastMove: true }] };
+        initialBoard[1][3] = { position: { row: 1, col: 3 }, image: '/Chess_plt45.svg', type: 'pawn', possibleMoves: [{ dx: 1, dy: 1, repeat: true, basedOnLastMove: false }], possibleTakes: [{ dx: 5, dy: 3 }], canJump:false };
+        initialBoard[3][5] = { position: { row: 3, col: 5 }, image: '/Chess_pdt45.svg', type: 'pawn', possibleMoves: [{ dx: 0, dy: 1, repeat: false, basedOnLastMove: false }, { dx: 1, dy: 1, repeat: true, basedOnLastMove: true }] };
 
 
         return initialBoard;
@@ -23,12 +23,12 @@ export default function Chessboard() {
 
     useEffect(() => {
         if (lastMessage) {
-            lastMessage.forEach((element: any) => {
-                setChessboard(prevBoard => {
-                    const newBoard = prevBoard.map(row => [...row]);
+            setChessboard(prevBoard => {
+                const newBoard = prevBoard.map(row => [...row]);
+                lastMessage.forEach((element: any) => {
                     newBoard[element.position.row][element.position.col] = element;
-                    return newBoard;
                 });
+                return newBoard;
             });
         }
     }, [lastMessage])
@@ -41,8 +41,8 @@ export default function Chessboard() {
             let lastdx = 0;
             let lastdy = 0;
             piecePosition.possibleMoves.forEach(move => {
-                const r = piecePosition.position.row + move.dy + (move.basedOnlastMove ? lastdy : 0);
-                const c = piecePosition.position.col + move.dx + (move.basedOnlastMove ? lastdx : 0);
+                const r = piecePosition.position.row + move.dy + (move.basedOnLastMove ? lastdy : 0);
+                const c = piecePosition.position.col + move.dx + (move.basedOnLastMove ? lastdx : 0);
                 if (r < 0 || r >= size || c < 0 || c >= size) return; 
 
                 newPosibleMoves.add(`${r},${c}`);

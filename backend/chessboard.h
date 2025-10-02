@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
+#include <optional>
 
 struct Move {
     int dx;
@@ -25,11 +26,9 @@ using json = nlohmann::json;
 
 class Chessboard {
 public:
-    Chessboard(int rows, int cols) : rows(rows), cols(cols) {
-        board.resize(rows, std::vector<Piece>(cols));
-    }
+    Chessboard(int rows, int cols) : rows_(rows), cols_(cols), board(rows, std::vector<std::optional<Piece>>(cols, std::nullopt)) {}
 
-    Piece& getPieceAt(int row, int col) {
+    std::optional<Piece>& getPieceAt(int row, int col) {
         return board[row][col];
     }
 
@@ -41,13 +40,15 @@ public:
         board[toRow][toCol] = board[fromRow][fromCol];
         board[fromRow][fromCol] = Piece();
     }
+    std::vector<std::vector<std::optional<Piece>>> getBoard() {
+        return board;
+    }
 
     void to_json(json& j); 
-    
 
 private:
-    int rows, cols;
-    std::vector<std::vector<Piece>> board;
+    int rows_, cols_;
+    std::vector<std::vector<std::optional<Piece>>> board;
 };
 
 #endif // CHESSBOARD_H
