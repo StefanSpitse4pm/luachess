@@ -5,9 +5,22 @@
 #include "chessboard.h"
 #include <vector>
 #include <map>
+#include <sol/sol.hpp>
+#include <filesystem>
 
 typedef websocketpp::server<websocketpp::config::asio> server;
 using json = nlohmann::json;
+
+struct luaRoomState {
+    std::string name;
+    sol::state lua;
+    Chessboard chessboard{8, 8};
+};
+
+std::map<
+    websocketpp::connection_hdl,
+    luaRoomState,
+    std::owner_less<websocketpp::connection_hdl>> games;
 
 void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr msg){
     std::string payload = msg->get_payload();
@@ -16,26 +29,47 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
     
 
     if (type == "ChessboardState") {
-        Chessboard chessboard(8, 8);
-        chessboard.setPieceAt(0,  0, { {0, 0}, "rook", "Chess_rlt45.svg", { {1, 0, true, false}, {0, 1, true, false}, {-1, 0, true, false}, {0, -1, true, false} }, {}, false });
-        
+        Chessboard& chessboard = games[hdl].chessboard; 
+
+        std::filesystem::path scriptPath = std::filesystem::current_path() / "backend" / "lua" / "isOccupiedTest.lua";
+        sol::state& lua = games[hdl].lua;
+
+        lua.script_file(scriptPath);
+        auto f = lua["getLegalMoves"];
+        f();
+
         json response;
         chessboard.to_json(response);
         s->send(hdl, response.dump(), msg->get_opcode());
         return;
     }
     else if (type == "LoadGame") {
-        
+        sol::state& lua = games[hdl].lua;
+        Chessboard& chessboard = games[hdl].chessboard;
+
+        chessboard.setPieceAt(0, 0, Piece{ {0, 0}, "rook", "♜", { {1, 0, true}, {0, 1, true}, {-1, 0, true}, {0, -1, true} }, { }, false });
+
+        lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::table, sol::lib::string, sol::lib::math); 
+
+        lua.set_function("isOccupied", [&](int row, int col) {
+            return chessboard.isOccupied(row, col);
+        });
+        json response;
+        chessboard.to_json(response);
+        s->send(hdl, response.dump(), msg->get_opcode());
+        return;
     }
 
     s->send(hdl, "{big working:'wow'}", msg->get_opcode());
 }
-// void on_open(websocketpp::connection_hdl hdl){
+void on_open(websocketpp::connection_hdl hdl){
+   sol::state lua;
+   games[hdl] = luaRoomState{ "default", std::move(lua) };
+}
 
-// }
-// void on_close(websocketpp::connection_hdl hdl){
-
-// }
+void on_close(websocketpp::connection_hdl hdl){
+    games.erase(hdl);
+}
 
 int main() {
     server chessServer;
@@ -68,3 +102,4 @@ int main() {
     }
 
 }
+

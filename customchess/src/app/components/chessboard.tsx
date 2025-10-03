@@ -6,7 +6,7 @@ import useWebsocket from '../service/socket'
 
 export default function Chessboard() {
 
-    const { sendMessage, lastMessage } = useWebsocket("ws://localhost:9002")
+    const { sendMessage, lastMessage, isConnected } = useWebsocket("ws://localhost:9002")
     const [possibleMoves, setPossibleMoves] = useState(new Set<string>());
     const [isPieceSelected, setIsPieceSelected] = useState(true);
     const [selectedPiece, setSelectedPiece] = useState<piece | null>(null);
@@ -22,6 +22,12 @@ export default function Chessboard() {
     });
 
     useEffect(() => {
+        if (isConnected) {
+            sendMessage({ type: "LoadGame", payload: {} });
+        }
+    }, [isConnected]);
+
+    useEffect(() => {
         if (lastMessage) {
             setChessboard(prevBoard => {
                 const newBoard = prevBoard.map(row => [...row]);
@@ -33,6 +39,8 @@ export default function Chessboard() {
         }
     }, [lastMessage])
     
+
+
     function handleSquareClick(piecePosition: piece | null) {
         const newPosibleMoves = new Set<string>();
         isPieceSelected ? setIsPieceSelected(false) : setIsPieceSelected(true);

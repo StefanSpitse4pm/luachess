@@ -28,6 +28,14 @@ class Chessboard {
 public:
     Chessboard(int rows, int cols) : rows_(rows), cols_(cols), board(rows, std::vector<std::optional<Piece>>(cols, std::nullopt)) {}
 
+    bool isOccupied(int row, int col) const {
+        if (row < 0 || row >= rows_ || col < 0 || col >= cols_) {
+            return false;
+        }
+        return board[row][col].has_value();
+    }
+
+
     std::optional<Piece>& getPieceAt(int row, int col) {
         return board[row][col];
     }

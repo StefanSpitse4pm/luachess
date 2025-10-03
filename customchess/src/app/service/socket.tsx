@@ -3,21 +3,25 @@ import { piece } from '../types/piece';
 
 function useWebSocket<T = any>(url: string) {
   const ws = useRef<null | WebSocket>(null);
-    const [lastMessage, setLastMessage] = useState<piece[] | null>(null);
+  const [lastMessage, setLastMessage] = useState<piece[] | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     ws.current = new WebSocket(url);
 
     ws.current.onopen = () => {
       console.log("Connected to WebSocket");
+      setIsConnected(true);
     };
 
     ws.current.onclose = () => {
       console.log("Disconnected from WebSocket");
+      setIsConnected(false);
     };
 
     ws.current.onerror = (error) => {
       console.error("WebSocket error:", error);
+      setIsConnected(false);
     };
 
     ws.current.onmessage = (event) => {
@@ -32,6 +36,7 @@ function useWebSocket<T = any>(url: string) {
 
     return () => {
       ws.current?.close();
+      setIsConnected(false);
     };
   }, [url]);
 
@@ -44,6 +49,6 @@ function useWebSocket<T = any>(url: string) {
 
   }
 
-  return { sendMessage, lastMessage };
+  return { sendMessage, lastMessage, isConnected };
 }
 export default useWebSocket;
