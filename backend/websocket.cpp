@@ -22,6 +22,48 @@ std::map<
     luaRoomState,
     std::owner_less<websocketpp::connection_hdl>> games;
 
+
+void setup_lua_api(sol::state& lua, Chessboard& chessboard) {
+    lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::table, sol::lib::string, sol::lib::math); 
+
+    lua.set_function("isOccupied", [&](int row, int col) {
+        return chessboard.isOccupied(row, col);
+    });
+
+    lua.set_function("addMove", [&](Piece& p, int row, int col) {
+        p.possibleMoves.push_back({row, col});
+    });
+
+    lua.set_function("addTake", [&](Piece& p, int row, int col) {
+        p.possibleTakes.push_back({row, col});
+    });
+
+    lua.new_usertype<Chessboard>("Chessboard",
+        "isOccupied", &Chessboard::isOccupied,
+        "getPieceAt", &Chessboard::getPieceAt,
+        "setPieceAt", &Chessboard::setPieceAt,
+        "movePiece", &Chessboard::movePiece,
+        "rows", sol::property(&Chessboard::getRows),
+        "cols", sol::property(&Chessboard::getCols)
+    );
+
+    lua.new_usertype<Piece>("Piece",
+        "type", &Piece::type,
+        "image", &Piece::image,
+        "canJumpOverPieces", &Piece::canJumpOverPieces,
+        "possibleMoves", &Piece::possibleMoves,
+        "possibleTakes", &Piece::possibleTakes
+    );
+
+    lua.new_usertype<Move>("Move",
+        "dx", &Move::dx,
+        "dy", &Move::dy,
+        "repeat", &Move::repeat,
+        "basedOnLastMove", &Move::basedOnLastMove
+    );
+
+}
+
 void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr msg){
     std::string payload = msg->get_payload();
     json j = json::parse(payload);
@@ -35,8 +77,15 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
         sol::state& lua = games[hdl].lua;
 
         lua.script_file(scriptPath);
-        auto f = lua["getLegalMoves"];
-        f();
+        sol::protected_function f = lua["getLegalMoves"];
+
+        if (f.valid()) {
+            sol::protected_function_result res = f(chessboard);
+            if (!res.valid()) {
+                sol::error err = res;
+                std::cerr << "Error calling Lua function: " << err.what() << std::endl;
+            }
+        } 
 
         json response;
         chessboard.to_json(response);
@@ -47,13 +96,10 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
         sol::state& lua = games[hdl].lua;
         Chessboard& chessboard = games[hdl].chessboard;
 
-        chessboard.setPieceAt(0, 0, Piece{ {0, 0}, "rook", "♜", { {1, 0, true}, {0, 1, true}, {-1, 0, true}, {0, -1, true} }, { }, false });
+        chessboard.setPieceAt(0, 0, Piece{ {0, 0}, "rook", "Chess_rlt45.svg", { {1, 0, true}, {0, 1, true}, {-1, 0, true}, {0, -1, true} }, { }, false });
 
-        lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::table, sol::lib::string, sol::lib::math); 
+        setup_lua_api(lua, chessboard);
 
-        lua.set_function("isOccupied", [&](int row, int col) {
-            return chessboard.isOccupied(row, col);
-        });
         json response;
         chessboard.to_json(response);
         s->send(hdl, response.dump(), msg->get_opcode());
@@ -70,6 +116,7 @@ void on_open(websocketpp::connection_hdl hdl){
 void on_close(websocketpp::connection_hdl hdl){
     games.erase(hdl);
 }
+
 
 int main() {
     server chessServer;

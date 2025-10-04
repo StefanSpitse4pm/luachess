@@ -52,6 +52,9 @@ public:
         return board;
     }
 
+    int getRows() const { return rows_; }
+    int getCols() const { return cols_; }
+
     void to_json(json& j); 
 
 private:
