@@ -14,10 +14,6 @@ export default function Chessboard() {
 
     const [chessboard, setChessboard] = useState<(piece | null)[][]>(() => {
         const initialBoard = Array.from({ length: size }, () => Array(size).fill(null));
-        initialBoard[1][3] = { position: { row: 1, col: 3 }, image: '/Chess_plt45.svg', type: 'pawn', possibleMoves: [{ dx: 1, dy: 1, repeat: true, basedOnLastMove: false }], possibleTakes: [{ dx: 5, dy: 3 }], canJump:false };
-        initialBoard[3][5] = { position: { row: 3, col: 5 }, image: '/Chess_pdt45.svg', type: 'pawn', possibleMoves: [{ dx: 0, dy: 1, repeat: false, basedOnLastMove: false }, { dx: 1, dy: 1, repeat: true, basedOnLastMove: true }] };
-
-
         return initialBoard;
     });
 
