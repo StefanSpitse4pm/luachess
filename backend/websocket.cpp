@@ -26,18 +26,6 @@ std::map<
 void setup_lua_api(sol::state& lua, Chessboard& chessboard) {
     lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::table, sol::lib::string, sol::lib::math); 
 
-    lua.set_function("isOccupied", [&](int row, int col) {
-        return chessboard.isOccupied(row, col);
-    });
-
-    lua.set_function("addMove", [&](Piece& p, int row, int col) {
-        p.possibleMoves.push_back({row, col});
-    });
-
-    lua.set_function("addTake", [&](Piece& p, int row, int col) {
-        p.possibleTakes.push_back({row, col});
-    });
-
     lua.new_usertype<Chessboard>("Chessboard",
         "isOccupied", &Chessboard::isOccupied,
         "getPieceAt", &Chessboard::getPieceAt,
@@ -52,7 +40,9 @@ void setup_lua_api(sol::state& lua, Chessboard& chessboard) {
         "image", &Piece::image,
         "canJumpOverPieces", &Piece::canJumpOverPieces,
         "possibleMoves", &Piece::possibleMoves,
-        "possibleTakes", &Piece::possibleTakes
+        "possibleTakes", &Piece::possibleTakes,
+        "addMove", &Piece::addMove,
+        "addTake", &Piece::addTake
     );
 
     lua.new_usertype<Move>("Move",
@@ -62,6 +52,27 @@ void setup_lua_api(sol::state& lua, Chessboard& chessboard) {
         "basedOnLastMove", &Move::basedOnLastMove
     );
 
+    lua.set_function("createPiece", [](const std::string& type, const std::string& image, int row, int col) {
+        Piece piece;
+        piece.type = type;
+        piece.image = image;
+        piece.position[0] = row;
+        piece.position[1] = col;
+        return piece;
+    });
+
+
+    std::filesystem::path scriptPath = std::filesystem::current_path() / "backend" / "lua" / "isOccupiedTest.lua";
+    
+    lua.script_file(scriptPath);
+    sol::protected_function setupFunc = lua["setup"];
+    if (setupFunc.valid()) {
+        sol::protected_function_result result = setupFunc(chessboard);
+        if (!result.valid()) {
+            sol::error err = result;
+            std::cerr << "Error calling Lua setup function: " << err.what() << std::endl;
+        }
+    }
 }
 
 void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr msg){
@@ -95,8 +106,6 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
     else if (type == "LoadGame") {
         sol::state& lua = games[hdl].lua;
         Chessboard& chessboard = games[hdl].chessboard;
-
-        chessboard.setPieceAt(0, 0, Piece{ {0, 0}, "rook", "Chess_rlt45.svg", { {1, 0, true}, {0, 1, true}, {-1, 0, true}, {0, -1, true} }, { }, false });
 
         setup_lua_api(lua, chessboard);
 

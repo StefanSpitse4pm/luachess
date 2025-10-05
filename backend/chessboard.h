@@ -20,6 +20,15 @@ struct Piece {
     std::vector<Move> possibleMoves;
     std::vector<Move> possibleTakes;
     bool canJumpOverPieces = false;
+
+    void addMove(int dx, int dy, bool repeat = false, bool basedOnLastMove = false) {
+        possibleMoves.push_back({dx, dy, repeat, basedOnLastMove});
+    }
+
+    void addTake(int dx, int dy, bool repeat = false, bool basedOnLastMove = false) {
+        possibleTakes.push_back({dx, dy, repeat, basedOnLastMove});
+    }
+
 };
 
 using json = nlohmann::json;
@@ -40,8 +49,8 @@ public:
         return board[row][col];
     }
 
-    void setPieceAt(int row, int col, const Piece& piece) {
-        board[row][col] = piece;
+    void setPieceAt(const Piece& piece) {
+        board[piece.position[0]][piece.position[1]] = piece;
     }
 
     void movePiece(int fromRow, int fromCol, int toRow, int toCol) {

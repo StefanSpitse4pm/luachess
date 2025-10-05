@@ -1,10 +1,12 @@
-@class Piece
+---@class Piece
 ---@field position {int, int}
 ---@field type string
 ---@field image string
 ---@field movePatterns { {int, int, boolean, boolean} }
 ---@field attackPatterns { {int, int, boolean, boolean} }
 ---@field canJumpOverPieces boolean
+---@method addMove(int, int)
+
 
 ---@class Chessboard
 ---@field rows int
@@ -16,4 +18,19 @@
 ---@param col int
 ---@return boolean
 
-function isOccupied(row, col) end
+function createPiece(type, image, row, col)
+    return {
+        type = type,
+        image = image,
+        position = {row, col},
+        movePatterns = {},
+        attackPatterns = {},
+        canJumpOverPieces = false,
+        addMove = function(dx, dy, repeat, basedOnLastMove)
+            table.insert(this.movePatterns, {dx, dy, repeat, basedOnLastMove})
+        end,
+        addTake = function(dx, dy, repeat, basedOnLastMove)
+            table.insert(this.attackPatterns, {dx, dy, repeat, basedOnLastMove})
+        end
+    }
+end
