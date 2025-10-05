@@ -84,8 +84,16 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
     if (type == "ChessboardState") {
         Chessboard& chessboard = games[hdl].chessboard; 
 
-        std::filesystem::path scriptPath = std::filesystem::current_path() / "backend" / "lua" / "isOccupiedTest.lua";
+        std::filesystem::path scriptPath = std::filesystem::current_path() / "backend" / "lua" / "regularChess.lua";
         sol::state& lua = games[hdl].lua;
+
+
+        int fromRow = j["payload"]["from"]["row"];
+        int fromCol = j["payload"]["from"]["col"];
+        int toRow = j["payload"]["to"]["row"];
+        int toCol = j["payload"]["to"]["col"];
+
+        chessboard.movePiece(fromRow, fromCol, toRow, toCol);
 
         lua.script_file(scriptPath);
         sol::protected_function f = lua["getLegalMoves"];
@@ -103,6 +111,7 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
         s->send(hdl, response.dump(), msg->get_opcode());
         return;
     }
+
     else if (type == "LoadGame") {
         sol::state& lua = games[hdl].lua;
         Chessboard& chessboard = games[hdl].chessboard;
@@ -114,6 +123,7 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
         s->send(hdl, response.dump(), msg->get_opcode());
         return;
     }
+    
 
     s->send(hdl, "{big working:'wow'}", msg->get_opcode());
 }
@@ -146,8 +156,8 @@ int main() {
         });
 
         chessServer.set_message_handler(bind(&on_message, &chessServer, std::placeholders::_1, std::placeholders::_2));
-        // chessServer.set_open_handler(bind(&on_open, std::placeholders::_1));
-        // chessServer.set_close_handler(bind(&on_close, std::placeholders::_1));
+        chessServer.set_open_handler(bind(&on_open, std::placeholders::_1));
+        chessServer.set_close_handler(bind(&on_close, std::placeholders::_1));
         chessServer.set_reuse_addr(true);
         chessServer.listen(9002);
         chessServer.start_accept();

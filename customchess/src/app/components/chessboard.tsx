@@ -87,6 +87,8 @@ export default function Chessboard() {
                 selectedPiece.possibleTakes = selectedPiece.possibleTakes.filter((take) => !(moveTo.row === take.dy) && moveTo.col === take.dx);  
             }
 
+            sendMessage({type: "ChessboardState", payload:{from: {row, col}, to: {row: moveTo.row, col: moveTo.col}}})
+
             setChessboard(prevBoard => {
                 const newBoard = prevBoard.map(row => [...row]);
                 newBoard[moveTo.row][moveTo.col] = { ...selectedPiece, position: moveTo };
@@ -96,7 +98,6 @@ export default function Chessboard() {
             setSelectedPiece(null);
             setPossibleMoves(new Set<string>());
             setIsPieceSelected(true);
-            sendMessage({type: "ChessboardState", payload:{"test": "test"}})
         }
         
     }
