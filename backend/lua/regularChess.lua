@@ -9,8 +9,8 @@ pieces = {
 function getLegalMoves(board)
     for x = 1, board.rows do 
         for y = 1, board.cols do
-            if board:getPieceAt(x, y) then
-                print("Piece at ", x, y)
+            if board:getPieceAt(x, y) ~= nil then
+                
             end
         end
     end

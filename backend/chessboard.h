@@ -47,6 +47,7 @@ public:
 
     std::optional<Piece>& getPieceAt(int row, int col) {
         return board[row][col];
+            
     }
 
     void setPieceAt(const Piece& piece) {
