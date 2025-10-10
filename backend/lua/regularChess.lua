@@ -7,10 +7,10 @@ pieces = {
 }
 
 function getLegalMoves(board)
-    for x = 1, board.rows do 
-        for y = 1, board.cols do
+    for x = 0, board.rows - 1 do
+        for y = 0, board.cols - 1 do
             if board:getPieceAt(x, y) ~= nil then
-                
+                print("Piece at", x, y)
             end
         end
     end

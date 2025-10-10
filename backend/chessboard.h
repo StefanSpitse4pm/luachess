@@ -46,6 +46,9 @@ public:
 
 
     std::optional<Piece>& getPieceAt(int row, int col) {
+        if (row < 0 || row >= rows_ || col < 0 || col >= cols_) {
+            throw std::out_of_range("Position out of bounds");
+        }
         return board[row][col];
             
     }
