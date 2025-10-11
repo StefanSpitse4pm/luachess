@@ -31,6 +31,11 @@ struct Piece {
         possibleTakes.push_back({dx, dy, repeat, basedOnLastMove});
     }
 
+    void clearMoves() {
+        possibleMoves.clear();
+        possibleTakes.clear();
+    }
+
 };
 
 using json = nlohmann::json;

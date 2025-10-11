@@ -40,6 +40,7 @@ void setup_lua_api(sol::state& lua, Chessboard& chessboard) {
         "type", &Piece::type,
         "image", &Piece::image,
         "canJumpOverPieces", &Piece::canJumpOverPieces,
+        "clearMoves", &Piece::clearMoves,
         "possibleMoves", &Piece::possibleMoves,
         "possibleTakes", &Piece::possibleTakes,
         "addMove", &Piece::addMove,
@@ -58,8 +59,8 @@ void setup_lua_api(sol::state& lua, Chessboard& chessboard) {
         Piece piece;
         piece.type = type;
         piece.image = image;
-        piece.position[0] = row;
-        piece.position[1] = col;
+        piece.position[0] = col;
+        piece.position[1] = row;
         piece.color = color;
         return piece;
     });
