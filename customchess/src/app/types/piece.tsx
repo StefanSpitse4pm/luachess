@@ -5,4 +5,5 @@ export interface piece {
         possibleMoves: { dx: number; dy: number; repeat: boolean, basedOnLastMove: boolean }[];
         possibleTakes?: { dx: number; dy: number;}[]; // the reason this exists is because this should be calculated on the server.
         canJumpOverPieces?: boolean;
+        color: 'white' | 'black';
     }

@@ -5,6 +5,7 @@
 #include <string>
 #include <nlohmann/json.hpp>
 #include <optional>
+#include <array>
 
 struct Move {
     int dx;
@@ -14,12 +15,13 @@ struct Move {
 };
 
 struct Piece {
-    int position[2];   // position[0] = row, position[1] = col
+    std::array<int, 2> position;   // position[0] = row, position[1] = col
     std::string type;
     std::string image;
     std::vector<Move> possibleMoves;
     std::vector<Move> possibleTakes;
     bool canJumpOverPieces = false;
+    std::string color;
 
     void addMove(int dx, int dy, bool repeat = false, bool basedOnLastMove = false) {
         possibleMoves.push_back({dx, dy, repeat, basedOnLastMove});
@@ -58,9 +60,16 @@ public:
     }
 
     void movePiece(int fromRow, int fromCol, int toRow, int toCol) {
+        if (fromRow < 0 || fromRow >= rows_ || fromCol < 0 || fromCol >= cols_) {
+            throw std::out_of_range("Position out of bounds");
+        }
         board[toRow][toCol] = board[fromRow][fromCol];
-        board[fromRow][fromCol] = Piece();
+        board[fromRow][fromCol] = std::nullopt;
+
+        board[toRow][toCol]->position[0] = toRow;
+        board[toRow][toCol]->position[1] = toCol;
     }
+
     std::vector<std::vector<std::optional<Piece>>> getBoard() {
         return board;
     }

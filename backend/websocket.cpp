@@ -36,13 +36,15 @@ void setup_lua_api(sol::state& lua, Chessboard& chessboard) {
     );
 
     lua.new_usertype<Piece>("Piece",
+        "position", &Piece::position,
         "type", &Piece::type,
         "image", &Piece::image,
         "canJumpOverPieces", &Piece::canJumpOverPieces,
         "possibleMoves", &Piece::possibleMoves,
         "possibleTakes", &Piece::possibleTakes,
         "addMove", &Piece::addMove,
-        "addTake", &Piece::addTake
+        "addTake", &Piece::addTake,
+        "color", &Piece::color
     );
 
     lua.new_usertype<Move>("Move",
@@ -52,17 +54,18 @@ void setup_lua_api(sol::state& lua, Chessboard& chessboard) {
         "basedOnLastMove", &Move::basedOnLastMove
     );
 
-    lua.set_function("createPiece", [](const std::string& type, const std::string& image, int row, int col) {
+    lua.set_function("createPiece", [](const std::string& type, const std::string& image, int row, int col, std::string color) {
         Piece piece;
         piece.type = type;
         piece.image = image;
         piece.position[0] = row;
         piece.position[1] = col;
+        piece.color = color;
         return piece;
     });
 
 
-    std::filesystem::path scriptPath = std::filesystem::current_path() / "backend" / "lua" / "isOccupiedTest.lua";
+    std::filesystem::path scriptPath = std::filesystem::current_path() / "backend" / "lua" / "regularChess.lua";
     
     lua.script_file(scriptPath);
     sol::protected_function setupFunc = lua["setup"];
@@ -92,9 +95,10 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
         int fromCol = j["payload"]["from"]["col"];
         int toRow = j["payload"]["to"]["row"];
         int toCol = j["payload"]["to"]["col"];
-
+        std::cout << "Moving piece from (" << fromRow << ", " << fromCol << ") to (" << toRow << ", " << toCol << ")\n"; 
         chessboard.movePiece(fromRow, fromCol, toRow, toCol);
 
+        
         lua.script_file(scriptPath);
         sol::protected_function f = lua["getLegalMoves"];
 

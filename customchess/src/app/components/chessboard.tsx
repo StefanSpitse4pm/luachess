@@ -117,7 +117,7 @@ export default function Chessboard() {
                                 onClick={() => handleSquareClick(chessboard[row][col])}
                             >
                                 {chessboard[row][col] ? (
-                                    <Piece image={chessboard[row][col].image} position={chessboard[row][col].position} type={chessboard[row][col].type} possibleMoves={chessboard[row][col].possibleMoves} chessboard={chessboard} />
+                                    <Piece image={chessboard[row][col].image} position={chessboard[row][col].position} type={chessboard[row][col].type} possibleMoves={chessboard[row][col].possibleMoves} chessboard={chessboard} color={chessboard[row][col].color} />
                                 ) : (
                                     <div className={`w-8 h-8 rounded-full bg-gray-400 opacity-40 ${isHighlighted ? 'block' : 'hidden'}`} onClick={() => movePiece({ row, col })}></div>
                                 )}
