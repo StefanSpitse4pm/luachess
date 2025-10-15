@@ -36,6 +36,16 @@ struct Piece {
         possibleTakes.clear();
     }
 
+    void foreachMove(const std::function<void(Move&)>& func) {
+        for (Move& move : possibleMoves) {
+            func(move);
+        }
+        for (Move& take : possibleTakes) {
+            func(take);
+        }
+    }
+
+
 };
 
 using json = nlohmann::json;
@@ -73,6 +83,40 @@ public:
 
         board[toRow][toCol]->position[0] = toRow;
         board[toRow][toCol]->position[1] = toCol;
+    }
+
+    void foreachPiece(const std::function<void(Piece&)>& func) {
+        for (int r = 0; r < rows_; ++r) {
+            for (int c = 0; c < cols_; ++c) {
+                if (board[r][c].has_value()) {
+                    func(board[r][c].value());
+                }
+            }
+        }
+
+    }
+
+    void calculateRepeatMoves() {
+        foreachPiece([this](Piece& piece) {
+            piece.foreachMove([this, &piece](Move& move) {
+                if (move.repeat) {
+                    int step = 1;
+                    while (true) {
+                        int newRow = piece.position[0] + move.dy * step;
+                        int newCol = piece.position[1] + move.dx * step;
+                        if (newRow < 0 || newRow >= rows_ || newCol < 0 || newCol >= cols_) {
+                            break; // Out of bounds
+                        }
+                        if (isOccupied(newRow, newCol)) {
+                            break; // Blocked by another piece
+                        }
+                        step++;
+                    }
+                    move.dx *= (step - 1);
+                    move.dy *= (step - 1);
+                }
+            });
+        });
     }
 
     std::vector<std::vector<std::optional<Piece>>> getBoard() {
