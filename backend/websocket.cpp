@@ -96,7 +96,6 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
         int fromCol = j["payload"]["from"]["col"];
         int toRow = j["payload"]["to"]["row"];
         int toCol = j["payload"]["to"]["col"];
-        std::cout << "Moving piece from (" << fromRow << ", " << fromCol << ") to (" << toRow << ", " << toCol << ")\n"; 
         chessboard.movePiece(fromRow, fromCol, toRow, toCol);
 
         

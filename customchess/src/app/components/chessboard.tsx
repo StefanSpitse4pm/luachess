@@ -65,10 +65,13 @@ export default function Chessboard() {
                 
             });
             piecePosition.possibleTakes?.forEach(take => {
-                console.log(take);
-                if (take.dx < 0 || take.dy < 0 || take.dx >= size || take.dy >= size) return;
-                newPosibleMoves.add(`${take.dy},${take.dx}`);
-                console.log(newPosibleMoves);
+                const r = piecePosition.position.row + take.dy + (take.basedOnLastMove ? lastdy : 0);
+                const c = piecePosition.position.col + take.dx + (take.basedOnLastMove ? lastdx : 0);
+            
+                // Validate bounds
+                if (r >= 0 && r < size && c >= 0 && c < size) {
+                    newPosibleMoves.add(`${r},${c}`);
+                }
             });
             setPossibleMoves(newPosibleMoves);
         }
