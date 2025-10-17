@@ -77,6 +77,7 @@ void setup_lua_api(sol::state& lua, Chessboard& chessboard) {
             std::cerr << "Error calling Lua setup function: " << err.what() << std::endl;
         }
     }
+    chessboard.calculateRepeatMoves();
 }
 
 void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr msg){
@@ -98,7 +99,7 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
         int toCol = j["payload"]["to"]["col"];
         chessboard.movePiece(fromRow, fromCol, toRow, toCol);
 
-        
+
         lua.script_file(scriptPath);
         sol::protected_function f = lua["getLegalMoves"];
 
@@ -109,7 +110,7 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
                 std::cerr << "Error calling Lua function: " << err.what() << std::endl;
             }
         } 
-
+        chessboard.calculateRepeatMoves();
         json response;
         chessboard.to_json(response);
         s->send(hdl, response.dump(), msg->get_opcode());

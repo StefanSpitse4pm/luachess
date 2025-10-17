@@ -6,6 +6,7 @@
 #include <nlohmann/json.hpp>
 #include <optional>
 #include <array>
+#include <functional>
 
 struct Move {
     int dx;
@@ -34,15 +35,6 @@ struct Piece {
     void clearMoves() {
         possibleMoves.clear();
         possibleTakes.clear();
-    }
-
-    void foreachMove(const std::function<void(Move&)>& func) {
-        for (Move& move : possibleMoves) {
-            func(move);
-        }
-        for (Move& take : possibleTakes) {
-            func(take);
-        }
     }
 
 
@@ -96,29 +88,6 @@ public:
 
     }
 
-    void calculateRepeatMoves() {
-        foreachPiece([this](Piece& piece) {
-            piece.foreachMove([this, &piece](Move& move) {
-                if (move.repeat) {
-                    int step = 1;
-                    while (true) {
-                        int newRow = piece.position[0] + move.dy * step;
-                        int newCol = piece.position[1] + move.dx * step;
-                        if (newRow < 0 || newRow >= rows_ || newCol < 0 || newCol >= cols_) {
-                            break; // Out of bounds
-                        }
-                        if (isOccupied(newRow, newCol)) {
-                            break; // Blocked by another piece
-                        }
-                        step++;
-                    }
-                    move.dx *= (step - 1);
-                    move.dy *= (step - 1);
-                }
-            });
-        });
-    }
-
     std::vector<std::vector<std::optional<Piece>>> getBoard() {
         return board;
     }
@@ -126,7 +95,8 @@ public:
     int getRows() const { return rows_; }
     int getCols() const { return cols_; }
 
-    void to_json(json& j); 
+    void to_json(json& j);
+    void calculateRepeatMoves();
 
 private:
     int rows_, cols_;

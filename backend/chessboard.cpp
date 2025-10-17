@@ -1,4 +1,5 @@
 #include "chessboard.h"
+#include <iostream>
 
 void Chessboard::to_json(json& j) {
     j = json::array();
@@ -36,4 +37,65 @@ void Chessboard::to_json(json& j) {
             }
         }
     }
+}
+void Chessboard::calculateRepeatMoves() {
+    foreachPiece([this](Piece& piece) {
+        std::vector<size_t> repeatMovesIndices;
+        std::vector<size_t> repeatTakesIndices;
+        std::vector<Move> repeatMovesToExpand;
+        std::vector<Move> repeatTakesToExpand;
+
+        for (size_t i = 0; i < piece.possibleMoves.size(); ++i) {
+            if (piece.possibleMoves[i].repeat) {
+                repeatMovesToExpand.push_back(piece.possibleMoves[i]);
+                repeatMovesIndices.push_back(i);
+            }
+        }
+        for (size_t i = 0; i < piece.possibleTakes.size(); ++i) {
+            if (piece.possibleTakes[i].repeat) {
+                repeatTakesToExpand.push_back(piece.possibleTakes[i]);
+                repeatTakesIndices.push_back(i);
+            }
+        }
+
+        for (auto it = repeatMovesIndices.rbegin(); it != repeatMovesIndices.rend(); ++it) {
+            piece.possibleMoves.erase(piece.possibleMoves.begin() + *it);
+        }
+        for (auto it = repeatTakesIndices.rbegin(); it != repeatTakesIndices.rend(); ++it) {
+            piece.possibleTakes.erase(piece.possibleTakes.begin() + *it);
+        }
+
+        for (const Move& repeatMove : repeatMovesToExpand) {
+            int step = 1;
+            while (true) {
+                int newRow = piece.position[0] + repeatMove.dy * step;
+                int newCol = piece.position[1] + repeatMove.dx * step;
+                if (newRow < 0 || newRow >= rows_ || newCol < 0 || newCol >= cols_) {
+                    break; // Out of bounds
+                }
+                if (isOccupied(newRow, newCol)) {
+                    break; // Blocked by another piece
+                }
+                piece.possibleMoves.push_back({repeatMove.dx * step, repeatMove.dy * step, false, repeatMove.basedOnLastMove});
+                step++;
+            }
+        }
+
+        // Expand repeat takes
+        for (const Move& repeatTake : repeatTakesToExpand) {
+            int step = 1;
+            while (true) {
+                int newRow = piece.position[0] + repeatTake.dy * step;
+                int newCol = piece.position[1] + repeatTake.dx * step;
+                if (newRow < 0 || newRow >= rows_ || newRow >= rows_ || newCol < 0 || newCol >= cols_) {
+                    break; // Out of bounds
+                }
+                if (isOccupied(newRow, newCol)) {
+                    break; // Blocked by another piece
+                }
+                piece.possibleTakes.push_back({repeatTake.dx * step, repeatTake.dy * step, false, repeatTake.basedOnLastMove});
+                step++;
+            }
+        }
+    });
 }
