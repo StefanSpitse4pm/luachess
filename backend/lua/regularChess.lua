@@ -49,11 +49,13 @@ local pieces = {
         get_moves = function(piece, board)
             piece:clearMoves()
             local dir = piece.color == "white" and -1 or 1
-            if (board:isOccupied(piece.position[1] + dir, piece.position[2]) == false) then
+            local row, col = piece.position[1], piece.position[2]
+            local startRow = piece.color == "white" and 6 or 1
+            if not board:isOccupied(row + dir, col) then
                 piece:addMove(0, dir, false, false)
-                print(piece.position[1] + 2)
-                if (piece.position[1] == 6 and piece.color == "white" or piece.position[1] == 1 and piece.color == "black" and board:isOccupied(piece.position[1], piece.position[2] + 2) == false) then
-                    piece:addMove(0,  1 * dir, false, true)
+                local twoStepRow = row + dir * 2
+                if row == startRow and twoStepRow >= 0 and twoStepRow < board.rows and not board:isOccupied(twoStepRow, col) then
+                    piece:addMove(0, dir * 1, false, true)
                 end
             end
             if (board:isOccupied(piece.position[1] + dir, piece.position[2] - 1) and board:getPieceAt(piece.position[1] + dir, piece.position[2] - 1).color ~= piece.color) then
@@ -129,7 +131,26 @@ local pieces = {
 
     },
     king = {
-        get_moves = function(piece, board) end
+        get_moves = function(piece, board) 
+            piece:clearMoves()
+            local moves = {
+                {0, -1}, {-1, 0}, {0, 1}, {1, 0},
+                {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
+            }
+            for _, move in ipairs(moves) do
+                local newRow = piece.position[1] + move[2]
+                local newCol = piece.position[2] + move[1]
+                if newRow >= 0 and newRow < board.rows and newCol >= 0 and newCol < board.cols then
+                    if not board:isOccupied(newRow, newCol) then
+                        piece:addMove(move[1], move[2], false, false)
+                    elseif board:getPieceAt(newRow, newCol).color ~= piece.color then
+                        piece:addTake(move[1], move[2], false, false)
+                    end
+                end
+            end
+            board:setPieceAt(piece)
+        end
+
     }
 }
 
@@ -144,10 +165,10 @@ function getLegalMoves(board)
 end
 
 function setup(board)
-    -- for x = 0, board.rows - 1 do
-    --     board:setPieceAt(createPiece("pawn", "Chess_plt45.svg", x, 6, "white"))
-    --     board:setPieceAt(createPiece("pawn", "Chess_pdt45.svg", x, 1, "black"))
-    -- end
+    for x = 0, board.rows - 1 do
+        board:setPieceAt(createPiece("pawn", "Chess_plt45.svg", x, 6, "white"))
+        board:setPieceAt(createPiece("pawn", "Chess_pdt45.svg", x, 1, "black"))
+    end
     board:setPieceAt(createPiece("rook", "Chess_rlt45.svg", 0, 7, "white"))
     board:setPieceAt(createPiece("rook", "Chess_rlt45.svg", 7, 7, "white"))
     board:setPieceAt(createPiece("rook", "Chess_rdt45.svg", 0, 0, "black"))
@@ -160,10 +181,10 @@ function setup(board)
     board:setPieceAt(createPiece("bishop", "Chess_blt45.svg", 5, 7, "white"))
     board:setPieceAt(createPiece("bishop", "Chess_bdt45.svg", 2, 0, "black"))
     board:setPieceAt(createPiece("bishop", "Chess_bdt45.svg", 5, 0, "black"))
-    -- board:setPieceAt(createPiece("queen", "Chess_qlt45.svg", 3, 7, "white"))
-    -- board:setPieceAt(createPiece("queen", "Chess_qdt45.svg", 3, 0, "black"))
-    -- board:setPieceAt(createPiece("king", "Chess_klt45.svg", 4, 7, "white"))
-    -- board:setPieceAt(createPiece("king", "Chess_kdt45.svg", 4, 0, "black"))
+    board:setPieceAt(createPiece("queen", "Chess_qlt45.svg", 3, 7, "white"))
+    board:setPieceAt(createPiece("queen", "Chess_qdt45.svg", 3, 0, "black"))
+    board:setPieceAt(createPiece("king", "Chess_klt45.svg", 4, 7, "white"))
+    board:setPieceAt(createPiece("king", "Chess_kdt45.svg", 4, 0, "black"))
 
     getLegalMoves(board)
 end
