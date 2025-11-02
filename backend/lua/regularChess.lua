@@ -1,3 +1,49 @@
+function takeOnDiagonals(piece, board)
+    local dirs = { {-1, -1}, {-1, 1}, {1, -1}, {1, 1} }
+    for _, d in ipairs(dirs) do
+        local dx, dy = d[1], d[2]
+        local step = 1
+        while true do
+            local newRow = piece.position[1] + dy * step
+            local newCol = piece.position[2] + dx * step
+            if newRow < 0 or newRow >= board.rows or newCol < 0 or newCol >= board.cols then
+                break
+            end
+            if board:isOccupied(newRow, newCol) then
+                local p = board:getPieceAt(newRow, newCol)
+                if p.color ~= piece.color then
+                    piece:addTake(dx * step, dy * step, false, false)
+                end
+                break
+            end
+            step = step + 1
+        end
+    end
+    return piece
+end
+
+function takeStraight(piece, board)
+    local dirs = { {0, -1}, {-1, 0}, {0, 1}, {1, 0} }
+    for _, d in ipairs(dirs) do
+        local dx, dy = d[1], d[2]
+        for step = 1, math.max(board.rows, board.cols) do
+            local newRow = piece.position[1] + dy * step
+            local newCol = piece.position[2] + dx * step
+            if newRow < 0 or newRow >= board.rows or newCol < 0 or newCol >= board.cols then
+                break
+            end
+            if board:isOccupied(newRow, newCol) then
+                local p = board:getPieceAt(newRow, newCol)
+                if p.color ~= piece.color then
+                    piece:addTake(dx * step, dy * step, false, false)
+                end
+                break
+            end
+        end
+    end
+    return piece
+end
+
 local pieces = {
     pawn = {
         get_moves = function(piece, board)
@@ -27,25 +73,8 @@ local pieces = {
             piece:addMove(-1, 0, true, false) 
             piece:addMove(0, 1, true, false)  
             piece:addMove(1, 0, true, false)
-            local dirs = { {0, -1}, {-1, 0}, {0, 1}, {1, 0} }
-            for _, d in ipairs(dirs) do
-                local dx, dy = d[1], d[2]
-                for step = 1, math.max(board.rows, board.cols) do
-                    local newRow = piece.position[1] + dy * step
-                    local newCol = piece.position[2] + dx * step
-                    if newRow < 0 or newRow >= board.rows or newCol < 0 or newCol >= board.cols then
-                        break
-                    end
-                    if board:isOccupied(newRow, newCol) then
-                        local p = board:getPieceAt(newRow, newCol)
-                        if p.color ~= piece.color then
-                            piece:addTake(dx * step, dy * step, false, false)
-                        end
-                        break
-                    end
-                end
-            end
-            
+            piece = takeStraight(piece, board)            
+            print(piece)
             board:calculateRepeatMoves(piece)
             board:setPieceAt(piece)
         end
@@ -78,34 +107,24 @@ local pieces = {
             piece:addMove(-1, 1, true, false)
             piece:addMove(1, -1, true, false)
             piece:addMove(1, 1, true, false)
-
-            local dirs = { {-1, -1}, {-1, 1}, {1, -1}, {1, 1} }
-            for _, d in ipairs(dirs) do
-                local dx, dy = d[1], d[2]
-                local step = 1
-                while true do
-                    local newRow = piece.position[1] + dy * step
-                    local newCol = piece.position[2] + dx * step
-                    if newRow < 0 or newRow >= board.rows or newCol < 0 or newCol >= board.cols then
-                        break
-                    end
-                    if board:isOccupied(newRow, newCol) then
-                        local p = board:getPieceAt(newRow, newCol)
-                        if p.color ~= piece.color then
-                            piece:addTake(dx * step, dy * step, false, false)
-                        end
-                        break
-                    end
-                    step = step + 1
-                end
-            end
-            
-            board:calculateRepeatMoves(piece)
+            piece = takeOnDiagonals(piece, board)
             board:setPieceAt(piece)
         end
     },
     queen = {
         get_moves = function(piece, board)
+            piece:clearMoves()
+            piece:addMove(0, -1, true, false)  
+            piece:addMove(-1, 0, true, false) 
+            piece:addMove(0, 1, true, false)  
+            piece:addMove(1, 0, true, false)
+            piece:addMove(-1, -1, true, false)
+            piece:addMove(-1, 1, true, false)
+            piece:addMove(1, -1, true, false)
+            piece:addMove(1, 1, true, false)
+            piece = takeOnDiagonals(piece, board)
+            piece = takeStraight(piece, board)
+            board:setPieceAt(piece)
         end
 
     },
