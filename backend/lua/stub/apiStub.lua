@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-doc-param, undefined-doc-name
 ---@class Piece
 ---@field position {int, int}
 ---@field type string
@@ -6,6 +7,7 @@
 ---@field attackPatterns { {int, int, boolean, boolean} }
 ---@field canJumpOverPieces boolean
 ---@method addMove(int, int)
+---@method possibleMoves 
 
 
 ---@class Chessboard
@@ -18,9 +20,10 @@
 ---@param col int
 ---@return boolean
 
-function createPiece(type, image, row, col)
+function createPiece(type, image, row, col, color)
     return {
         type = type,
+        color = color,
         image = image,
         position = {row, col},
         movePatterns = {},

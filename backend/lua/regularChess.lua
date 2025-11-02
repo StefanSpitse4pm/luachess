@@ -1,4 +1,4 @@
-pieces = {
+local pieces = {
     pawn = {
         get_moves = function(piece, board)
             piece:clearMoves()
@@ -20,15 +20,36 @@ pieces = {
             board:setPieceAt(piece)
         end
     },
-    rook = {get_moves = function(piece, board)
-        piece:clearMoves()
-        piece:addMove(0, -1, true, false)
-        piece:addMove(-1, 0, true, false)
-        piece:addMove(0, 1, true, false)
-        piece:addMove(1, 0, true, false)
-
-        board:setPieceAt(piece)
-    end},
+    rook = {
+        get_moves = function(piece, board)
+            piece:clearMoves()
+            piece:addMove(0, -1, true, false)  
+            piece:addMove(-1, 0, true, false) 
+            piece:addMove(0, 1, true, false)  
+            piece:addMove(1, 0, true, false)
+            
+            for i = 0, board.cols - 1 do
+                print(i)
+                if i ~= piece.position[2] then
+                    if board:isOccupied(piece.position[1], i) then
+                        if board:getPieceAt(piece.position[1], i).color ~= piece.color then
+                            piece:addTake(i - piece.position[2], 0, false, false)
+                        end
+                    end
+                end
+                if i ~= piece.position[1] then
+                    if board:isOccupied(i, piece.position[2]) then
+                        if board:getPieceAt(i, piece.position[2]).color ~= piece.color then
+                            piece:addTake(0, i - piece.position[1], false, false)
+                        end
+                    end
+                end
+            end
+            
+            board:calculateRepeatMoves(piece)
+            board:setPieceAt(piece)
+        end
+    },
     knight = {get_moves = function(piece, board) end},
     bishop = {get_moves = function(piece, board) end},
     queen = {get_moves = function(piece, board) end},

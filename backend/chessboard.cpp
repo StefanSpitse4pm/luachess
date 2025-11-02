@@ -87,13 +87,16 @@ void Chessboard::calculateRepeatMoves() {
             while (true) {
                 int newRow = piece.position[0] + repeatTake.dy * step;
                 int newCol = piece.position[1] + repeatTake.dx * step;
-                if (newRow < 0 || newRow >= rows_ || newRow >= rows_ || newCol < 0 || newCol >= cols_) {
+                if (newRow < 0 || newRow >= rows_ || newCol < 0 || newCol >= cols_) {
                     break; // Out of bounds
                 }
                 if (isOccupied(newRow, newCol)) {
-                    break; // Blocked by another piece
+                    // If there's a piece at this position, we can potentially take it
+                    // (the game logic will determine if it's an enemy piece)
+                    piece.possibleTakes.push_back({repeatTake.dx * step, repeatTake.dy * step, false, repeatTake.basedOnLastMove});
+                    break; // Stop after finding a piece (can't continue past it)
                 }
-                piece.possibleTakes.push_back({repeatTake.dx * step, repeatTake.dy * step, false, repeatTake.basedOnLastMove});
+                // If no piece at this position, we can't take here, but continue looking
                 step++;
             }
         }

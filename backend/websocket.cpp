@@ -32,7 +32,8 @@ void setup_lua_api(sol::state& lua, Chessboard& chessboard) {
         "setPieceAt", &Chessboard::setPieceAt,
         "movePiece", &Chessboard::movePiece,
         "rows", sol::property(&Chessboard::getRows),
-        "cols", sol::property(&Chessboard::getCols)
+        "cols", sol::property(&Chessboard::getCols),
+        "calculateRepeatMoves", &Chessboard::calculateRepeatMoves
     );
 
     lua.new_usertype<Piece>("Piece",
