@@ -1,23 +1,23 @@
 ---@diagnostic disable: undefined-doc-param, undefined-doc-name
 ---@class Piece
----@field position {int, int}
----@field type string
----@field image string
----@field movePatterns { {int, int, boolean, boolean} }
----@field attackPatterns { {int, int, boolean, boolean} }
----@field canJumpOverPieces boolean
----@method addMove(int, int)
----@method possibleMoves 
+---@field position: {number, number}
+---@field type: string
+---@field image: string
+---@field movePatterns: { {number, number, boolean, boolean} }
+---@field attackPatterns: { {number, number, boolean, boolean} }
+---@field canJumpOverPieces: boolean
+---@method addMove(number, number)
+---@method possibleMoves: { {number, number} }
 
 
 ---@class Chessboard
----@field rows int
----@field cols int
----@field board table<int, table<int, Piece?>>
+---@field rows: number
+---@field cols: number
+---@field board: table<number, table<number, Piece?>>
 
 ---@param piece Piece
----@param row int
----@param col int
+---@param row number
+---@param col number
 ---@return boolean
 
 function createPiece(type, image, row, col, color)
