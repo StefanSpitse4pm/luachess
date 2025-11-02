@@ -27,20 +27,21 @@ local pieces = {
             piece:addMove(-1, 0, true, false) 
             piece:addMove(0, 1, true, false)  
             piece:addMove(1, 0, true, false)
-            
-            for i = 0, board.cols - 1 do
-                if i ~= piece.position[2] then
-                    if board:isOccupied(piece.position[1], i) then
-                        if board:getPieceAt(piece.position[1], i).color ~= piece.color then
-                            piece:addTake(i - piece.position[2], 0, false, false)
-                        end
+            local dirs = { {0, -1}, {-1, 0}, {0, 1}, {1, 0} }
+            for _, d in ipairs(dirs) do
+                local dx, dy = d[1], d[2]
+                for step = 1, math.max(board.rows, board.cols) do
+                    local newRow = piece.position[1] + dy * step
+                    local newCol = piece.position[2] + dx * step
+                    if newRow < 0 or newRow >= board.rows or newCol < 0 or newCol >= board.cols then
+                        break
                     end
-                end
-                if i ~= piece.position[1] then
-                    if board:isOccupied(i, piece.position[2]) then
-                        if board:getPieceAt(i, piece.position[2]).color ~= piece.color then
-                            piece:addTake(0, i - piece.position[1], false, false)
+                    if board:isOccupied(newRow, newCol) then
+                        local p = board:getPieceAt(newRow, newCol)
+                        if p.color ~= piece.color then
+                            piece:addTake(dx * step, dy * step, false, false)
                         end
+                        break
                     end
                 end
             end
@@ -71,10 +72,42 @@ local pieces = {
         end
     },
     bishop = {
-        get_moves = function(piece, board) end
+        get_moves = function(piece, board) 
+            piece:clearMoves()
+            piece:addMove(-1, -1, true, false)
+            piece:addMove(-1, 1, true, false)
+            piece:addMove(1, -1, true, false)
+            piece:addMove(1, 1, true, false)
+
+            local dirs = { {-1, -1}, {-1, 1}, {1, -1}, {1, 1} }
+            for _, d in ipairs(dirs) do
+                local dx, dy = d[1], d[2]
+                local step = 1
+                while true do
+                    local newRow = piece.position[1] + dy * step
+                    local newCol = piece.position[2] + dx * step
+                    if newRow < 0 or newRow >= board.rows or newCol < 0 or newCol >= board.cols then
+                        break
+                    end
+                    if board:isOccupied(newRow, newCol) then
+                        local p = board:getPieceAt(newRow, newCol)
+                        if p.color ~= piece.color then
+                            piece:addTake(dx * step, dy * step, false, false)
+                        end
+                        break
+                    end
+                    step = step + 1
+                end
+            end
+            
+            board:calculateRepeatMoves(piece)
+            board:setPieceAt(piece)
+        end
     },
     queen = {
-        get_moves = function(piece, board) end
+        get_moves = function(piece, board)
+        end
+
     },
     king = {
         get_moves = function(piece, board) end
@@ -104,10 +137,10 @@ function setup(board)
     board:setPieceAt(createPiece("knight", "Chess_nlt45.svg", 6, 7, "white"))
     board:setPieceAt(createPiece("knight", "Chess_ndt45.svg", 1, 0, "black"))
     board:setPieceAt(createPiece("knight", "Chess_ndt45.svg", 6, 0, "black"))
-    -- board:setPieceAt(createPiece("bishop", "Chess_blt45.svg", 2, 7, "white"))
-    -- board:setPieceAt(createPiece("bishop", "Chess_blt45.svg", 5, 7, "white"))
-    -- board:setPieceAt(createPiece("bishop", "Chess_bdt45.svg", 2, 0, "black"))
-    -- board:setPieceAt(createPiece("bishop", "Chess_bdt45.svg", 5, 0, "black"))
+    board:setPieceAt(createPiece("bishop", "Chess_blt45.svg", 2, 7, "white"))
+    board:setPieceAt(createPiece("bishop", "Chess_blt45.svg", 5, 7, "white"))
+    board:setPieceAt(createPiece("bishop", "Chess_bdt45.svg", 2, 0, "black"))
+    board:setPieceAt(createPiece("bishop", "Chess_bdt45.svg", 5, 0, "black"))
     -- board:setPieceAt(createPiece("queen", "Chess_qlt45.svg", 3, 7, "white"))
     -- board:setPieceAt(createPiece("queen", "Chess_qdt45.svg", 3, 0, "black"))
     -- board:setPieceAt(createPiece("king", "Chess_klt45.svg", 4, 7, "white"))
