@@ -29,7 +29,6 @@ local pieces = {
             piece:addMove(1, 0, true, false)
             
             for i = 0, board.cols - 1 do
-                print(i)
                 if i ~= piece.position[2] then
                     if board:isOccupied(piece.position[1], i) then
                         if board:getPieceAt(piece.position[1], i).color ~= piece.color then
@@ -50,10 +49,36 @@ local pieces = {
             board:setPieceAt(piece)
         end
     },
-    knight = {get_moves = function(piece, board) end},
-    bishop = {get_moves = function(piece, board) end},
-    queen = {get_moves = function(piece, board) end},
-    king = {get_moves = function(piece, board) end}
+    knight = {
+        get_moves = function(piece, board) 
+            piece:clearMoves()
+            local moves = {
+                {1, 2}, {2, 1}, {-1, 2}, {-2, 1},
+                {1, -2}, {2, -1}, {-1, -2}, {-2, -1}
+            }
+            for _, move in ipairs(moves) do
+                local newRow = piece.position[1] + move[2]
+                local newCol = piece.position[2] + move[1]
+                if newRow >= 0 and newRow < board.rows and newCol >= 0 and newCol < board.cols then
+                    if not board:isOccupied(newRow, newCol) then
+                        piece:addMove(move[1], move[2], false, false)
+                    elseif board:getPieceAt(newRow, newCol).color ~= piece.color then
+                        piece:addTake(move[1], move[2], false, false)
+                    end
+                end
+            end
+            board:setPieceAt(piece)
+        end
+    },
+    bishop = {
+        get_moves = function(piece, board) end
+    },
+    queen = {
+        get_moves = function(piece, board) end
+    },
+    king = {
+        get_moves = function(piece, board) end
+    }
 }
 
 function getLegalMoves(board)
@@ -75,10 +100,10 @@ function setup(board)
     board:setPieceAt(createPiece("rook", "Chess_rlt45.svg", 7, 7, "white"))
     board:setPieceAt(createPiece("rook", "Chess_rdt45.svg", 0, 0, "black"))
     board:setPieceAt(createPiece("rook", "Chess_rdt45.svg", 7, 0, "black"))
-    -- board:setPieceAt(createPiece("knight", "Chess_nlt45.svg", 1, 7, "white"))
-    -- board:setPieceAt(createPiece("knight", "Chess_nlt45.svg", 6, 7, "white"))
-    -- board:setPieceAt(createPiece("knight", "Chess_ndt45.svg", 1, 0, "black"))
-    -- board:setPieceAt(createPiece("knight", "Chess_ndt45.svg", 6, 0, "black"))
+    board:setPieceAt(createPiece("knight", "Chess_nlt45.svg", 1, 7, "white"))
+    board:setPieceAt(createPiece("knight", "Chess_nlt45.svg", 6, 7, "white"))
+    board:setPieceAt(createPiece("knight", "Chess_ndt45.svg", 1, 0, "black"))
+    board:setPieceAt(createPiece("knight", "Chess_ndt45.svg", 6, 0, "black"))
     -- board:setPieceAt(createPiece("bishop", "Chess_blt45.svg", 2, 7, "white"))
     -- board:setPieceAt(createPiece("bishop", "Chess_blt45.svg", 5, 7, "white"))
     -- board:setPieceAt(createPiece("bishop", "Chess_bdt45.svg", 2, 0, "black"))
