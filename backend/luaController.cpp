@@ -1,11 +1,6 @@
 #include <sol/sol.hpp>
 #include "chessboard.h"
 
-struct luaRoomState {
-    std::string name;
-    sol::state lua;
-    Chessboard chessboard{8, 8};
-};
 
 void setup_lua_api(sol::state& lua, Chessboard& chessboard) {
     lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::table, sol::lib::string, sol::lib::math); 

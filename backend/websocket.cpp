@@ -7,7 +7,7 @@
 #include <map>
 #include <sol/sol.hpp>
 #include <filesystem>
-#include "luaController.cpp"
+#include "luaController.h"
 
 typedef websocketpp::server<websocketpp::config::asio> server;
 using json = nlohmann::json;
@@ -23,6 +23,13 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
     json j = json::parse(payload);
     std::string type = j["type"];
     
+    if (!j.contains("payload") || !j["payload"].is_object()) {
+        json response;
+        response["type"] = "Error";
+        response["payload"]["message"] = "Missing or invalid payload";
+        s->send(hdl, response.dump(), msg->get_opcode());
+        return;
+    }
 
     if (type == "ChessboardState") {
         Chessboard& chessboard = games[hdl].chessboard; 
@@ -66,9 +73,61 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
         s->send(hdl, response.dump(), msg->get_opcode());
         return;
     }
-    
+    else if (type == "createRoom") {
 
-    s->send(hdl, "{big working:'wow'}", msg->get_opcode());
+        if (!j["payload"].contains("roomName") || !j["payload"]["roomName"].is_string()) {
+            std::cout << "Invalid room creation request" << std::endl;
+            json response;
+            response["type"] = "Error";
+            response["payload"]["message"] = "Missing or invalid roomName";
+            s->send(hdl, response.dump(), msg->get_opcode());
+            return;
+        }
+        std::string roomName = j["payload"]["roomName"];
+        games[hdl].roomName = roomName;
+
+        std::cout << "Room created: " << roomName << std::endl;
+        json response;
+        s->send(hdl, response.dump(), msg->get_opcode());
+        return;
+    }
+    else if (type == "joinRoom") 
+    {
+        std::string roomName = j["payload"]["roomName"];
+        std::string playerName = j["payload"]["playerName"];
+        games[hdl].roomName = roomName;
+
+        if (games[hdl].players[0].empty()) {
+            games[hdl].players[0] = playerName;
+        } else if (games[hdl].players[1].empty()) {
+            games[hdl].players[1] = playerName;
+        } else {
+            json response;
+            response["type"] = "Error";
+            response["payload"]["message"] = "Room is full";
+            s->send(hdl, response.dump(), msg->get_opcode());
+            return;
+        }
+
+        json response;
+        response["type"] = "RoomJoined";
+        response["payload"]["roomName"] = roomName;
+        s->send(hdl, response.dump(), msg->get_opcode());
+        return;
+    }
+    else if (type == "listRooms") {
+        std::vector<std::string> roomList;
+        for (const auto& pair : games) {
+            roomList.push_back(pair.second.roomName);
+        }
+
+        json response;
+        response["type"] = "RoomList";
+        response["payload"]["rooms"] = roomList;
+        s->send(hdl, response.dump(), msg->get_opcode());
+        return;
+    }
+
 }
 void on_open(websocketpp::connection_hdl hdl){
    sol::state lua;
