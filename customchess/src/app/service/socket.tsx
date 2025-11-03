@@ -3,7 +3,7 @@ import { piece } from '../types/piece';
 
 function useWebSocket<T = any>(url: string) {
   const ws = useRef<null | WebSocket>(null);
-  const [lastMessage, setLastMessage] = useState<piece[] | null>(null);
+  const [lastMessage, setLastMessage] = useState<any | null>(null);
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {

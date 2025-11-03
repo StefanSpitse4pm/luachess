@@ -12,25 +12,32 @@ export default function Games() {
         }
     }, [isConnected]);
 
-    useEffect(() => {
-        if (lastMessage) {
-            console.log("Received message:", lastMessage);
-        }
-    }, [lastMessage]);
-
-    function handleCreateRoom() {
-        sendMessage({ type: "createRoom", payload: { roomName: "New Room",  } });
+    function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        const roomName = formData.get("roomName") as string;
+        sendMessage({ type: "createRoom", payload: { roomName } });
         sendMessage({ type: "listRooms", payload: {} });
     }
+
 
     return (
         <main className="flex min-h-screen flex-col items-center justify-between p-24">
             <h1 className="text-4xl font-bold">Games Page</h1>
             <div>
 
-                <div onClick={handleCreateRoom} className="mt-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                    add test room
-                </div>
+                <h2 className="text-2xl font-bold">Available Rooms</h2>
+                <ul>
+                    {lastMessage?.payload?.rooms.map((room: string) => (
+                        <li key={room} className="border-b py-2">{room}</li>
+                    ))}
+                </ul>
+                <form onSubmit={handleSubmit}>
+                    <input type="text" name="roomName" placeholder="Enter room name" required />
+                    <button type="submit" className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                        Create Room
+                    </button>
+                </form>
             </div>
         </main>
     );
