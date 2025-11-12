@@ -16,7 +16,8 @@ export default function Games() {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
         const roomName = formData.get("roomName") as string;
-        sendMessage({ type: "createRoom", payload: { roomName } });
+        const username = formData.get("username") as string;
+        sendMessage({ type: "createRoom", payload: { "roomName": roomName, "username" : username} });
         sendMessage({ type: "listRooms", payload: {} });
     }
 
@@ -33,6 +34,7 @@ export default function Games() {
                     ))}
                 </ul>
                 <form onSubmit={handleSubmit}>
+                    <input type="text" name="username" placeholder="username" required />
                     <input type="text" name="roomName" placeholder="Enter room name" required />
                     <button type="submit" className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                         Create Room

@@ -8,6 +8,7 @@
 #include <sol/sol.hpp>
 #include <filesystem>
 #include "luaController.h"
+#include "room.h"
 
 typedef websocketpp::server<websocketpp::config::asio> server;
 using json = nlohmann::json;
@@ -23,11 +24,7 @@ std::map<
     luaRoomState,
     std::owner_less<websocketpp::connection_hdl>> games;
 
-std::map<
-    websocketpp::connection_hdl,
-    roomInfo,
-    std::owner_less<websocketpp::connection_hdl>> rooms;
-
+std::vector<Room> rooms;
 
 
 void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr msg){
@@ -86,13 +83,16 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
         return;
     }
     else if (type == "createRoom") {
+        std::string roomName = j["payload"]["roomName"];
+        std::string username = j["payload"]["username"];
+        Room newRoom(roomName);
+        newRoom.addUser(username, hdl);
         
     }
-    else if (type == "joinRoom") {
+    // else if (type == "joinRoom") {
 
-    }
-    else if (type == "listRooms") {
-    }
+    // }
+    // else if (type == "listRooms") {
 
 }
 void on_open(websocketpp::connection_hdl hdl){
