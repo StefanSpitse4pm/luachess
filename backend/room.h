@@ -24,7 +24,7 @@ class Room {
                 throw new std::out_of_range("group is full");
             }
             player_names[filledSpots++] = name;
-            player_hdls[filledSpots++] = hdl;
+            player_hdls[filledSpots] = hdl;
             std::cout << name << " size of " << filledSpots << " to 2" << '\n';
             return;
         }
