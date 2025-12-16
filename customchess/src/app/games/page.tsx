@@ -30,7 +30,10 @@ export default function Games() {
                 <h2 className="text-2xl font-bold">Available Rooms</h2>
                 <ul>
                     {lastMessage?.rooms.map((room: any, index: number) => (
-                        <li key={index} className="border-b py-2">{room.roomName}</li>
+                        <li key={index} className="border-b py-2 flex justify-between">
+                            <div>{room.roomName}</div>
+                            <div>{room.filledSpots} / {room.roomSize}</div>
+                        </li>
                     ))}
                 </ul>
                 <form onSubmit={handleSubmit}>

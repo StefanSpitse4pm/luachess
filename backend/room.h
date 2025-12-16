@@ -33,7 +33,7 @@ class Room {
         json toJson(){
            return {
             {"roomName", this->roomName},
-            {"roomsize", MAX_PLAYER_COUNT},
+            {"roomSize", MAX_PLAYER_COUNT},
             {"filledSpots", filledSpots},
             {"users", player_names},
            };
