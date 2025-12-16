@@ -9,6 +9,7 @@
 
 const int MAX_PLAYER_COUNT = 2;
 
+
 class Room {
     public:
         Room(std::string nameRoom) {
@@ -20,13 +21,22 @@ class Room {
                 throw new std::invalid_argument("Name cannot be empty");
             }
 
-            if (filledSpots + 1 == MAX_PLAYER_COUNT) {
+            if (filledSpots >= MAX_PLAYER_COUNT) {
                 throw new std::out_of_range("group is full");
             }
             player_names[filledSpots++] = name;
             player_hdls[filledSpots] = hdl;
             std::cout << name << " size of " << filledSpots << " to 2" << '\n';
             return;
+        }
+
+        json toJson(){
+           return {
+            {"roomName", this->roomName},
+            {"roomsize", MAX_PLAYER_COUNT},
+            {"filledSpots", filledSpots},
+            {"users", player_names},
+           };
         }
 
     private:

@@ -14,11 +14,6 @@ typedef websocketpp::server<websocketpp::config::asio> server;
 using json = nlohmann::json;
 
 
-struct roomInfo {
-    std::string roomName;
-    std::array<std::string, 2> players;
-};
-
 std::map<
     websocketpp::connection_hdl,
     luaRoomState,
@@ -87,12 +82,19 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
         std::string username = j["payload"]["username"];
         Room newRoom(roomName);
         newRoom.addUser(username, hdl);
-        
+        rooms.push_back(newRoom);
     }
     // else if (type == "joinRoom") {
-
+    // TODO
     // }
-    // else if (type == "listRooms") {
+    else if (type == "listRooms") {
+        json response;
+        for (Room room : rooms) 
+        {
+            response["rooms"].push_back(room.toJson());
+        }
+        s->send(hdl, response.dump(), msg->get_opcode());
+    }
 
 }
 void on_open(websocketpp::connection_hdl hdl){

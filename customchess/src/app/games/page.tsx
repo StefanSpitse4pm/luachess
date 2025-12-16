@@ -29,8 +29,8 @@ export default function Games() {
 
                 <h2 className="text-2xl font-bold">Available Rooms</h2>
                 <ul>
-                    {lastMessage?.payload?.rooms.map((room: string) => (
-                        <li key={room} className="border-b py-2">{room}</li>
+                    {lastMessage?.rooms.map((room: any, index: number) => (
+                        <li key={index} className="border-b py-2">{room.roomName}</li>
                     ))}
                 </ul>
                 <form onSubmit={handleSubmit}>
