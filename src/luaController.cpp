@@ -46,7 +46,7 @@ void setup_lua_api(sol::state& lua, Chessboard& chessboard) {
     });
 
 
-    std::filesystem::path scriptPath = std::filesystem::current_path() / "backend" / "lua" / "regularChess.lua";
+    std::filesystem::path scriptPath = std::filesystem::current_path()/ "lua" / "regularChess.lua";
     
     lua.script_file(scriptPath);
     sol::protected_function setupFunc = lua["setup"];

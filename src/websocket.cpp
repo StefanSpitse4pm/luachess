@@ -38,7 +38,7 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
     if (type == "ChessboardState") {
         Chessboard& chessboard = games[hdl].chessboard; 
 
-        std::filesystem::path scriptPath = std::filesystem::current_path() / "backend" / "lua" / "regularChess.lua";
+        std::filesystem::path scriptPath = std::filesystem::current_path()/ "lua" / "regularChess.lua";
         sol::state& lua = games[hdl].lua;
 
 

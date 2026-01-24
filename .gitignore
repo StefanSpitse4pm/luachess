@@ -1,5 +1,5 @@
 customchess/node_modules
 .vscode/
 .DS_Store
-backend/websocket
+src/websocket
 customchess/.next/
