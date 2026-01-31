@@ -7,9 +7,9 @@
 #include <string>
 
 
-class Action {
+class Handler {
     public:
-    virtual ~Action() = default;
+    virtual ~Handler() = default;
 
     virtual void router(std::string action) = 0;
 };

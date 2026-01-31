@@ -1,3 +1,3 @@
-[submodule "backend/extern/sol2"]
-	path = backend/extern/sol2
+[submodule "src/extern/sol2"]
+	path = src/extern/sol2
 	url = https://github.com/ThePhD/sol2.git
