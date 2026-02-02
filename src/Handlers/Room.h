@@ -6,7 +6,7 @@
 #define LUACHESS_ROOM_H
 #include <string>
 #include <vector>
-#include <nlohmann/json_fwd.hpp>
+#include <nlohmann/json.hpp>
 #include <utility>
 #include <websocketpp/common/connection_hdl.hpp>
 
@@ -52,3 +52,4 @@ class Room {
 
 
 #endif //LUACHESS_ROOM_H
+

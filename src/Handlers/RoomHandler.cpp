@@ -3,9 +3,10 @@
 //
 
 #include "RoomHandler.h"
-#include <nlohmann/json.hpp>
 #include "Room.h"
 
+
+RoomHandler::~RoomHandler() = default;
 
 void RoomHandler::router(std::string action) {
 }
@@ -16,11 +17,15 @@ void RoomHandler::createRoom(const std::string& roomName, const std::string& use
 void RoomHandler::joinRoom(const std::string& roomName, const std::string& username, websocketpp::connection_hdl) {
 }
 
-nlohmann::json RoomHandler::listRooms() {
+
+
+nlohmann::json RoomHandler::listRooms() const {
     nlohmann::json response;
-    for (auto& room : rooms) {
-        response["rooms"].push_back(room->toJson());
-
+    response["rooms"] = nlohmann::json::array();
+    for (const auto& room : rooms) {
+        if (room) {
+            response["rooms"].push_back(room->toJson());
+        }
     }
-
+    return response;
 }
