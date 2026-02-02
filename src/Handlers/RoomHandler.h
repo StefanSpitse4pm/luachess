@@ -8,20 +8,25 @@
 #include <nlohmann/json.hpp>
 #include <websocketpp/common/connection_hdl.hpp>
 
+#include "ActionContext.h"
 #include "Handler.h"
 #include "Room.h"
+
 
 
 class RoomHandler : public Handler {
     public:
 
     RoomHandler();
-    ~RoomHandler();
+    ~RoomHandler() = default;
 
-    void router(std::string action) override;
-    void createRoom(const std::string& roomName, const std::string& username, const websocketpp::connection_hdl&);
-    void joinRoom(const std::string& roomName, const std::string& username, const websocketpp::connection_hdl&);
-    nlohmann::json listRooms() const;
+
+    using ActionFn = std::function<void(const ActionContext&)>;
+
+    void router(std::string action, const ActionContext &ctx) override;
+    void createRoom(const ActionContext &ctx);
+    void joinRoom(const ActionContext &ctx);
+    void listRooms(const ActionContext &ctx) const;
     private:
     std::vector<std::unique_ptr<Room>> rooms{};
 };

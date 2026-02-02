@@ -11,7 +11,7 @@ class Handler {
     public:
     virtual ~Handler() = default;
 
-    virtual void router(std::string action) = 0;
+    virtual void router(std::string action, const ActionContext& ctx) = 0;
 };
 
 

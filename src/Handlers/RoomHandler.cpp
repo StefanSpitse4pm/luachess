@@ -3,41 +3,50 @@
 //
 
 #include "RoomHandler.h"
+
+#include "ActionContext.h"
 #include "Room.h"
-using ActionFn = void (RoomHandler::*)();
-
-RoomHandler::~RoomHandler() = default;
 
 
-void RoomHandler::router(std::string action) {
+void RoomHandler::router(const std::string action, const ActionContext& ctx) {
 
     static const std::unordered_map<std::string, ActionFn> actionMap = {
-        {std::string("createRoom"), &RoomHandler::createRoom},
-        {std::string("joinRoom"), &RoomHandler::joinRoom},
-        {std::string("listRooms"), &RoomHandler::listRooms},
+         {"CreateRoom", [this](const ActionContext& a_ctx) { createRoom(a_ctx); }},
+           {"JoinRoom",   [this](const ActionContext& a_ctx) { joinRoom(a_ctx); }},
+           {"ListRooms",  [this](const ActionContext& a_ctx) { listRooms(a_ctx); }},
     };
+    auto it = actionMap.find(action);
+    if (it != actionMap.end()) {
+        it->second(ctx);
+    } else {
+        throw std::invalid_argument("Unknown action: " + action);
+    }
+
 }
 
-void RoomHandler::createRoom(const std::string& roomName, const std::string& username, const websocketpp::connection_hdl& hdl) {
+void RoomHandler::createRoom(const ActionContext& ctx) {
     int newRoomId = static_cast<int>(rooms.size()) + 1;
-    auto newRoom = std::make_unique<Room>(newRoomId, roomName);
-    newRoom->addUser(username, hdl);
+    auto newRoom = std::make_unique<Room>(newRoomId, ctx.roomContext.roomName);
+    newRoom->addUser(ctx.userContext.username, ctx.userContext.hdl);
     rooms.push_back(std::move(newRoom));
+    // TODO return error and success
 }
 
-void RoomHandler::joinRoom(const std::string& roomName, const std::string& username, const websocketpp::connection_hdl& hdl) {
+// TODO figure out why compiler wants this to Const
+void RoomHandler::joinRoom(const ActionContext& ctx) {
     for (const auto& room : rooms) {
-        if (room && room->get_room_name() == roomName) {
-            room->addUser(username, hdl);
+        if (room && room->get_room_name() == ctx.roomContext.roomName) {
+            room->addUser(ctx.userContext.username, ctx.userContext.hdl);
             return;
         }
     }
+    // TODO return error and success
     throw std::invalid_argument("Room not found");
 }
 
 
 
-nlohmann::json RoomHandler::listRooms() const {
+void RoomHandler::listRooms(const ActionContext& ctx) const {
     nlohmann::json response;
     response["rooms"] = nlohmann::json::array();
     for (const auto& room : rooms) {
@@ -45,5 +54,5 @@ nlohmann::json RoomHandler::listRooms() const {
             response["rooms"].push_back(room->toJson());
         }
     }
-    return response;
+    ctx.server->send(ctx.userContext.hdl, response.dump(), websocketpp::frame::opcode::text);
 }
