@@ -3,4 +3,4 @@ customchess/node_modules
 .DS_Store
 src/websocket
 customchess/.next/
-.idea
+.idea/

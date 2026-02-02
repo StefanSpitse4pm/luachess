@@ -10,7 +10,9 @@ add_executable(luachess src/websocket.cpp src/chessboard.cpp src/luaController.c
         src/Handlers/RoomHandler.cpp
         src/Handlers/RoomHandler.h
         src/Handlers/Room.cpp
-        src/Handlers/Room.h)
+        src/Handlers/Room.h
+        src/Handlers/ActionContext.h
+)
 
 target_include_directories(luachess PRIVATE ${CMAKE_SOURCE_DIR}/src/extern/sol2/include SYSTEM /usr/include/lua5.4)
 target_link_libraries(luachess PRIVATE lua5.4)

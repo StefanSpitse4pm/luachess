@@ -20,15 +20,6 @@ class Room {
 
     ~Room() = default;
 
-    [[nodiscard]] int get_id() const
-    {
-        return id;
-    }
-
-    void set_id(int id) {
-        this->id = id;
-    }
-
     [[nodiscard]] std::string get_room_name() const
     {
         return roomName;

@@ -19,8 +19,8 @@ class RoomHandler : public Handler {
     ~RoomHandler();
 
     void router(std::string action) override;
-    void createRoom(const std::string& roomName, const std::string& username, websocketpp::connection_hdl);
-    void joinRoom(const std::string& roomName, const std::string& username, websocketpp::connection_hdl);
+    void createRoom(const std::string& roomName, const std::string& username, const websocketpp::connection_hdl&);
+    void joinRoom(const std::string& roomName, const std::string& username, const websocketpp::connection_hdl&);
     nlohmann::json listRooms() const;
     private:
     std::vector<std::unique_ptr<Room>> rooms{};
