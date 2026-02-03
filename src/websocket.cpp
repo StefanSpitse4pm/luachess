@@ -8,7 +8,7 @@
 #include <sol/sol.hpp>
 #include <filesystem>
 #include "luaController.h"
-#include "room.h"
+#include "Handlers/RoomHandler.h"
 
 typedef websocketpp::server<websocketpp::config::asio> server;
 using json = nlohmann::json;
@@ -19,10 +19,8 @@ std::map<
     luaRoomState,
     std::owner_less<websocketpp::connection_hdl>> games;
 
-std::vector<Room> rooms;
 
-
-void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr msg){
+void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr msg) {
     std::string payload = msg->get_payload();
     json j = json::parse(payload);
     std::string type = j["type"];
@@ -66,7 +64,7 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
         return;
     }
 
-    else if (type == "LoadGame") {
+    if (type == "LoadGame") {
         sol::state& lua = games[hdl].lua;
         Chessboard& chessboard = games[hdl].chessboard;
 
@@ -77,32 +75,39 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
         s->send(hdl, response.dump(), msg->get_opcode());
         return;
     }
-    else if (type == "createRoom") {
-        std::string roomName = j["payload"]["roomName"];
-        std::string username = j["payload"]["username"];
-        Room newRoom(roomName);
-        newRoom.addUser(username, hdl);
-        rooms.push_back(newRoom);
-    }
-    // else if (type == "joinRoom") {
-    // TODO
-    // }
-    else if (type == "listRooms") {
-        json response;
-        for (Room room : rooms) 
-        {
-            response["rooms"].push_back(room.toJson());
-        }
-        s->send(hdl, response.dump(), msg->get_opcode());
-    }
 
+    if (type == "Room") {
+        ActionContext ctx;
+        ctx.action = j["payload"]["action"];
+        ctx.serverPtr = s;
+        ctx.userContext.hdl = hdl;
+
+        if (j["payload"].contains("username")) {
+            ctx.userContext.username = j["payload"]["username"];
+        }
+
+        if (j["payload"].contains("roomName")) {
+            ctx.roomContext.roomName = j["payload"]["roomName"];
+        }
+
+        try {
+            RoomHandler roomHandler;
+            roomHandler.router(ctx.action, ctx);
+        } catch (const std::exception& e) {
+            json response;
+            response["type"] = "Error";
+            response["payload"]["message"] = e.what();
+            s->send(hdl, response.dump(), msg->get_opcode());
+        }
+    }
 }
-void on_open(websocketpp::connection_hdl hdl){
+
+void on_open(const websocketpp::connection_hdl& hdl){
    sol::state lua;
    games[hdl] = luaRoomState{std::move(lua) };
 }
 
-void on_close(websocketpp::connection_hdl hdl){
+void on_close(const websocketpp::connection_hdl& hdl){
     games.erase(hdl);
 }
 
@@ -138,4 +143,3 @@ int main() {
     }
 
 }
-
