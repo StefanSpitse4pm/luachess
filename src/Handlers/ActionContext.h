@@ -22,7 +22,7 @@ struct RoomContext {
 
 struct ActionContext {
     std::string action;
-    server* server;
+    server* serverPtr;
 
     UserConext userContext;
     RoomContext roomContext;

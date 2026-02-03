@@ -54,5 +54,5 @@ void RoomHandler::listRooms(const ActionContext& ctx) const {
             response["rooms"].push_back(room->toJson());
         }
     }
-    ctx.server->send(ctx.userContext.hdl, response.dump(), websocketpp::frame::opcode::text);
+    ctx.serverPtr->send(ctx.userContext.hdl, response.dump(), websocketpp::frame::opcode::text);
 }

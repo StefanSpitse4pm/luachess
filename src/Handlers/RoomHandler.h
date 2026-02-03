@@ -17,8 +17,8 @@
 class RoomHandler : public Handler {
     public:
 
-    RoomHandler();
-    ~RoomHandler() = default;
+    RoomHandler() = default;
+    ~RoomHandler() override = default;
 
 
     using ActionFn = std::function<void(const ActionContext&)>;

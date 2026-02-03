@@ -25,6 +25,5 @@ nlohmann::json Room::toJson() {
         {"roomName", roomName},
         {"roomSize", MAX_PLAYER_COUNT},
         {"filledSpots", playerNames.size()},
-        {"roomSize", playerNames},
     };
 }
