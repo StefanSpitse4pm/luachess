@@ -25,15 +25,19 @@ void RoomHandler::router(const std::string action, const ActionContext& ctx) {
 }
 
 void RoomHandler::createRoom(const ActionContext& ctx) {
+    std::lock_guard<std::mutex> lock(roomsMutex);
+    std::cout << "Creating room: " << ctx.roomContext.roomName << " for user: " << ctx.userContext.username << std::endl;
     int newRoomId = static_cast<int>(rooms.size()) + 1;
     auto newRoom = std::make_unique<Room>(newRoomId, ctx.roomContext.roomName);
     newRoom->addUser(ctx.userContext.username, ctx.userContext.hdl);
+    assert(newRoom != nullptr);
     rooms.push_back(std::move(newRoom));
-    // TODO return error and success
+    assert(rooms.back() != nullptr);
 }
 
 // TODO figure out why compiler wants this to Const
 void RoomHandler::joinRoom(const ActionContext& ctx) {
+    std::lock_guard<std::mutex> lock(roomsMutex);
     for (const auto& room : rooms) {
         if (room && room->get_room_name() == ctx.roomContext.roomName) {
             room->addUser(ctx.userContext.username, ctx.userContext.hdl);
@@ -49,10 +53,14 @@ void RoomHandler::joinRoom(const ActionContext& ctx) {
 void RoomHandler::listRooms(const ActionContext& ctx) const {
     nlohmann::json response;
     response["rooms"] = nlohmann::json::array();
+
+    std::lock_guard lock(roomsMutex);
     for (const auto& room : rooms) {
         if (room) {
             response["rooms"].push_back(room->toJson());
         }
     }
+
+    std::cout << response.dump() << std::endl;
     ctx.serverPtr->send(ctx.userContext.hdl, response.dump(), websocketpp::frame::opcode::text);
 }

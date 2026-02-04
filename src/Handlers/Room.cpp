@@ -20,7 +20,7 @@ void Room::addUser(const std::string& username, const websocketpp::connection_hd
     playerHdl.push_back(connection_hdl);
 }
 
-nlohmann::json Room::toJson() {
+nlohmann::json Room::toJson() const {
     return {
         {"roomName", roomName},
         {"roomSize", MAX_PLAYER_COUNT},

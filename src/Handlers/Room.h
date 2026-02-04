@@ -32,7 +32,7 @@ class Room {
 
 
     void addUser(const std::string& username, const websocketpp::connection_hdl& connection_hdl);
-    nlohmann::json toJson();
+    [[nodiscard]] nlohmann::json toJson() const;
 
     private:
     int id;

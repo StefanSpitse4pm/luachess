@@ -90,15 +90,8 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
             ctx.roomContext.roomName = j["payload"]["roomName"];
         }
 
-        try {
-            RoomHandler roomHandler;
-            roomHandler.router(ctx.action, ctx);
-        } catch (const std::exception& e) {
-            json response;
-            response["type"] = "Error";
-            response["payload"]["message"] = e.what();
-            s->send(hdl, response.dump(), msg->get_opcode());
-        }
+        RoomHandler roomHandler;
+        roomHandler.router(ctx.action, ctx);
     }
 }
 

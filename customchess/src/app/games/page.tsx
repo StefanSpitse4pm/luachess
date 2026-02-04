@@ -7,7 +7,7 @@ export default function Games() {
 
     useEffect(() => {
         if (isConnected) {
-            sendMessage({ type: "listRooms", payload: {} });
+            sendMessage({ type: "Room", payload: {"action":"ListRooms"} });
             console.log("Last message:", lastMessage);
         }
     }, [isConnected]);
@@ -17,8 +17,8 @@ export default function Games() {
         const formData = new FormData(event.currentTarget);
         const roomName = formData.get("roomName") as string;
         const username = formData.get("username") as string;
-        sendMessage({ type: "createRoom", payload: { "roomName": roomName, "username" : username} });
-        sendMessage({ type: "listRooms", payload: {} });
+        sendMessage({ type: "Room", payload: { "action":"CreateRoom" ,"roomName": roomName, "username" : username} });
+        sendMessage({ type: "Room", payload: {"action":"ListRooms"}, "roomName":roomName, "username": username });
     }
 
 

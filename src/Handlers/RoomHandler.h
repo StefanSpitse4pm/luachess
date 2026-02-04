@@ -7,6 +7,7 @@
 #include <vector>
 #include <nlohmann/json.hpp>
 #include <websocketpp/common/connection_hdl.hpp>
+#include <mutex>
 
 #include "ActionContext.h"
 #include "Handler.h"
@@ -29,6 +30,7 @@ class RoomHandler : public Handler {
     void listRooms(const ActionContext &ctx) const;
     private:
     std::vector<std::unique_ptr<Room>> rooms{};
+    mutable std::mutex roomsMutex;
 };
 
 
