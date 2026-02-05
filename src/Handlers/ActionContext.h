@@ -11,16 +11,19 @@
 
 typedef websocketpp::server<websocketpp::config::asio> server;
 
-struct UserConext {
+struct UserConext
+{
     std::string username;
     websocketpp::connection_hdl hdl;
 };
 
-struct RoomContext {
+struct RoomContext
+{
     std::string roomName;
 };
 
-struct ActionContext {
+struct ActionContext
+{
     std::string action;
     server* serverPtr;
 
@@ -28,4 +31,4 @@ struct ActionContext {
     RoomContext roomContext;
 };
 
-#endif //LUACHESS_ACTIONCONTEXT_H
+#endif // LUACHESS_ACTIONCONTEXT_H

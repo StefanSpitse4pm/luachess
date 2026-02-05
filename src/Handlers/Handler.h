@@ -6,13 +6,12 @@
 #define LUACHESS_ACTION_H
 #include <string>
 
-
-class Handler {
-    public:
+class Handler
+{
+  public:
     virtual ~Handler() = default;
 
     virtual void router(std::string action, const ActionContext& ctx) = 0;
 };
 
-
-#endif //LUACHESS_ACTION_H
+#endif // LUACHESS_ACTION_H

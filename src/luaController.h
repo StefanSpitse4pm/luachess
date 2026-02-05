@@ -1,11 +1,11 @@
 #ifndef LUACONTROLLER_H
 #define LUACONTROLLER_H
 
-#include <sol/sol.hpp>
 #include "chessboard.h"
+#include <sol/sol.hpp>
 
-
-struct luaRoomState {
+struct luaRoomState
+{
     sol::state lua;
     Chessboard chessboard{8, 8};
 };

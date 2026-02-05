@@ -1,0 +1,39 @@
+BasedOnStyle: LLVM
+
+IndentWidth: 4
+ContinuationIndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 120
+
+BreakBeforeBraces: Allman
+
+InsertBraces: true
+
+SpaceBeforeParens: ControlStatements
+SpaceBeforeParensOptions:
+  AfterControlStatements: true
+  AfterFunctionDefinitionName: false
+  AfterFunctionDeclarationName: false
+  AfterForeachMacros: true
+
+SpacesInParentheses: false
+SpacesInAngles: false
+
+SeparateDefinitionBlocks: Always
+MaxEmptyLinesToKeep: 1
+
+AlignAfterOpenBracket: BlockIndent
+AlignOperands: true
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+
+SortIncludes: true
+
+KeepEmptyLinesAtTheStartOfBlocks: false
+DerivePointerAlignment: false
+PointerAlignment: Left

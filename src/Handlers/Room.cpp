@@ -7,12 +7,16 @@
 #include <nlohmann/json.hpp>
 
 constexpr int MAX_PLAYER_COUNT = 2;
-void Room::addUser(const std::string& username, const websocketpp::connection_hdl& connection_hdl) {
-    if (username.empty()) {
+
+void Room::addUser(const std::string& username, const websocketpp::connection_hdl& connection_hdl)
+{
+    if (username.empty())
+    {
         throw std::invalid_argument("username is empty");
     }
 
-    if (playerNames.size() + 1 > MAX_PLAYER_COUNT) {
+    if (playerNames.size() + 1 > MAX_PLAYER_COUNT)
+    {
         throw std::out_of_range("get_player_hdl() > MAX_PLAYER_COUNT");
     }
 
@@ -20,7 +24,8 @@ void Room::addUser(const std::string& username, const websocketpp::connection_hd
     playerHdl.push_back(connection_hdl);
 }
 
-nlohmann::json Room::toJson() const {
+nlohmann::json Room::toJson() const
+{
     return {
         {"roomName", roomName},
         {"roomSize", MAX_PLAYER_COUNT},

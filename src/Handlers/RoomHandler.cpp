@@ -7,26 +7,29 @@
 #include "ActionContext.h"
 #include "Room.h"
 
-
-void RoomHandler::router(const std::string action, const ActionContext& ctx) {
-
+void RoomHandler::router(const std::string action, const ActionContext& ctx)
+{
     static const std::unordered_map<std::string, ActionFn> actionMap = {
-         {"CreateRoom", [this](const ActionContext& a_ctx) { createRoom(a_ctx); }},
-           {"JoinRoom",   [this](const ActionContext& a_ctx) { joinRoom(a_ctx); }},
-           {"ListRooms",  [this](const ActionContext& a_ctx) { listRooms(a_ctx); }},
+        {"CreateRoom", [this](const ActionContext& a_ctx) { createRoom(a_ctx); }},
+        {"JoinRoom", [this](const ActionContext& a_ctx) { joinRoom(a_ctx); }},
+        {"ListRooms", [this](const ActionContext& a_ctx) { listRooms(a_ctx); }},
     };
     auto it = actionMap.find(action);
-    if (it != actionMap.end()) {
+    if (it != actionMap.end())
+    {
         it->second(ctx);
-    } else {
+    }
+    else
+    {
         throw std::invalid_argument("Unknown action: " + action);
     }
-
 }
 
-void RoomHandler::createRoom(const ActionContext& ctx) {
+void RoomHandler::createRoom(const ActionContext& ctx)
+{
     std::lock_guard<std::mutex> lock(roomsMutex);
-    std::cout << "Creating room: " << ctx.roomContext.roomName << " for user: " << ctx.userContext.username << std::endl;
+    std::cout << "Creating room: " << ctx.roomContext.roomName << " for user: " << ctx.userContext.username
+              << std::endl;
     int newRoomId = static_cast<int>(rooms.size()) + 1;
     auto newRoom = std::make_unique<Room>(newRoomId, ctx.roomContext.roomName);
     newRoom->addUser(ctx.userContext.username, ctx.userContext.hdl);
@@ -36,10 +39,13 @@ void RoomHandler::createRoom(const ActionContext& ctx) {
 }
 
 // TODO figure out why compiler wants this to Const
-void RoomHandler::joinRoom(const ActionContext& ctx) {
+void RoomHandler::joinRoom(const ActionContext& ctx)
+{
     std::lock_guard<std::mutex> lock(roomsMutex);
-    for (const auto& room : rooms) {
-        if (room && room->get_room_name() == ctx.roomContext.roomName) {
+    for (const auto& room : rooms)
+    {
+        if (room && room->get_room_name() == ctx.roomContext.roomName)
+        {
             room->addUser(ctx.userContext.username, ctx.userContext.hdl);
             return;
         }
@@ -48,15 +54,16 @@ void RoomHandler::joinRoom(const ActionContext& ctx) {
     throw std::invalid_argument("Room not found");
 }
 
-
-
-void RoomHandler::listRooms(const ActionContext& ctx) const {
+void RoomHandler::listRooms(const ActionContext& ctx) const
+{
     nlohmann::json response;
     response["rooms"] = nlohmann::json::array();
 
     std::lock_guard lock(roomsMutex);
-    for (const auto& room : rooms) {
-        if (room) {
+    for (const auto& room : rooms)
+    {
+        if (room)
+        {
             response["rooms"].push_back(room->toJson());
         }
     }
