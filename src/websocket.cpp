@@ -14,6 +14,7 @@ typedef websocketpp::server<websocketpp::config::asio> server;
 using json = nlohmann::json;
 
 std::map<websocketpp::connection_hdl, luaRoomState, std::owner_less<websocketpp::connection_hdl>> games;
+RoomHandler roomHandler; // Single shared instance
 
 void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr msg)
 {
@@ -92,7 +93,6 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
             ctx.roomContext.roomName = j["payload"]["roomName"];
         }
 
-        RoomHandler roomHandler;
         roomHandler.router(ctx.action, ctx);
     }
 }

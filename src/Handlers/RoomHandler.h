@@ -28,7 +28,6 @@ class RoomHandler : public Handler
 
   private:
     std::vector<std::unique_ptr<Room>> rooms{};
-    mutable std::mutex roomsMutex;
 };
 
 #endif // LUACHESS_ROOMHANDLER_H
