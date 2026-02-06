@@ -33,6 +33,7 @@ void RoomHandler::createRoom(const ActionContext& ctx)
     auto newRoom = std::make_unique<Room>(newRoomId, ctx.roomContext.roomName);
     newRoom->addUser(ctx.userContext.username, ctx.userContext.hdl);
     rooms.push_back(std::move(newRoom));
+    ctx.serverPtr->send(ctx.userContext.hdl, rooms.back()->toJson().dump(), websocketpp::frame::opcode::text);
 }
 
 // TODO figure out why compiler wants this to Const
