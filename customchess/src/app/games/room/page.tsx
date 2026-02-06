@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import useWebsocket from '../../service/socket';
+import { useWebSocketContext } from '../../context/WebSocketContext';
 
 interface RoomData {
     filledSpots: number;
@@ -16,7 +16,7 @@ export default function Room() {
     const roomName = searchParams.get('roomName');
     const username = searchParams.get('username');
 
-    const { sendMessage, lastMessage, isConnected } = useWebsocket("ws://localhost:9002");
+    const { sendMessage, lastMessage, isConnected } = useWebSocketContext();
     const [currentRoom, setCurrentRoom] = useState<RoomData | null>(null);
 
     useEffect(() => {
@@ -26,7 +26,6 @@ export default function Room() {
             return;
         }
 
-        // Join the room when component mounts
         if (isConnected) {
             sendMessage({
                 type: "Room",

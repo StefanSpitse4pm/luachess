@@ -1,11 +1,11 @@
 "use client";
-import useWebsocket from '../service/socket'
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useWebSocketContext } from '../context/WebSocketContext';
 
 export default function Games() {
     const router = useRouter();
-    const { sendMessage, lastMessage, isConnected } = useWebsocket("ws://localhost:9002")
+    const { sendMessage, lastMessage, isConnected } = useWebSocketContext();
 
     useEffect(() => {
         if (isConnected) {
@@ -25,14 +25,12 @@ export default function Games() {
 
         sendMessage({ type: "Room", payload: { "action":"CreateRoom" ,"roomName": roomName, "username" : username} });
 
-        // Navigate to room page
         router.push(`/games/room?roomName=${encodeURIComponent(roomName)}&username=${encodeURIComponent(username)}`);
     }
 
     function handleJoinRoom(roomName: string) {
         const username = prompt("Enter your username:");
         if (username) {
-            // Navigate to room page
             router.push(`/games/room?roomName=${encodeURIComponent(roomName)}&username=${encodeURIComponent(username)}`);
         }
     }
