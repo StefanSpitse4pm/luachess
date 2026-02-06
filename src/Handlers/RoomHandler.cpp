@@ -43,6 +43,7 @@ void RoomHandler::joinRoom(const ActionContext& ctx)
         if (room && room->get_room_name() == ctx.roomContext.roomName)
         {
             room->addUser(ctx.userContext.username, ctx.userContext.hdl);
+            ctx.serverPtr->send(ctx.userContext.hdl, room->toJson().dump(), websocketpp::frame::opcode::text);
             return;
         }
     }
@@ -57,7 +58,10 @@ void RoomHandler::listRooms(const ActionContext& ctx) const
 
     for (const auto& room : rooms)
     {
-        response["rooms"].push_back(room->toJson());
+        if (room)
+        {
+            response["rooms"].push_back(room->toJson());
+        }
     }
 
     std::cout << response.dump() << std::endl;
