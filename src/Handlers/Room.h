@@ -4,6 +4,8 @@
 
 #ifndef LUACHESS_ROOM_H
 #define LUACHESS_ROOM_H
+#include "ActionContext.h"
+
 #include <nlohmann/json.hpp>
 #include <string>
 #include <utility>
@@ -35,8 +37,7 @@ class Room
   private:
     int id;
     std::string roomName;
-    std::vector<websocketpp::connection_hdl> playerHdl;
-    std::vector<std::string> playerNames;
+    std::vector<UserContext> playerContexts;
 };
 
 #endif // LUACHESS_ROOM_H
