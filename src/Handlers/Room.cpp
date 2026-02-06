@@ -33,3 +33,4 @@ nlohmann::json Room::toJson() const
         {"players", playerNames},
     };
 }
+

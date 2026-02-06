@@ -30,6 +30,8 @@ export default function Games() {
 
     function handleJoinRoom(roomName: string) {
         const username = prompt("Enter your username:");
+
+        sendMessage({ type: "Room", payload: { "action":"JoinRoom" ,"roomName": roomName, "username" : username} });
         if (username) {
             router.push(`/games/room?roomName=${encodeURIComponent(roomName)}&username=${encodeURIComponent(username)}`);
         }

@@ -20,27 +20,14 @@ export default function Room() {
     const [currentRoom, setCurrentRoom] = useState<RoomData | null>(null);
 
     useEffect(() => {
-        // If no roomName or username in URL, redirect back to games
         if (!roomName || !username) {
             router.push('/games');
             return;
-        }
-
-        if (isConnected) {
-            sendMessage({
-                type: "Room",
-                payload: {
-                    "action": "JoinRoom",
-                    "roomName": roomName,
-                    "username": username
-                }
-            });
         }
     }, [isConnected, roomName, username]);
 
     useEffect(() => {
         console.log("Last message:", lastMessage);
-        // Check if lastMessage contains room data (has roomName, players, etc.)
         if (lastMessage && lastMessage.roomName && lastMessage.players) {
             setCurrentRoom(lastMessage as RoomData);
         }
@@ -56,7 +43,6 @@ export default function Room() {
                     "username": username
                 }
             });
-            // Redirect back to games lobby
             router.push('/games');
         }
     }
