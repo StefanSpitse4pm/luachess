@@ -53,7 +53,7 @@ class Chessboard
     {
     }
 
-    bool isOccupied(int row, int col) const
+    [[nodiscard]] bool isOccupied(int row, int col) const
     {
         if (row < 0 || row >= rows_ || col < 0 || col >= cols_)
         {
