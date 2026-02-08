@@ -34,6 +34,7 @@ class Room
     void addUser(const std::string& username, const websocketpp::connection_hdl& connection_hdl);
     void removeUser(UserContext userContext);
     [[nodiscard]] nlohmann::json toJson() const;
+    [[nodiscard]] const std::vector<UserContext>& getPlayerContexts() const;
 
   private:
     int id;
