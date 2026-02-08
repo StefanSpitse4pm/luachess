@@ -49,3 +49,7 @@ nlohmann::json Room::toJson() const
     };
 }
 
+const std::vector<UserContext>& Room::getPlayerContexts() const
+{
+    return playerContexts;
+}

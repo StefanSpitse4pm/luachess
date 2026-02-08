@@ -34,7 +34,10 @@ void RoomHandler::createRoom(const ActionContext& ctx)
     auto newRoom = std::make_unique<Room>(newRoomId, ctx.roomContext.roomName);
     newRoom->addUser(ctx.userContext.username, ctx.userContext.hdl);
     rooms.push_back(std::move(newRoom));
-    ctx.serverPtr->send(ctx.userContext.hdl, rooms.back()->toJson().dump(), websocketpp::frame::opcode::text);
+
+    // Send room state to creator
+    std::string roomJson = rooms.back()->toJson().dump();
+    ctx.serverPtr->send(ctx.userContext.hdl, roomJson, websocketpp::frame::opcode::text);
 }
 
 // TODO figure out why compiler wants this to Const
@@ -45,7 +48,13 @@ void RoomHandler::joinRoom(const ActionContext& ctx)
         if (room && room->get_room_name() == ctx.roomContext.roomName)
         {
             room->addUser(ctx.userContext.username, ctx.userContext.hdl);
-            ctx.serverPtr->send(ctx.userContext.hdl, room->toJson().dump(), websocketpp::frame::opcode::text);
+
+            // Broadcast room state to all users in the room
+            std::string roomJson = room->toJson().dump();
+            for (const auto& playerCtx : room->getPlayerContexts())
+            {
+                ctx.serverPtr->send(playerCtx.hdl, roomJson, websocketpp::frame::opcode::text);
+            }
             return;
         }
     }
@@ -55,15 +64,21 @@ void RoomHandler::joinRoom(const ActionContext& ctx)
 
 void RoomHandler::leaveRoom(const ActionContext& ctx)
 {
-        for (const auto& room : rooms)
+    for (const auto& room : rooms)
+    {
+        if (room && room->get_room_name() == ctx.roomContext.roomName)
         {
-            if (room && room->get_room_name() == ctx.roomContext.roomName)
+            room->removeUser(ctx.userContext);
+
+            std::string roomJson = room->toJson().dump();
+            for (const auto& playerCtx : room->getPlayerContexts())
             {
-                room->removeUser(ctx.userContext);
-                return;
+                ctx.serverPtr->send(playerCtx.hdl, roomJson, websocketpp::frame::opcode::text);
             }
+            return;
         }
-        throw std::invalid_argument("Room not found");
+    }
+    throw std::invalid_argument("Room not found");
 }
 
 void RoomHandler::listRooms(const ActionContext& ctx) const
