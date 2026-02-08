@@ -9,8 +9,8 @@
 #include <vector>
 #include <websocketpp/common/connection_hdl.hpp>
 
-#include "ActionContext.h"
-#include "Handler.h"
+#include "../ActionContext.h"
+#include "../Handler.h"
 #include "Room.h"
 
 class RoomHandler : public Handler

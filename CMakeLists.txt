@@ -10,10 +10,10 @@ add_executable(luachess
         src/chessboard.cpp
         src/luaController.cpp
         src/Handlers/Handler.h
-        src/Handlers/RoomHandler.cpp
-        src/Handlers/RoomHandler.h
-        src/Handlers/Room.cpp
-        src/Handlers/Room.h
+        src/Handlers/Rooms/RoomHandler.cpp
+        src/Handlers/Rooms/RoomHandler.h
+        src/Handlers/Rooms/Room.cpp
+        src/Handlers/Rooms/Room.h
         src/Handlers/ActionContext.h
 )
 

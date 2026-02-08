@@ -4,7 +4,7 @@
 
 #include "RoomHandler.h"
 
-#include "ActionContext.h"
+#include "../ActionContext.h"
 #include "Room.h"
 
 void RoomHandler::router(const std::string action, const ActionContext& ctx)
