@@ -25,6 +25,7 @@ class RoomHandler : public Handler
     void createRoom(const ActionContext& ctx);
     void joinRoom(const ActionContext& ctx);
     void listRooms(const ActionContext& ctx) const;
+    void leaveRoom(const ActionContext& ctx);
 
   private:
     std::vector<std::unique_ptr<Room>> rooms{};

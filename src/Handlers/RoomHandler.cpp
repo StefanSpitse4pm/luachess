@@ -13,6 +13,7 @@ void RoomHandler::router(const std::string action, const ActionContext& ctx)
         {"CreateRoom", [this](const ActionContext& a_ctx) { createRoom(a_ctx); }},
         {"JoinRoom", [this](const ActionContext& a_ctx) { joinRoom(a_ctx); }},
         {"ListRooms", [this](const ActionContext& a_ctx) { listRooms(a_ctx); }},
+        {"LeaveRoom", [this](const ActionContext& a_ctx) { leaveRoom(a_ctx); }},
     };
     auto it = actionMap.find(action);
     if (it != actionMap.end())
@@ -50,6 +51,19 @@ void RoomHandler::joinRoom(const ActionContext& ctx)
     }
     // TODO return error and success
     throw std::invalid_argument("Room not found");
+}
+
+void RoomHandler::leaveRoom(const ActionContext& ctx)
+{
+        for (const auto& room : rooms)
+        {
+            if (room && room->get_room_name() == ctx.roomContext.roomName)
+            {
+                room->removeUser(ctx.userContext);
+                return;
+            }
+        }
+        throw std::invalid_argument("Room not found");
 }
 
 void RoomHandler::listRooms(const ActionContext& ctx) const

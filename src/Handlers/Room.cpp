@@ -23,6 +23,16 @@ void Room::addUser(const std::string& username, const websocketpp::connection_hd
     playerContexts.emplace_back(username, connection_hdl);
 }
 
+void Room::removeUser(UserContext userContext)
+{
+    auto it = std::find_if(playerContexts.begin(), playerContexts.end(),
+                           [&userContext](const UserContext& ctx) { return ctx.username == userContext.username; });
+    if (it != playerContexts.end())
+    {
+        playerContexts.erase(it);
+    }
+}
+
 nlohmann::json Room::toJson() const
 {
     std::vector<std::string> usernames;
