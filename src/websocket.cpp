@@ -87,10 +87,20 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
         {
             ctx.userContext.username = j["payload"]["username"];
         }
+        else
+        {
+            s->send(hdl, R"({"type": "Error", "payload": {"message": "Missing username"}})", msg->get_opcode());
+            return;
+        }
 
         if (j["payload"].contains("roomName"))
         {
             ctx.roomContext.roomName = j["payload"]["roomName"];
+        }
+        else
+        {
+            s->send(hdl, R"({"type": "Error", "payload": {"message": "Missing roomName"}})", msg->get_opcode());
+            return;
         }
 
         roomHandler.router(ctx.action, ctx);

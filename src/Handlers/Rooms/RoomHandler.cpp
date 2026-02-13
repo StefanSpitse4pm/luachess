@@ -18,7 +18,10 @@ void RoomHandler::router(const std::string action, const ActionContext& ctx)
     auto it = actionMap.find(action);
     if (it != actionMap.end())
     {
-        it->second(ctx);
+        try
+        {
+            it->second(ctx);
+        }
     }
     else
     {
@@ -35,7 +38,6 @@ void RoomHandler::createRoom(const ActionContext& ctx)
     newRoom->addUser(ctx.userContext.username, ctx.userContext.hdl);
     rooms.push_back(std::move(newRoom));
 
-    // Send room state to creator
     std::string roomJson = rooms.back()->toJson().dump();
     ctx.serverPtr->send(ctx.userContext.hdl, roomJson, websocketpp::frame::opcode::text);
 }
@@ -58,7 +60,7 @@ void RoomHandler::joinRoom(const ActionContext& ctx)
             return;
         }
     }
-    // TODO return error and success
+    // TODO return error
     throw std::invalid_argument("Room not found");
 }
 
@@ -94,6 +96,5 @@ void RoomHandler::listRooms(const ActionContext& ctx) const
         }
     }
 
-    std::cout << response.dump() << std::endl;
     ctx.serverPtr->send(ctx.userContext.hdl, response.dump(), websocketpp::frame::opcode::text);
 }
