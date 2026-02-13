@@ -4,16 +4,17 @@ project(luachess
         LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
 
 add_executable(luachess
         src/websocket.cpp
         src/chessboard.cpp
         src/luaController.cpp
         src/Handlers/Handler.h
-        src/Handlers/RoomHandler.cpp
-        src/Handlers/RoomHandler.h
-        src/Handlers/Room.cpp
-        src/Handlers/Room.h
+        src/Handlers/Rooms/RoomHandler.cpp
+        src/Handlers/Rooms/RoomHandler.h
+        src/Handlers/Rooms/Room.cpp
+        src/Handlers/Rooms/Room.h
         src/Handlers/ActionContext.h
 )
 

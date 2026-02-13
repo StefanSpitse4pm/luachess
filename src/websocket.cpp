@@ -1,4 +1,4 @@
-#include "Handlers/RoomHandler.h"
+#include "Handlers/Rooms/RoomHandler.h"
 #include "chessboard.h"
 #include "luaController.h"
 #include <filesystem>
@@ -14,6 +14,7 @@ typedef websocketpp::server<websocketpp::config::asio> server;
 using json = nlohmann::json;
 
 std::map<websocketpp::connection_hdl, luaRoomState, std::owner_less<websocketpp::connection_hdl>> games;
+RoomHandler roomHandler;
 
 void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr msg)
 {
@@ -86,13 +87,22 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
         {
             ctx.userContext.username = j["payload"]["username"];
         }
+        else
+        {
+            s->send(hdl, R"({"type": "Error", "payload": {"message": "Missing username"}})", msg->get_opcode());
+            return;
+        }
 
         if (j["payload"].contains("roomName"))
         {
             ctx.roomContext.roomName = j["payload"]["roomName"];
         }
+        else
+        {
+            s->send(hdl, R"({"type": "Error", "payload": {"message": "Missing roomName"}})", msg->get_opcode());
+            return;
+        }
 
-        RoomHandler roomHandler;
         roomHandler.router(ctx.action, ctx);
     }
 }

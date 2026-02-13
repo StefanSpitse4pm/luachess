@@ -9,8 +9,8 @@
 #include <vector>
 #include <websocketpp/common/connection_hdl.hpp>
 
-#include "ActionContext.h"
-#include "Handler.h"
+#include "../ActionContext.h"
+#include "../Handler.h"
 #include "Room.h"
 
 class RoomHandler : public Handler
@@ -25,10 +25,10 @@ class RoomHandler : public Handler
     void createRoom(const ActionContext& ctx);
     void joinRoom(const ActionContext& ctx);
     void listRooms(const ActionContext& ctx) const;
+    void leaveRoom(const ActionContext& ctx);
 
   private:
     std::vector<std::unique_ptr<Room>> rooms{};
-    mutable std::mutex roomsMutex;
 };
 
 #endif // LUACHESS_ROOMHANDLER_H

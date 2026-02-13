@@ -4,7 +4,7 @@
 
 #include "RoomHandler.h"
 
-#include "ActionContext.h"
+#include "../ActionContext.h"
 #include "Room.h"
 
 void RoomHandler::router(const std::string action, const ActionContext& ctx)
@@ -13,11 +13,15 @@ void RoomHandler::router(const std::string action, const ActionContext& ctx)
         {"CreateRoom", [this](const ActionContext& a_ctx) { createRoom(a_ctx); }},
         {"JoinRoom", [this](const ActionContext& a_ctx) { joinRoom(a_ctx); }},
         {"ListRooms", [this](const ActionContext& a_ctx) { listRooms(a_ctx); }},
+        {"LeaveRoom", [this](const ActionContext& a_ctx) { leaveRoom(a_ctx); }},
     };
     auto it = actionMap.find(action);
     if (it != actionMap.end())
     {
-        it->second(ctx);
+        try
+        {
+            it->second(ctx);
+        }
     }
     else
     {
@@ -27,30 +31,55 @@ void RoomHandler::router(const std::string action, const ActionContext& ctx)
 
 void RoomHandler::createRoom(const ActionContext& ctx)
 {
-    std::lock_guard<std::mutex> lock(roomsMutex);
     std::cout << "Creating room: " << ctx.roomContext.roomName << " for user: " << ctx.userContext.username
               << std::endl;
     int newRoomId = static_cast<int>(rooms.size()) + 1;
     auto newRoom = std::make_unique<Room>(newRoomId, ctx.roomContext.roomName);
     newRoom->addUser(ctx.userContext.username, ctx.userContext.hdl);
-    assert(newRoom != nullptr);
     rooms.push_back(std::move(newRoom));
-    assert(rooms.back() != nullptr);
+
+    std::string roomJson = rooms.back()->toJson().dump();
+    ctx.serverPtr->send(ctx.userContext.hdl, roomJson, websocketpp::frame::opcode::text);
 }
 
 // TODO figure out why compiler wants this to Const
 void RoomHandler::joinRoom(const ActionContext& ctx)
 {
-    std::lock_guard<std::mutex> lock(roomsMutex);
     for (const auto& room : rooms)
     {
         if (room && room->get_room_name() == ctx.roomContext.roomName)
         {
             room->addUser(ctx.userContext.username, ctx.userContext.hdl);
+
+            // Broadcast room state to all users in the room
+            std::string roomJson = room->toJson().dump();
+            for (const auto& playerCtx : room->getPlayerContexts())
+            {
+                ctx.serverPtr->send(playerCtx.hdl, roomJson, websocketpp::frame::opcode::text);
+            }
             return;
         }
     }
-    // TODO return error and success
+    // TODO return error
+    throw std::invalid_argument("Room not found");
+}
+
+void RoomHandler::leaveRoom(const ActionContext& ctx)
+{
+    for (const auto& room : rooms)
+    {
+        if (room && room->get_room_name() == ctx.roomContext.roomName)
+        {
+            room->removeUser(ctx.userContext);
+
+            std::string roomJson = room->toJson().dump();
+            for (const auto& playerCtx : room->getPlayerContexts())
+            {
+                ctx.serverPtr->send(playerCtx.hdl, roomJson, websocketpp::frame::opcode::text);
+            }
+            return;
+        }
+    }
     throw std::invalid_argument("Room not found");
 }
 
@@ -59,7 +88,6 @@ void RoomHandler::listRooms(const ActionContext& ctx) const
     nlohmann::json response;
     response["rooms"] = nlohmann::json::array();
 
-    std::lock_guard lock(roomsMutex);
     for (const auto& room : rooms)
     {
         if (room)
@@ -68,6 +96,5 @@ void RoomHandler::listRooms(const ActionContext& ctx) const
         }
     }
 
-    std::cout << response.dump() << std::endl;
     ctx.serverPtr->send(ctx.userContext.hdl, response.dump(), websocketpp::frame::opcode::text);
 }

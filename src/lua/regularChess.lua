@@ -1,3 +1,10 @@
+---@diagnostic disable: lowercase-global
+-- Load API stubs for IDE support (this is not executed at runtime)
+if false then
+    ---@module 'stub.apiStub'
+    require('stub.apiStub')
+end
+
 function takeOnDiagonals(piece, board)
     local dirs = { {-1, -1}, {-1, 1}, {1, -1}, {1, 1} }
     for _, d in ipairs(dirs) do
@@ -71,18 +78,18 @@ local pieces = {
     rook = {
         get_moves = function(piece, board)
             piece:clearMoves()
-            piece:addMove(0, -1, true, false)  
-            piece:addMove(-1, 0, true, false) 
-            piece:addMove(0, 1, true, false)  
+            piece:addMove(0, -1, true, false)
+            piece:addMove(-1, 0, true, false)
+            piece:addMove(0, 1, true, false)
             piece:addMove(1, 0, true, false)
-            piece = takeStraight(piece, board)            
+            piece = takeStraight(piece, board)
             print(piece)
             board:calculateRepeatMoves(piece)
             board:setPieceAt(piece)
         end
     },
     knight = {
-        get_moves = function(piece, board) 
+        get_moves = function(piece, board)
             piece:clearMoves()
             local moves = {
                 {1, 2}, {2, 1}, {-1, 2}, {-2, 1},
@@ -103,7 +110,7 @@ local pieces = {
         end
     },
     bishop = {
-        get_moves = function(piece, board) 
+        get_moves = function(piece, board)
             piece:clearMoves()
             piece:addMove(-1, -1, true, false)
             piece:addMove(-1, 1, true, false)
@@ -116,9 +123,9 @@ local pieces = {
     queen = {
         get_moves = function(piece, board)
             piece:clearMoves()
-            piece:addMove(0, -1, true, false)  
-            piece:addMove(-1, 0, true, false) 
-            piece:addMove(0, 1, true, false)  
+            piece:addMove(0, -1, true, false)
+            piece:addMove(-1, 0, true, false)
+            piece:addMove(0, 1, true, false)
             piece:addMove(1, 0, true, false)
             piece:addMove(-1, -1, true, false)
             piece:addMove(-1, 1, true, false)
@@ -131,7 +138,7 @@ local pieces = {
 
     },
     king = {
-        get_moves = function(piece, board) 
+        get_moves = function(piece, board)
             piece:clearMoves()
             local moves = {
                 {0, -1}, {-1, 0}, {0, 1}, {1, 0},

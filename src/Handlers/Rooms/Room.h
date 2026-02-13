@@ -4,6 +4,8 @@
 
 #ifndef LUACHESS_ROOM_H
 #define LUACHESS_ROOM_H
+#include "../ActionContext.h"
+
 #include <nlohmann/json.hpp>
 #include <string>
 #include <utility>
@@ -30,13 +32,14 @@ class Room
     }
 
     void addUser(const std::string& username, const websocketpp::connection_hdl& connection_hdl);
+    void removeUser(UserContext userContext);
     [[nodiscard]] nlohmann::json toJson() const;
+    [[nodiscard]] const std::vector<UserContext>& getPlayerContexts() const;
 
   private:
     int id;
     std::string roomName;
-    std::vector<websocketpp::connection_hdl> playerHdl;
-    std::vector<std::string> playerNames;
+    std::vector<UserContext> playerContexts;
 };
 
 #endif // LUACHESS_ROOM_H
