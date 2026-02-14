@@ -16,6 +16,8 @@ add_executable(luachess
         src/Handlers/Rooms/Room.cpp
         src/Handlers/Rooms/Room.h
         src/Handlers/ActionContext.h
+        src/Handlers/Games/GameHandler.cpp
+        src/Handlers/Games/GameHandler.h
 )
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/extern/sol2)
