@@ -22,6 +22,14 @@ void RoomHandler::router(const std::string action, const ActionContext& ctx)
         {
             it->second(ctx);
         }
+        catch (...)
+        {
+            ctx.serverPtr->send(
+                ctx.userContext.hdl,
+                R"({"type": "Error", "payload": {"message": "Cant find that action"}})",
+                websocketpp::frame::opcode::text
+            );
+        }
     }
     else
     {
@@ -31,8 +39,6 @@ void RoomHandler::router(const std::string action, const ActionContext& ctx)
 
 void RoomHandler::createRoom(const ActionContext& ctx)
 {
-    std::cout << "Creating room: " << ctx.roomContext.roomName << " for user: " << ctx.userContext.username
-              << std::endl;
     int newRoomId = static_cast<int>(rooms.size()) + 1;
     auto newRoom = std::make_unique<Room>(newRoomId, ctx.roomContext.roomName);
     newRoom->addUser(ctx.userContext.username, ctx.userContext.hdl);
