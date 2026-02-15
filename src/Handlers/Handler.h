@@ -4,6 +4,7 @@
 
 #ifndef LUACHESS_ACTION_H
 #define LUACHESS_ACTION_H
+#include "ActionContext.h"
 #include <string>
 
 class Handler
@@ -11,6 +12,7 @@ class Handler
   public:
     virtual ~Handler() = default;
 
+    using ActionFn = std::function<void(const ActionContext&)>;
     virtual void router(std::string action, const ActionContext& ctx) = 0;
 };
 
