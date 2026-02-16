@@ -1,7 +1,7 @@
 #ifndef LUACONTROLLER_H
 #define LUACONTROLLER_H
 
-#include "chessboard.h"
+#include "Chess/chessboard.h"
 #include <sol/sol.hpp>
 
 struct luaRoomState

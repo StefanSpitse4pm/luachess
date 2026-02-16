@@ -1,5 +1,7 @@
-#include "chessboard.h"
+#include "Chess/Piece.h"
+#include "Chess/chessboard.h"
 #include <sol/sol.hpp>
+#include <utility>
 
 void setup_lua_api(sol::state& lua, Chessboard& chessboard)
 {
@@ -26,17 +28,11 @@ void setup_lua_api(sol::state& lua, Chessboard& chessboard)
         "createPiece",
         [](const std::string& type, const std::string& image, int row, int col, std::string color)
         {
-            Piece piece;
-            piece.type = type;
-            piece.image = image;
-            piece.position[0] = col;
-            piece.position[1] = row;
-            piece.color = color;
-            return piece;
+            return Piece({col, row}, type, image, std::move(color));
         }
     );
 
-    std::filesystem::path scriptPath = std::filesystem::current_path() / "lua" / "regularChess.lua";
+    const std::filesystem::path scriptPath = std::filesystem::current_path() / "lua" / "regularChess.lua";
 
     lua.script_file(scriptPath);
     sol::protected_function setupFunc = lua["setup"];

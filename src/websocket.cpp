@@ -1,6 +1,6 @@
+#include "Chess/chessboard.h"
 #include "Handlers/Games/GameHandler.h"
 #include "Handlers/Rooms/RoomHandler.h"
-#include "chessboard.h"
 
 #include <filesystem>
 #include <iostream>
@@ -13,7 +13,6 @@
 
 typedef websocketpp::server<websocketpp::config::asio> server;
 using json = nlohmann::json;
-
 std::map<websocketpp::connection_hdl, luaRoomState, std::owner_less<websocketpp::connection_hdl>> games;
 RoomHandler roomHandler;
 GameHandler gameHandler;
@@ -68,15 +67,15 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
     if (type == "Game")
     {
 
-        // sol::state& lua = games[hdl].lua;
-        // Chessboard& chessboard = games[hdl].chessboard;
-        //
-        // setup_lua_api(lua, chessboard);
-        //
-        // json response;
-        // chessboard.to_json(response);
-        // s->send(hdl, response.dump(), msg->get_opcode());
-        // return;
+        sol::state& lua = games[hdl].lua;
+        Chessboard& chessboard = games[hdl].chessboard;
+
+        setup_lua_api(lua, chessboard);
+
+        json response;
+        chessboard.to_json(response);
+        s->send(hdl, response.dump(), msg->get_opcode());
+        return;
     }
 
     if (type == "Room")

@@ -8,7 +8,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-point
 
 add_executable(luachess
         src/websocket.cpp
-        src/chessboard.cpp
+        src/Chess/chessboard.cpp
         src/luaController.cpp
         src/Handlers/Handler.h
         src/Handlers/Rooms/RoomHandler.cpp
@@ -18,6 +18,9 @@ add_executable(luachess
         src/Handlers/ActionContext.h
         src/Handlers/Games/GameHandler.cpp
         src/Handlers/Games/GameHandler.h
+        src/Chess/Piece.cpp
+        src/Chess/Piece.h
+        src/Chess/Move.h
 )
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/extern/sol2)
