@@ -92,7 +92,7 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
 
         if (j["payload"].contains("roomName"))
         {
-            ctx.roomContext.roomName = j["payload"]["roomName"];
+            ctx.roomContext.desiredRoomName = j["payload"]["roomName"];
         }
         else
         {

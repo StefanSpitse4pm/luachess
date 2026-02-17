@@ -40,7 +40,7 @@ void RoomHandler::router(const std::string action, const ActionContext& ctx)
 void RoomHandler::createRoom(const ActionContext& ctx)
 {
     int newRoomId = static_cast<int>(rooms.size()) + 1;
-    auto newRoom = std::make_unique<Room>(newRoomId, ctx.roomContext.roomName);
+    auto newRoom = std::make_unique<Room>(newRoomId, ctx.roomContext.desiredRoomName);
     newRoom->addUser(ctx.userContext.username, ctx.userContext.hdl);
     rooms.push_back(std::move(newRoom));
 
@@ -51,9 +51,22 @@ void RoomHandler::createRoom(const ActionContext& ctx)
 // TODO figure out why compiler wants this to Const
 void RoomHandler::joinRoom(const ActionContext& ctx)
 {
+    if (ctx.roomContext.room != nullptr)
+    {
+        Room* room = ctx.roomContext.room;
+        room->addUser(ctx.userContext.username, ctx.userContext.hdl);
+
+        std::string roomJson = room->toJson().dump();
+        for (const auto& playerCtx : room->getPlayerContexts())
+        {
+            ctx.serverPtr->send(playerCtx.hdl, roomJson, websocketpp::frame::opcode::text);
+        }
+        return;
+    }
+
     for (const auto& room : rooms)
     {
-        if (room && room->get_room_name() == ctx.roomContext.roomName)
+        if (room && room->get_room_name() == ctx.roomContext.desiredRoomName)
         {
             room->addUser(ctx.userContext.username, ctx.userContext.hdl);
 
@@ -72,9 +85,23 @@ void RoomHandler::joinRoom(const ActionContext& ctx)
 
 void RoomHandler::leaveRoom(const ActionContext& ctx)
 {
+    // Prefer direct pointer if provided
+    if (ctx.roomContext.room != nullptr)
+    {
+        Room* room = ctx.roomContext.room;
+        room->removeUser(ctx.userContext);
+
+        std::string roomJson = room->toJson().dump();
+        for (const auto& playerCtx : room->getPlayerContexts())
+        {
+            ctx.serverPtr->send(playerCtx.hdl, roomJson, websocketpp::frame::opcode::text);
+        }
+        return;
+    }
+
     for (const auto& room : rooms)
     {
-        if (room && room->get_room_name() == ctx.roomContext.roomName)
+        if (room && room->get_room_name() == ctx.roomContext.desiredRoomName)
         {
             room->removeUser(ctx.userContext);
 

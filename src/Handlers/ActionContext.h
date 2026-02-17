@@ -4,6 +4,9 @@
 
 #ifndef LUACHESS_ACTIONCONTEXT_H
 #define LUACHESS_ACTIONCONTEXT_H
+
+class Room;
+
 #include <string>
 #include <websocketpp/common/connection_hdl.hpp>
 #include <websocketpp/config/asio_no_tls.hpp>
@@ -19,7 +22,8 @@ struct UserContext
 
 struct RoomContext
 {
-    std::string roomName;
+    Room* room = nullptr; // pointer to the resolved Room (may be null for CreateRoom)
+    std::string desiredRoomName; // incoming room name from payload (used to create or lookup rooms)
 };
 
 struct ActionContext
