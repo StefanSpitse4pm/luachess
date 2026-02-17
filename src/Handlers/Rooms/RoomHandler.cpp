@@ -51,6 +51,19 @@ void RoomHandler::createRoom(const ActionContext& ctx)
 // TODO figure out why compiler wants this to Const
 void RoomHandler::joinRoom(const ActionContext& ctx)
 {
+
+    if (ctx.roomContext.desiredRoomName.empty())
+    {
+        ctx.serverPtr->send(ctx.userContext.hdl, R"({"type": "Error", "payload": {"message": "Missing Room name"}})", websocketpp::frame::opcode::text);
+        return;
+    }
+
+    if (ctx.userContext.username.empty())
+    {
+        ctx.serverPtr->send(ctx.userContext.hdl, R"({"type": "Error", "payload": {"message": "Missing username"}})", websocketpp::frame::opcode::text);
+        return;
+    }
+
     if (ctx.roomContext.room != nullptr)
     {
         Room* room = ctx.roomContext.room;
@@ -85,7 +98,18 @@ void RoomHandler::joinRoom(const ActionContext& ctx)
 
 void RoomHandler::leaveRoom(const ActionContext& ctx)
 {
-    // Prefer direct pointer if provided
+    if (ctx.roomContext.desiredRoomName.empty())
+    {
+        ctx.serverPtr->send(ctx.userContext.hdl, R"({"type": "Error", "payload": {"message": "Missing Room name"}})", websocketpp::frame::opcode::text);
+        return;
+    }
+
+    if (ctx.userContext.username.empty())
+    {
+        ctx.serverPtr->send(ctx.userContext.hdl, R"({"type": "Error", "payload": {"message": "Missing username"}})", websocketpp::frame::opcode::text);
+        return;
+    }
+
     if (ctx.roomContext.room != nullptr)
     {
         Room* room = ctx.roomContext.room;
