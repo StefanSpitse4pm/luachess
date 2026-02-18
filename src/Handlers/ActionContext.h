@@ -4,6 +4,7 @@
 
 #ifndef LUACHESS_ACTIONCONTEXT_H
 #define LUACHESS_ACTIONCONTEXT_H
+#include "Rooms/Player.h"
 
 class Room;
 
@@ -14,16 +15,16 @@ class Room;
 
 typedef websocketpp::server<websocketpp::config::asio> server;
 
-struct UserContext
+struct sessionContext
 {
-    std::string username;
+    Player* player = nullptr;
     websocketpp::connection_hdl hdl;
 };
 
 struct RoomContext
 {
-    Room* room = nullptr; // pointer to the resolved Room (may be null for CreateRoom)
-    std::string desiredRoomName; // incoming room name from payload (used to create or lookup rooms)
+    Room* room = nullptr;
+    std::string desiredRoomName;
 };
 
 struct ActionContext
@@ -31,7 +32,7 @@ struct ActionContext
     std::string action;
     server* serverPtr;
 
-    UserContext userContext;
+    sessionContext SessionContext;
     RoomContext roomContext;
 };
 

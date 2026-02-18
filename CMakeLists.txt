@@ -21,6 +21,7 @@ add_executable(luachess
         src/Chess/Piece.cpp
         src/Chess/Piece.h
         src/Chess/Move.h
+        src/Handlers/Rooms/Player.h
 )
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/extern/sol2)

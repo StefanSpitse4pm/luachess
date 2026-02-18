@@ -26,7 +26,7 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
     ActionContext ctx;
     ctx.action = j["payload"]["action"];
     ctx.serverPtr = s;
-    ctx.userContext.hdl = hdl;
+    ctx.SessionContext.hdl = hdl;
     if (!j.contains("payload") || !j["payload"].is_object())
     {
         json response;
@@ -82,7 +82,7 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
     {
         if (j["payload"].contains("username"))
         {
-            ctx.userContext.username = j["payload"]["username"];
+            ctx.SessionContext.player = new Player(j["payload"]["username"]);
         }
 
         if (j["payload"].contains("roomName"))
