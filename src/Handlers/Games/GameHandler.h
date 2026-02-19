@@ -5,20 +5,22 @@
 #ifndef LUACHESS_GAMEHANDLER_H
 #define LUACHESS_GAMEHANDLER_H
 
-#include "../Handler.h"
-#include "../ActionContext.h"
 #include "../../luaController.h"
+#include "../ActionContext.h"
+#include "../Handler.h"
+#include "Game.h"
+#include "GameFactory.h"
 
 class GameHandler : public Handler
 {
     public:
         GameHandler() = default;
-        ~GameHandler() override = default;
 
         void router(std::string action, const ActionContext& ctx) override;
         void startGame(ActionContext ctx);
     private:
-        std::map<websocketpp::connection_hdl, luaRoomState, std::owner_less<websocketpp::connection_hdl>> games;
+	    std::vector<std::unique_ptr<Game>> games;
+		std::vector<GameFactory> factories;
 };
 
 #endif // LUACHESS_GAMEHANDLER_H

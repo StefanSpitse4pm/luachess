@@ -22,6 +22,14 @@ add_executable(luachess
         src/Chess/Piece.h
         src/Chess/Move.h
         src/Handlers/Rooms/Player.h
+        src/Handlers/Games/Game.cpp
+        src/Handlers/Games/Game.h
+        src/Handlers/Games/Engine/Engine.h
+        src/Handlers/Games/Engine/LuaEngine.cpp
+        src/Handlers/Games/Engine/LuaEngine.h
+        src/Handlers/Games/GameFactory.h
+        src/Handlers/Games/PlayerCreatedLuaGameFactory.cpp
+        src/Handlers/Games/PlayerCreatedLuaGameFactory.h
 )
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/extern/sol2)

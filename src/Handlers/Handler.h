@@ -10,10 +10,10 @@
 class Handler
 {
   public:
-    virtual ~Handler() = default;
+	virtual ~Handler() = default;
 
-    using ActionFn = std::function<void(const ActionContext&)>;
-    virtual void router(std::string action, const ActionContext& ctx) = 0;
+	using ActionFn = std::function<void(const ActionContext&)>;
+	virtual void router(std::string action, const ActionContext& ctx) = 0;
 };
 
 #endif // LUACHESS_ACTION_H
