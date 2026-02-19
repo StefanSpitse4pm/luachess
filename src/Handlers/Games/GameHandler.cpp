@@ -10,4 +10,5 @@ void GameHandler::router(std::string action, const ActionContext& ctx)
 
 void GameHandler::startGame(ActionContext ctx)
 {
+
 }
