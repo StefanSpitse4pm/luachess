@@ -10,17 +10,20 @@
 #include "../Handler.h"
 #include "Game.h"
 #include "GameFactory.h"
+#include "PlayerCreatedLuaGameFactory.h"
 
 class GameHandler : public Handler
 {
     public:
-        GameHandler() = default;
-
-        void router(std::string action, const ActionContext& ctx) override;
+	GameHandler() {
+	    auto factory = std::make_unique<PlayerCreatedLuaGameFactory>();
+	    factories.push_back(factory);
+	};
+	void router(std::string action, const ActionContext& ctx) override;
         void startGame(ActionContext ctx);
     private:
-	    std::vector<std::unique_ptr<Game>> games;
-		std::vector<GameFactory> factories;
+	std::vector<std::unique_ptr<Game>> games;
+	std::vector<std::unique_ptr<GameFactory>> factories;
 };
 
 #endif // LUACHESS_GAMEHANDLER_H
