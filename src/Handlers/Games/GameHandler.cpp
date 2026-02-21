@@ -43,9 +43,8 @@ void GameHandler::startGame(ActionContext ctx)
     {
         auto game = factories[0]->createGame(ctx);
         game->start();
+        json response = game->getChessboard().to_json();
         games.push_back(std::move(game));
-        json response;
-        game->getChessboard().to_json(response);
         ctx.serverPtr->send(ctx.sessionContext.hdl, response.dump(), websocketpp::frame::opcode::text);
 
     }

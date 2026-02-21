@@ -20,7 +20,8 @@ class GameHandler : public Handler
 	    factories.push_back(std::move(factory));
 	};
 	void router(std::string action, const ActionContext& ctx) override;
-        void startGame(ActionContext ctx);
+    void startGame(ActionContext ctx);
+
     private:
 	std::vector<std::unique_ptr<Game>> games;
 	std::vector<std::unique_ptr<GameFactory>> factories;

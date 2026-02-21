@@ -1,9 +1,9 @@
 #include "chessboard.h"
 #include <iostream>
 
-void Chessboard::to_json(json& j)
+json Chessboard::to_json()
 {
-    j = json::array();
+    json j = json::array();
     for (int r = 0; r < rows_; ++r)
     {
         for (int c = 0; c < cols_; ++c)
@@ -43,6 +43,7 @@ void Chessboard::to_json(json& j)
             }
         }
     }
+    return j;
 }
 
 void Chessboard::calculateRepeatMoves()

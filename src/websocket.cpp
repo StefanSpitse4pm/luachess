@@ -47,7 +47,9 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
         int fromCol = j["payload"]["from"]["col"];
         int toRow = j["payload"]["to"]["row"];
         int toCol = j["payload"]["to"]["col"];
-        chessboard.movePiece(fromRow, fromCol, toRow, toCol); lua.script_file(scriptPath); sol::protected_function f = lua["getLegalMoves"];
+        chessboard.movePiece(fromRow, fromCol, toRow, toCol);
+        lua.script_file(scriptPath);
+        sol::protected_function f = lua["getLegalMoves"];
         if (f.valid())
         {
             sol::protected_function_result res = f(chessboard);
@@ -58,8 +60,7 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
             }
         }
         chessboard.calculateRepeatMoves();
-        json response;
-        chessboard.to_json(response);
+        json response = chessboard.to_json();
         s->send(hdl, response.dump(), msg->get_opcode());
         return;
     }
