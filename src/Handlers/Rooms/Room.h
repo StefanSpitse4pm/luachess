@@ -15,9 +15,7 @@
 class Room
 {
   public:
-    Room(int id, std::string room_name) : id(id), roomName(std::move(room_name))
-    {
-    }
+    Room(int id, std::string room_name) : id(id), roomName(std::move(room_name)){}
 
     ~Room() = default;
 
@@ -31,15 +29,15 @@ class Room
         roomName = room_name;
     }
 
-    void addUser(const std::string& username, const websocketpp::connection_hdl& connection_hdl);
-    void removeUser(UserContext userContext);
+    void addUser(const SessionContext& sessionContext);
+    void removeUser(SessionContext userContext);
     [[nodiscard]] nlohmann::json toJson() const;
-    [[nodiscard]] const std::vector<UserContext>& getPlayerContexts() const;
+    [[nodiscard]] const std::vector<SessionContext>& getSessionContexts() const;
 
   private:
     int id;
     std::string roomName;
-    std::vector<UserContext> playerContexts;
+    std::vector<SessionContext> sessionContexts;
 };
 
 #endif // LUACHESS_ROOM_H

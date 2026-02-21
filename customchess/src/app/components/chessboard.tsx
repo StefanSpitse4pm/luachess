@@ -19,7 +19,7 @@ export default function Chessboard() {
 
     useEffect(() => {
         if (isConnected) {
-            sendMessage({ type: "LoadGame", payload: {} });
+            sendMessage({ type: "Game", payload: {"action":"startGame", "gameType": "PlayerCreatedLuaGame"} });
         }
     }, [isConnected]);
 
@@ -34,7 +34,7 @@ export default function Chessboard() {
             });
         }
     }, [lastMessage])
-    
+
 
 
     function handleSquareClick(piecePosition: piece | null) {
@@ -47,7 +47,7 @@ export default function Chessboard() {
             piecePosition.possibleMoves.forEach(move => {
                 const r = piecePosition.position.row + move.dy + (move.basedOnLastMove ? lastdy : 0);
                 const c = piecePosition.position.col + move.dx + (move.basedOnLastMove ? lastdx : 0);
-                if (r < 0 || r >= size || c < 0 || c >= size) return; 
+                if (r < 0 || r >= size || c < 0 || c >= size) return;
 
                 newPosibleMoves.add(`${r},${c}`);
                 if (move.repeat) {
@@ -56,18 +56,18 @@ export default function Chessboard() {
                     while (repeatRow >= 0 && repeatRow < size && repeatCol >= 0 && repeatCol < size) {
                         if (chessboard[repeatRow][repeatCol] !== null && !piecePosition.canJumpOverPieces) break;
                         newPosibleMoves.add(`${repeatRow},${repeatCol}`);
-                        repeatRow += move.dy; 
+                        repeatRow += move.dy;
                         repeatCol += move.dx;
                     }
                 }
                 lastdx = move.dx;
                 lastdy = move.dy;
-                
+
             });
             piecePosition.possibleTakes?.forEach(take => {
                 const r = piecePosition.position.row + take.dy + (take.basedOnLastMove ? lastdy : 0);
                 const c = piecePosition.position.col + take.dx + (take.basedOnLastMove ? lastdx : 0);
-            
+
                 // Validate bounds
                 if (r >= 0 && r < size && c >= 0 && c < size) {
                     newPosibleMoves.add(`${r},${c}`);
@@ -76,7 +76,7 @@ export default function Chessboard() {
             setPossibleMoves(newPosibleMoves);
         }
         return;
-        
+
     }
 
 
@@ -87,10 +87,10 @@ export default function Chessboard() {
 
             if (chessboard[moveTo.row][moveTo.col] !== null && selectedPiece.possibleTakes) {
                 chessboard[moveTo.row][moveTo.col] = null;
-                selectedPiece.possibleTakes = selectedPiece.possibleTakes.filter((take) => !(moveTo.row === take.dy) && moveTo.col === take.dx);  
+                selectedPiece.possibleTakes = selectedPiece.possibleTakes.filter((take) => !(moveTo.row === take.dy) && moveTo.col === take.dx);
             }
 
-            sendMessage({type: "ChessboardState", payload:{from: {row, col}, to: {row: moveTo.row, col: moveTo.col}}})
+            sendMessage({type: "ChessboardState", payload:{action: "", from: {row, col}, to: {row: moveTo.row, col: moveTo.col}}})
 
             setChessboard(prevBoard => {
                 const newBoard = prevBoard.map(row => [...row]);
@@ -102,7 +102,7 @@ export default function Chessboard() {
             setPossibleMoves(new Set<string>());
             setIsPieceSelected(true);
         }
-        
+
     }
 
     return (

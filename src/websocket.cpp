@@ -1,6 +1,7 @@
+#include "Chess/chessboard.h"
+#include "Handlers/Games/GameHandler.h"
 #include "Handlers/Rooms/RoomHandler.h"
-#include "chessboard.h"
-#include "luaController.h"
+
 #include <filesystem>
 #include <iostream>
 #include <map>
@@ -12,9 +13,9 @@
 
 typedef websocketpp::server<websocketpp::config::asio> server;
 using json = nlohmann::json;
-
 std::map<websocketpp::connection_hdl, luaRoomState, std::owner_less<websocketpp::connection_hdl>> games;
 RoomHandler roomHandler;
+GameHandler gameHandler;
 
 void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr msg)
 {
@@ -22,6 +23,10 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
     json j = json::parse(payload);
     std::string type = j["type"];
 
+    ActionContext ctx;
+    ctx.action = j["payload"]["action"];
+    ctx.serverPtr = s;
+    ctx.sessionContext.hdl = hdl;
     if (!j.contains("payload") || !j["payload"].is_object())
     {
         json response;
@@ -43,10 +48,8 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
         int toRow = j["payload"]["to"]["row"];
         int toCol = j["payload"]["to"]["col"];
         chessboard.movePiece(fromRow, fromCol, toRow, toCol);
-
         lua.script_file(scriptPath);
         sol::protected_function f = lua["getLegalMoves"];
-
         if (f.valid())
         {
             sol::protected_function_result res = f(chessboard);
@@ -57,50 +60,31 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
             }
         }
         chessboard.calculateRepeatMoves();
-        json response;
-        chessboard.to_json(response);
+        json response = chessboard.to_json();
         s->send(hdl, response.dump(), msg->get_opcode());
         return;
     }
 
-    if (type == "LoadGame")
+    if (type == "Game")
     {
-        sol::state& lua = games[hdl].lua;
-        Chessboard& chessboard = games[hdl].chessboard;
-
-        setup_lua_api(lua, chessboard);
-
-        json response;
-        chessboard.to_json(response);
-        s->send(hdl, response.dump(), msg->get_opcode());
+        if (j["payload"].contains("gameType"))
+        {
+            ctx.gameContext.gameType = j["payload"]["gameType"];
+        }
+        gameHandler.router(ctx.action, ctx);
         return;
     }
 
     if (type == "Room")
     {
-        ActionContext ctx;
-        ctx.action = j["payload"]["action"];
-        ctx.serverPtr = s;
-        ctx.userContext.hdl = hdl;
-
         if (j["payload"].contains("username"))
         {
-            ctx.userContext.username = j["payload"]["username"];
-        }
-        else
-        {
-            s->send(hdl, R"({"type": "Error", "payload": {"message": "Missing username"}})", msg->get_opcode());
-            return;
+            ctx.sessionContext.player = new Player(j["payload"]["username"]);
         }
 
         if (j["payload"].contains("roomName"))
         {
-            ctx.roomContext.roomName = j["payload"]["roomName"];
-        }
-        else
-        {
-            s->send(hdl, R"({"type": "Error", "payload": {"message": "Missing roomName"}})", msg->get_opcode());
-            return;
+            ctx.roomContext.desiredRoomName = j["payload"]["roomName"];
         }
 
         roomHandler.router(ctx.action, ctx);

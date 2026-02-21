@@ -8,48 +8,47 @@
 
 constexpr int MAX_PLAYER_COUNT = 2;
 
-void Room::addUser(const std::string& username, const websocketpp::connection_hdl& connection_hdl)
+void Room::addUser(const SessionContext& sessionContext)
 {
-    if (username.empty())
+    if (sessionContext.player->get_username().empty())
     {
         throw std::invalid_argument("username is empty");
     }
 
-    if (playerContexts.size() + 1 > MAX_PLAYER_COUNT)
+    if (sessionContexts.size() + 1 > MAX_PLAYER_COUNT)
     {
         throw std::out_of_range("get_player_hdl() > MAX_PLAYER_COUNT");
     }
 
-    playerContexts.emplace_back(username, connection_hdl);
+    sessionContexts.emplace_back(sessionContext);
 }
 
-void Room::removeUser(UserContext userContext)
+void Room::removeUser(SessionContext userContext)
 {
-    auto it = std::find_if(playerContexts.begin(), playerContexts.end(),
-                           [&userContext](const UserContext& ctx) { return ctx.username == userContext.username; });
-    if (it != playerContexts.end())
+    auto it = std::find_if(sessionContexts.begin(), sessionContexts.end(),
+                           [&userContext](const SessionContext& ctx) { return ctx.player->get_username() == userContext.player->get_username(); });
+    if (it != sessionContexts.end())
     {
-        playerContexts.erase(it);
+        sessionContexts.erase(it);
     }
 }
 
 nlohmann::json Room::toJson() const
 {
     std::vector<std::string> usernames;
-    usernames.reserve(playerContexts.size());
-    for (const auto& [username, hdl] : playerContexts)    {
-        usernames.push_back(username);
+    usernames.reserve(sessionContexts.size());
+    for (const auto& [username, hdl] : sessionContexts)    {
+        usernames.push_back(username->get_username());
     }
-
     return {
         {"roomName", roomName},
         {"roomSize", MAX_PLAYER_COUNT},
-        {"filledSpots", playerContexts.size()},
+        {"filledSpots", sessionContexts.size()},
         {"players", usernames},
     };
 }
 
-const std::vector<UserContext>& Room::getPlayerContexts() const
+const std::vector<SessionContext>& Room::getSessionContexts() const
 {
-    return playerContexts;
+    return sessionContexts;
 }

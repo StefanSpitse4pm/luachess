@@ -4,6 +4,10 @@
 
 #ifndef LUACHESS_ACTIONCONTEXT_H
 #define LUACHESS_ACTIONCONTEXT_H
+#include "Rooms/Player.h"
+
+class Room;
+
 #include <string>
 #include <websocketpp/common/connection_hdl.hpp>
 #include <websocketpp/config/asio_no_tls.hpp>
@@ -11,15 +15,22 @@
 
 typedef websocketpp::server<websocketpp::config::asio> server;
 
-struct UserContext
+struct GameContext
 {
-    std::string username;
+    int boardSize = 8;
+    std::string gameType;
+};
+
+struct SessionContext
+{
+    Player* player = nullptr;
     websocketpp::connection_hdl hdl;
 };
 
 struct RoomContext
 {
-    std::string roomName;
+    Room* room = nullptr;
+    std::string desiredRoomName;
 };
 
 struct ActionContext
@@ -27,8 +38,9 @@ struct ActionContext
     std::string action;
     server* serverPtr;
 
-    UserContext userContext;
+    SessionContext sessionContext;
     RoomContext roomContext;
+    GameContext gameContext;
 };
 
 #endif // LUACHESS_ACTIONCONTEXT_H

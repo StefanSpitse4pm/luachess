@@ -1,47 +1,14 @@
 #ifndef CHESSBOARD_H
 #define CHESSBOARD_H
 
+#include "Piece.h"
+
 #include <array>
 #include <functional>
 #include <nlohmann/json.hpp>
 #include <optional>
 #include <string>
 #include <vector>
-
-struct Move
-{
-    int dx;
-    int dy;
-    bool repeat = false;
-    bool basedOnLastMove = false;
-};
-
-struct Piece
-{
-    std::array<int, 2> position; // position[0] = row, position[1] = col
-    std::string type;
-    std::string image;
-    std::vector<Move> possibleMoves;
-    std::vector<Move> possibleTakes;
-    bool canJumpOverPieces = false;
-    std::string color;
-
-    void addMove(int dx, int dy, bool repeat = false, bool basedOnLastMove = false)
-    {
-        possibleMoves.push_back({dx, dy, repeat, basedOnLastMove});
-    }
-
-    void addTake(int dx, int dy, bool repeat = false, bool basedOnLastMove = false)
-    {
-        possibleTakes.push_back({dx, dy, repeat, basedOnLastMove});
-    }
-
-    void clearMoves()
-    {
-        possibleMoves.clear();
-        possibleTakes.clear();
-    }
-};
 
 using json = nlohmann::json;
 
@@ -118,7 +85,7 @@ class Chessboard
         return cols_;
     }
 
-    void to_json(json& j);
+    json to_json();
     void calculateRepeatMoves();
 
   private:

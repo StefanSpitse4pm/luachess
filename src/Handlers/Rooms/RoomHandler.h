@@ -19,7 +19,6 @@ class RoomHandler : public Handler
     RoomHandler() = default;
     ~RoomHandler() override = default;
 
-    using ActionFn = std::function<void(const ActionContext&)>;
 
     void router(std::string action, const ActionContext& ctx) override;
     void createRoom(const ActionContext& ctx);
