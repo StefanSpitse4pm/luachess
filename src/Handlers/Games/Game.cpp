@@ -6,8 +6,8 @@
 
 void Game::start() const
 {
-    engine.setup(chessboard);
-    engine.initialize(filepath, chessboard);
+    engine->setup(*chessboard);
+    engine->initialize(filepath, *chessboard);
 }
 
 void Game::stop()

@@ -19,7 +19,7 @@ void GameHandler::router(std::string action, const ActionContext& ctx)
 		catch (...)
 		{
 			ctx.serverPtr->send(
-				ctx.SessionContext.hdl,
+				ctx.sessionContext.hdl,
 				R"({"type": "Error", "payload": {"message": "Cant find that action"}})",
 				websocketpp::frame::opcode::text
 			);
@@ -33,17 +33,20 @@ void GameHandler::router(std::string action, const ActionContext& ctx)
 
 void GameHandler::startGame(ActionContext ctx)
 {
-    if (ctx.GameContext.gameType.empty())
+    if (ctx.gameContext.gameType.empty())
     {
-        ctx.serverPtr->send(ctx.SessionContext.hdl, R"({"type": "Error", "payload": {"message": "Missing game type"}})", websocketpp::frame::opcode::text);
+        ctx.serverPtr->send(ctx.sessionContext.hdl, R"({"type": "Error", "payload": {"message": "Missing game type"}})", websocketpp::frame::opcode::text);
         return;
     }
 
-    if (ctx.GameContext.gameType == "PlayerCreatedLuaGame")
+    if (ctx.gameContext.gameType == "PlayerCreatedLuaGame")
     {
         auto game = factories[0]->createGame(ctx);
         game->start();
         games.push_back(std::move(game));
+        json response;
+        game->getChessboard().to_json(response);
+        ctx.serverPtr->send(ctx.sessionContext.hdl, response.dump(), websocketpp::frame::opcode::text);
 
     }
 }

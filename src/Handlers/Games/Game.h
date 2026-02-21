@@ -5,27 +5,29 @@
 #ifndef LUACHESS_GAME_H
 #define LUACHESS_GAME_H
 #include "Engine/Engine.h"
+#include "../../Chess/chessboard.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
 class Game
 {
     public:
-        Game(Engine& engine, Chessboard& chessboard, std::string  filepath)
-        : engine(engine), chessboard(chessboard), filepath(std::move(filepath)){}
+        Game(std::unique_ptr<Engine> engine, std::unique_ptr<Chessboard> chessboard, std::string  filepath)
+        : engine(std::move(engine)), chessboard(std::move(chessboard)), filepath(std::move(filepath)){}
 
         void start() const;
         void stop();
 
         [[nodiscard]] Chessboard& getChessboard() const
         {
-            return chessboard;
+            return *chessboard;
         }
 
       private:
-        Engine& engine;
-        Chessboard& chessboard;
+        std::unique_ptr<Engine> engine;
+        std::unique_ptr<Chessboard> chessboard;
         std::filesystem::path filepath;
 };
 

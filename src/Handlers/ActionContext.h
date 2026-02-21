@@ -38,9 +38,9 @@ struct ActionContext
     std::string action;
     server* serverPtr;
 
-    SessionContext SessionContext;
+    SessionContext sessionContext;
     RoomContext roomContext;
-    GameContext GameContext;
+    GameContext gameContext;
 };
 
 #endif // LUACHESS_ACTIONCONTEXT_H

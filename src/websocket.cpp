@@ -26,7 +26,7 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
     ActionContext ctx;
     ctx.action = j["payload"]["action"];
     ctx.serverPtr = s;
-    ctx.SessionContext.hdl = hdl;
+    ctx.sessionContext.hdl = hdl;
     if (!j.contains("payload") || !j["payload"].is_object())
     {
         json response;
@@ -66,15 +66,11 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
 
     if (type == "Game")
     {
-
-        sol::state& lua = games[hdl].lua;
-        Chessboard& chessboard = games[hdl].chessboard;
-
-        setup_lua_api(lua, chessboard);
-
-        json response;
-        chessboard.to_json(response);
-        s->send(hdl, response.dump(), msg->get_opcode());
+        if (j["payload"].contains("gameType"))
+        {
+            ctx.gameContext.gameType = j["payload"]["gameType"];
+        }
+        gameHandler.router(ctx.action, ctx);
         return;
     }
 
@@ -82,7 +78,7 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
     {
         if (j["payload"].contains("username"))
         {
-            ctx.SessionContext.player = new Player(j["payload"]["username"]);
+            ctx.sessionContext.player = new Player(j["payload"]["username"]);
         }
 
         if (j["payload"].contains("roomName"))

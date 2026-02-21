@@ -19,7 +19,7 @@ export default function Chessboard() {
 
     useEffect(() => {
         if (isConnected) {
-            sendMessage({ type: "Game", payload: {"action":""} });
+            sendMessage({ type: "Game", payload: {"action":"startGame", "gameType": "PlayerCreatedLuaGame"} });
         }
     }, [isConnected]);
 
