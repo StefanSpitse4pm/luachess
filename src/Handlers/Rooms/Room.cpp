@@ -8,7 +8,7 @@
 
 constexpr int MAX_PLAYER_COUNT = 2;
 
-void Room::addUser(const sessionContext& sessionContext)
+void Room::addUser(const SessionContext& sessionContext)
 {
     if (sessionContext.player->get_username().empty())
     {
@@ -23,10 +23,10 @@ void Room::addUser(const sessionContext& sessionContext)
     sessionContexts.emplace_back(sessionContext);
 }
 
-void Room::removeUser(sessionContext userContext)
+void Room::removeUser(SessionContext userContext)
 {
     auto it = std::find_if(sessionContexts.begin(), sessionContexts.end(),
-                           [&userContext](const sessionContext& ctx) { return ctx.player->get_username() == userContext.player->get_username(); });
+                           [&userContext](const SessionContext& ctx) { return ctx.player->get_username() == userContext.player->get_username(); });
     if (it != sessionContexts.end())
     {
         sessionContexts.erase(it);
@@ -48,7 +48,7 @@ nlohmann::json Room::toJson() const
     };
 }
 
-const std::vector<sessionContext>& Room::getSessionContexts() const
+const std::vector<SessionContext>& Room::getSessionContexts() const
 {
     return sessionContexts;
 }

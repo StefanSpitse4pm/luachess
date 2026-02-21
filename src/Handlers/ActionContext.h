@@ -15,7 +15,13 @@ class Room;
 
 typedef websocketpp::server<websocketpp::config::asio> server;
 
-struct sessionContext
+struct GameContext
+{
+    int boardSize = 8;
+    std::string gameType;
+};
+
+struct SessionContext
 {
     Player* player = nullptr;
     websocketpp::connection_hdl hdl;
@@ -32,8 +38,9 @@ struct ActionContext
     std::string action;
     server* serverPtr;
 
-    sessionContext SessionContext;
+    SessionContext SessionContext;
     RoomContext roomContext;
+    GameContext GameContext;
 };
 
 #endif // LUACHESS_ACTIONCONTEXT_H

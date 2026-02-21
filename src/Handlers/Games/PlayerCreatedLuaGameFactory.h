@@ -9,7 +9,7 @@
 class PlayerCreatedLuaGameFactory : public GameFactory
 {
   public:
-	std::unique_ptr<Game> createGame() override;
+    std::unique_ptr<Game> createGame(ActionContext ctx) override;
 };
 
 #endif // LUACHESS_PLAYERCREATEDLUAGAMEFACTORY_H

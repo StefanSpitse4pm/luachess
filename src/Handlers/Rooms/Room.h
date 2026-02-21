@@ -29,15 +29,15 @@ class Room
         roomName = room_name;
     }
 
-    void addUser(const sessionContext& sessionContext);
-    void removeUser(sessionContext userContext);
+    void addUser(const SessionContext& sessionContext);
+    void removeUser(SessionContext userContext);
     [[nodiscard]] nlohmann::json toJson() const;
-    [[nodiscard]] const std::vector<sessionContext>& getSessionContexts() const;
+    [[nodiscard]] const std::vector<SessionContext>& getSessionContexts() const;
 
   private:
     int id;
     std::string roomName;
-    std::vector<sessionContext> sessionContexts;
+    std::vector<SessionContext> sessionContexts;
 };
 
 #endif // LUACHESS_ROOM_H

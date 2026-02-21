@@ -4,9 +4,13 @@
 
 #include "PlayerCreatedLuaGameFactory.h"
 
+#include "Engine/LuaEngine.h"
+#include "../../Chess/chessboard.h"
 
-std::unique_ptr<Game> PlayerCreatedLuaGameFactory::createGame()
+std::unique_ptr<Game> PlayerCreatedLuaGameFactory::createGame(ActionContext)
 {
-    // TODO: Implement logic to create a Game instance based on player-created Lua scripts
-    return nullptr;
+    LuaEngine engine = LuaEngine();
+    Chessboard board = Chessboard(8,8);
+    auto newGame = std::make_unique<Game>(engine, board, "scripts/default_chess.lua");
+    return std::move(newGame);
 }

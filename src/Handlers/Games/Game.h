@@ -15,7 +15,7 @@ class Game
         Game(Engine& engine, Chessboard& chessboard, std::string  filepath)
         : engine(engine), chessboard(chessboard), filepath(std::move(filepath)){}
 
-        void start();
+        void start() const;
         void stop();
 
         [[nodiscard]] Chessboard& getChessboard() const
@@ -26,7 +26,7 @@ class Game
       private:
         Engine& engine;
         Chessboard& chessboard;
-        std::string filepath;
+        std::filesystem::path filepath;
 };
 
 #endif // LUACHESS_GAME_H

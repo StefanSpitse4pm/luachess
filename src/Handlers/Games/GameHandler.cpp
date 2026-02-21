@@ -33,5 +33,17 @@ void GameHandler::router(std::string action, const ActionContext& ctx)
 
 void GameHandler::startGame(ActionContext ctx)
 {
+    if (ctx.GameContext.gameType.empty())
+    {
+        ctx.serverPtr->send(ctx.SessionContext.hdl, R"({"type": "Error", "payload": {"message": "Missing game type"}})", websocketpp::frame::opcode::text);
+        return;
+    }
 
+    if (ctx.GameContext.gameType == "PlayerCreatedLuaGame")
+    {
+        auto game = factories[0]->createGame(ctx);
+        game->start();
+        games.push_back(std::move(game));
+
+    }
 }

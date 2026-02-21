@@ -6,7 +6,7 @@
 #include "../../../Chess/chessboard.h"
 
 
-void LuaEngine::setup(Chessboard& chessboard)
+void LuaEngine::setup(Chessboard& board)
 {
     luaState.open_libraries(sol::lib::base, sol::lib::package, sol::lib::table, sol::lib::string, sol::lib::math);
 
@@ -31,19 +31,21 @@ void LuaEngine::setup(Chessboard& chessboard)
         "createPiece", [](const std::string& type, const std::string& image, int row, int col, std::string color)
         { return Piece({col, row}, type, image, std::move(color)); }
     );
+}
 
-    const std::filesystem::path scriptPath = std::filesystem::current_path() / "lua" / "regularChess.lua";
+void LuaEngine::initialize(std::filesystem::path scriptPath, Chessboard& board)
+{
 
     luaState.script_file(scriptPath);
     sol::protected_function setupFunc = luaState["setup"];
     if (setupFunc.valid())
     {
-        sol::protected_function_result result = setupFunc(chessboard);
+        sol::protected_function_result result = setupFunc(board);
         if (!result.valid())
         {
             sol::error err = result;
             std::cerr << "Error calling Lua setup function: " << err.what() << std::endl;
         }
     }
-    chessboard.calculateRepeatMoves();
+    board.calculateRepeatMoves();
 }

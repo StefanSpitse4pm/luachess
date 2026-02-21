@@ -4,9 +4,10 @@
 
 #include "Game.h"
 
-void Game::start()
+void Game::start() const
 {
     engine.setup(chessboard);
+    engine.initialize(filepath, chessboard);
 }
 
 void Game::stop()
