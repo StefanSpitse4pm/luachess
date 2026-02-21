@@ -17,7 +17,7 @@ class GameHandler : public Handler
     public:
 	GameHandler() {
 	    auto factory = std::make_unique<PlayerCreatedLuaGameFactory>();
-	    factories.push_back(factory);
+	    factories.push_back(std::move(factory));
 	};
 	void router(std::string action, const ActionContext& ctx) override;
         void startGame(ActionContext ctx);

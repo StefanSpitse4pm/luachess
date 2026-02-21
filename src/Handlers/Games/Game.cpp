@@ -6,7 +6,7 @@
 
 void Game::start()
 {
-    // TODO: Implement game start logic here
+    engine.setup(chessboard);
 }
 
 void Game::stop()

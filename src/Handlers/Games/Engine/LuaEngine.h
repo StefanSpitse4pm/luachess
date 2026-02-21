@@ -12,10 +12,9 @@ class LuaEngine : public Engine
     // TODO state should be created on constructor
     public:
         LuaEngine() = default;
-        ~LuaEngine() override;
         void setup(Chessboard& board) override;
     private:
-        sol::state state;
+        sol::state luaState;
 };
 
 #endif // LUACHESS_LUAENGINE_H

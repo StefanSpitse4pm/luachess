@@ -6,7 +6,7 @@
 #define LUACHESS_PLAYERCREATEDLUAGAMEFACTORY_H
 #include "GameFactory.h"
 
-class PlayerCreatedLuaGameFactory : GameFactory
+class PlayerCreatedLuaGameFactory : public GameFactory
 {
   public:
 	std::unique_ptr<Game> createGame() override;
