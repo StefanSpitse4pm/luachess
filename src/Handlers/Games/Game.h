@@ -6,11 +6,13 @@
 #define LUACHESS_GAME_H
 #include "Engine/Engine.h"
 #include "../../Chess/chessboard.h"
+#include "../ActionContext.h"
 
 #include <memory>
 #include <atomic>
 #include <string>
 #include <utility>
+
 
 
 class Game
@@ -31,6 +33,7 @@ class Game
         std::unique_ptr<Engine> engine;
         std::unique_ptr<Chessboard> chessboard;
         std::filesystem::path filepath;
+        std::vector<SessionContext> sessionContexts;
         inline static std::atomic<uint32_t> nextId{1};
         uint32_t id;
 

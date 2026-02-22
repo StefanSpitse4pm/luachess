@@ -1,10 +1,12 @@
 #include "Chess/chessboard.h"
 #include "Handlers/Games/GameHandler.h"
+#include "Handlers/Rooms/Player.h"
 #include "Handlers/Rooms/RoomHandler.h"
 
 #include <filesystem>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <nlohmann/json.hpp>
 #include <sol/sol.hpp>
 #include <vector>
@@ -14,6 +16,7 @@
 typedef websocketpp::server<websocketpp::config::asio> server;
 using json = nlohmann::json;
 std::map<websocketpp::connection_hdl, luaRoomState, std::owner_less<websocketpp::connection_hdl>> games;
+std::map<websocketpp::connection_hdl, std::unique_ptr<Player>, std::owner_less<websocketpp::connection_hdl>> players;
 RoomHandler roomHandler;
 GameHandler gameHandler;
 
@@ -36,34 +39,34 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
         return;
     }
 
-    if (type == "ChessboardState")
-    {
-        Chessboard& chessboard = games[hdl].chessboard;
-
-        std::filesystem::path scriptPath = std::filesystem::current_path() / "lua" / "regularChess.lua";
-        sol::state& lua = games[hdl].lua;
-
-        int fromRow = j["payload"]["from"]["row"];
-        int fromCol = j["payload"]["from"]["col"];
-        int toRow = j["payload"]["to"]["row"];
-        int toCol = j["payload"]["to"]["col"];
-        chessboard.movePiece(fromRow, fromCol, toRow, toCol);
-        lua.script_file(scriptPath);
-        sol::protected_function f = lua["getLegalMoves"];
-        if (f.valid())
-        {
-            sol::protected_function_result res = f(chessboard);
-            if (!res.valid())
-            {
-                sol::error err = res;
-                std::cerr << "Error calling Lua function: " << err.what() << std::endl;
-            }
-        }
-        chessboard.calculateRepeatMoves();
-        json response = chessboard.to_json();
-        s->send(hdl, response.dump(), msg->get_opcode());
-        return;
-    }
+    // if (type == "ChessboardState")
+    // {
+    //     Chessboard& chessboard = games[hdl].chessboard;
+    //
+    //     std::filesystem::path scriptPath = std::filesystem::current_path() / "lua" / "regularChess.lua";
+    //     sol::state& lua = games[hdl].lua;
+    //
+    //     int fromRow = j["payload"]["from"]["row"];
+    //     int fromCol = j["payload"]["from"]["col"];
+    //     int toRow = j["payload"]["to"]["row"];
+    //     int toCol = j["payload"]["to"]["col"];
+    //     chessboard.movePiece(fromRow, fromCol, toRow, toCol);
+    //     lua.script_file(scriptPath);
+    //     sol::protected_function f = lua["getLegalMoves"];
+    //     if (f.valid())
+    //     {
+    //         sol::protected_function_result res = f(chessboard);
+    //         if (!res.valid())
+    //         {
+    //             sol::error err = res;
+    //             std::cerr << "Error calling Lua function: " << err.what() << std::endl;
+    //         }
+    //     }
+    //     chessboard.calculateRepeatMoves();
+    //     json response = chessboard.to_json();
+    //     s->send(hdl, response.dump(), msg->get_opcode());
+    //     return;
+    // }
 
     if (type == "Game")
     {
@@ -71,20 +74,36 @@ void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr 
         {
             ctx.gameContext.gameType = j["payload"]["gameType"];
         }
+
+        if (j["payload"].contains("move"))
+        {
+            ctx.gameContext.send->fromCol = j["payload"]["move"]["from"]["col"];
+            ctx.gameContext.send->fromRow = j["payload"]["move"]["from"]["row"];
+            ctx.gameContext.send->toCol = j["payload"]["move"]["to"]["col"];
+            ctx.gameContext.send->toRow = j["payload"]["move"]["to"]["row"];
+        }
+
         gameHandler.router(ctx.action, ctx);
         return;
     }
 
     if (type == "Room")
     {
-        if (j["payload"].contains("username"))
-        {
-            ctx.sessionContext.player = new Player(j["payload"]["username"]);
-        }
 
         if (j["payload"].contains("roomName"))
         {
             ctx.roomContext.desiredRoomName = j["payload"]["roomName"];
+        }
+
+        if (j["payload"].contains("username"))
+        {
+            std::string username = j["payload"]["username"];
+            // Create or reuse a Player for this connection
+            if (players.find(hdl) == players.end() || players[hdl]->get_username() != username)
+            {
+                players[hdl] = std::make_unique<Player>(username);
+            }
+            ctx.sessionContext.player = players[hdl].get();
         }
 
         roomHandler.router(ctx.action, ctx);
@@ -100,6 +119,7 @@ void on_open(const websocketpp::connection_hdl& hdl)
 void on_close(const websocketpp::connection_hdl& hdl)
 {
     games.erase(hdl);
+    players.erase(hdl);
 }
 
 int main()

@@ -21,6 +21,7 @@ class GameHandler : public Handler
 	};
 	void router(std::string action, const ActionContext& ctx) override;
     void startGame(ActionContext ctx);
+    void onMove(ActionContext ctx);
 
     private:
 	std::vector<std::unique_ptr<Game>> games;

@@ -8,6 +8,7 @@ void GameHandler::router(std::string action, const ActionContext& ctx)
 {
 	static const std::unordered_map<std::string, ActionFn> actionMap = {
 	{"startGame", [this](const ActionContext& a_ctx) { startGame(a_ctx); }},
+    {"onMove", [this](const ActionContext& a_ctx) { onMove(a_ctx); }},
 	};
 	auto it = actionMap.find(action);
 	if (it != actionMap.end())
@@ -48,4 +49,8 @@ void GameHandler::startGame(ActionContext ctx)
         ctx.serverPtr->send(ctx.sessionContext.hdl, response.dump(), websocketpp::frame::opcode::text);
 
     }
+}
+
+void GameHandler::onMove(ActionContext ctx)
+{
 }

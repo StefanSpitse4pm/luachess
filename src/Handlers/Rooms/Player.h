@@ -22,6 +22,11 @@ class Player
         return username;
     }
 
+      [[nodiscard]] uint32_t get_id() const
+    {
+        return id;
+    }
+
   private:
         std::string username{};
         uint32_t id;

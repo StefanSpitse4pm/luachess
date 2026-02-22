@@ -15,8 +15,17 @@ class Room;
 
 typedef websocketpp::server<websocketpp::config::asio> server;
 
+struct sendMove
+{
+    int fromRow;
+    int fromCol;
+    int toRow;
+    int toCol;
+};
+
 struct GameContext
 {
+    sendMove* send = nullptr;
     int boardSize = 8;
     std::string gameType;
 };
