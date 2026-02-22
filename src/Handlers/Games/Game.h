@@ -8,14 +8,16 @@
 #include "../../Chess/chessboard.h"
 
 #include <memory>
+#include <atomic>
 #include <string>
 #include <utility>
+
 
 class Game
 {
     public:
         Game(std::unique_ptr<Engine> engine, std::unique_ptr<Chessboard> chessboard, std::string  filepath)
-        : engine(std::move(engine)), chessboard(std::move(chessboard)), filepath(std::move(filepath)){}
+        : engine(std::move(engine)), chessboard(std::move(chessboard)), filepath(std::move(filepath)), id(nextId++){}
 
         void start() const;
         void stop();
@@ -29,6 +31,9 @@ class Game
         std::unique_ptr<Engine> engine;
         std::unique_ptr<Chessboard> chessboard;
         std::filesystem::path filepath;
+        inline static std::atomic<uint32_t> nextId{1};
+        uint32_t id;
+
 };
 
 #endif // LUACHESS_GAME_H

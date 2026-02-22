@@ -15,7 +15,7 @@
 class Room
 {
   public:
-    Room(int id, std::string room_name) : id(id), roomName(std::move(room_name)){}
+    Room(int id, std::string room_name) : id(nextId++), roomName(std::move(room_name)){}
 
     ~Room() = default;
 
@@ -35,7 +35,8 @@ class Room
     [[nodiscard]] const std::vector<SessionContext>& getSessionContexts() const;
 
   private:
-    int id;
+    uint32_t id;
+    inline static std::atomic<uint32_t> nextId{1};
     std::string roomName;
     std::vector<SessionContext> sessionContexts;
 };
