@@ -4,10 +4,8 @@
 
 #ifndef LUACHESS_ROOMHANDLER_H
 #define LUACHESS_ROOMHANDLER_H
-#include <mutex>
 #include <nlohmann/json.hpp>
-#include <vector>
-#include <websocketpp/common/connection_hdl.hpp>
+#include <map>
 
 #include "../ActionContext.h"
 #include "../Handler.h"
@@ -27,7 +25,7 @@ class RoomHandler : public Handler
     void leaveRoom(const ActionContext& ctx);
 
   private:
-    std::vector<std::unique_ptr<Room>> rooms{};
+    std::map<std::unique_ptr<Room>, std::unique_ptr<SessionContext>> rooms{};
 };
 
 #endif // LUACHESS_ROOMHANDLER_H
