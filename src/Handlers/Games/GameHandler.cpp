@@ -34,6 +34,8 @@ void GameHandler::router(std::string action, const ActionContext& ctx)
 
 void GameHandler::startGame(ActionContext ctx)
 {
+
+
     if (ctx.gameContext.gameType.empty())
     {
         ctx.serverPtr->send(ctx.sessionContext.hdl, R"({"type": "Error", "payload": {"message": "Missing game type"}})", websocketpp::frame::opcode::text);

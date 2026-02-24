@@ -1,9 +1,8 @@
 //
 // Created by stefanspitse on 1/31/26.
 //
-
+#include <algorithm>
 #include "RoomHandler.h"
-
 #include "../ActionContext.h"
 #include "Room.h"
 
@@ -79,7 +78,7 @@ void RoomHandler::joinRoom(const ActionContext& ctx)
 
     for (const auto& room : rooms)
     {
-        if (room && room->get_room_name() == ctx.roomContext.desiredRoomName)
+        if (room && room->getRoomName() == ctx.roomContext.desiredRoomName)
         {
             room->addUser(ctx.sessionContext);
 
@@ -124,7 +123,7 @@ void RoomHandler::leaveRoom(const ActionContext& ctx)
 
     for (const auto& room : rooms)
     {
-        if (room && room->get_room_name() == ctx.roomContext.desiredRoomName)
+        if (room && room->getRoomName() == ctx.roomContext.desiredRoomName)
         {
             room->removeUser(ctx.sessionContext);
 
@@ -153,4 +152,29 @@ void RoomHandler::listRooms(const ActionContext& ctx) const
     }
 
     ctx.serverPtr->send(ctx.sessionContext.hdl, response.dump(), websocketpp::frame::opcode::text);
+}
+
+Room RoomHandler::findRoomByName(const std::string& roomName) const
+{
+    for (const auto& room : rooms)
+    {
+        if (room && room->getRoomName() == roomName)
+        {
+            return *room;
+        }
+    }
+    throw std::invalid_argument("Room not found");
+}
+
+bool RoomHandler::removeRoom(Room room)
+{
+    auto it = std::ranges::remove_if(
+                  rooms, [&room](const std::unique_ptr<Room>& r) { return r && r->getId() == room.getId(); }
+    ).begin();
+    if (it != rooms.end())
+    {
+        rooms.erase(it, rooms.end());
+        return true;
+    }
+    return false;
 }

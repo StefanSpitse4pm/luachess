@@ -19,14 +19,19 @@ class Room
 
     ~Room() = default;
 
-    [[nodiscard]] std::string get_room_name() const
+    [[nodiscard]] std::string getRoomName() const
     {
         return roomName;
     }
 
-    void set_room_name(const std::string& room_name)
+    void setRoomName(const std::string& room_name)
     {
         roomName = room_name;
+    }
+
+    [[nodiscard]] uint32_t getId() const
+    {
+        return id;
     }
 
     void addUser(const SessionContext& sessionContext);
