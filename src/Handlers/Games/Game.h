@@ -33,7 +33,7 @@ class Game
         std::unique_ptr<Engine> engine;
         std::unique_ptr<Chessboard> chessboard;
         std::filesystem::path filepath;
-        std::vector<SessionContext> sessionContexts;
+        std::vector<SessionContext> sessionContexts; // players
         inline static std::atomic<uint32_t> nextId{1};
         uint32_t id;
 

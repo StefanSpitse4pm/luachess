@@ -6,8 +6,6 @@
 #define LUACHESS_PLAYER_H
 #include <string>
 #include <utility>
-
-#endif // LUACHESS_PLAYER_H
 #include <atomic>
 
 class Player
@@ -32,3 +30,6 @@ class Player
         uint32_t id;
         inline static std::atomic<uint32_t> nextId{1};
 };
+
+#endif // LUACHESS_PLAYER_H
+

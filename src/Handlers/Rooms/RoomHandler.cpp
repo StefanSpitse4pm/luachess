@@ -42,11 +42,13 @@ void RoomHandler::createRoom(const ActionContext& ctx)
     int newRoomId = static_cast<int>(rooms.size()) + 1;
     auto newRoom = std::make_unique<Room>(newRoomId, ctx.roomContext.desiredRoomName);
     newRoom->addUser(ctx.sessionContext);
-    rooms.insert(std::make_pair(std::move(newRoom), std::make_unique<SessionContext>(ctx.sessionContext)));
-    std::string roomJson = rooms.begin()->first->toJson().dump();
+    rooms.push_back(std::move(newRoom));
+
+    std::string roomJson = rooms.back()->toJson().dump();
     ctx.serverPtr->send(ctx.sessionContext.hdl, roomJson, websocketpp::frame::opcode::text);
 }
 
+// TODO figure out why compiler wants this to Const
 void RoomHandler::joinRoom(const ActionContext& ctx)
 {
 
@@ -75,14 +77,14 @@ void RoomHandler::joinRoom(const ActionContext& ctx)
         return;
     }
 
-    for (const auto& room: rooms)
+    for (const auto& room : rooms)
     {
-        if (room.first && room.first->get_room_name() == ctx.roomContext.desiredRoomName)
+        if (room && room->get_room_name() == ctx.roomContext.desiredRoomName)
         {
-            room.first->addUser(ctx.sessionContext);
+            room->addUser(ctx.sessionContext);
 
-            std::string roomJson = room.first->toJson().dump();
-            for (const auto& playerCtx : room.first->getSessionContexts())
+            std::string roomJson = room->toJson().dump();
+            for (const auto& playerCtx : room->getSessionContexts())
             {
                 ctx.serverPtr->send(playerCtx.hdl, roomJson, websocketpp::frame::opcode::text);
             }
@@ -122,12 +124,12 @@ void RoomHandler::leaveRoom(const ActionContext& ctx)
 
     for (const auto& room : rooms)
     {
-        if (room.first && room.first->get_room_name() == ctx.roomContext.desiredRoomName)
+        if (room && room->get_room_name() == ctx.roomContext.desiredRoomName)
         {
-            room.first->removeUser(ctx.sessionContext);
+            room->removeUser(ctx.sessionContext);
 
-            std::string roomJson = room.first->toJson().dump();
-            for (const auto& playerCtx : room.first->getSessionContexts())
+            std::string roomJson = room->toJson().dump();
+            for (const auto& playerCtx : room->getSessionContexts())
             {
                 ctx.serverPtr->send(playerCtx.hdl, roomJson, websocketpp::frame::opcode::text);
             }
@@ -144,9 +146,9 @@ void RoomHandler::listRooms(const ActionContext& ctx) const
 
     for (const auto& room : rooms)
     {
-        if (room.first)
+        if (room)
         {
-            response["rooms"].push_back(room.first->toJson());
+            response["rooms"].push_back(room->toJson());
         }
     }
 

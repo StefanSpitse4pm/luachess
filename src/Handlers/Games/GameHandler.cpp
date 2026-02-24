@@ -53,4 +53,5 @@ void GameHandler::startGame(ActionContext ctx)
 
 void GameHandler::onMove(ActionContext ctx)
 {
+
 }

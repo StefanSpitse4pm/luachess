@@ -2,7 +2,6 @@
 #include "Handlers/Games/GameHandler.h"
 #include "Handlers/Rooms/RoomHandler.h"
 
-#include <filesystem>
 #include <iostream>
 #include <map>
 #include <nlohmann/json.hpp>
@@ -17,7 +16,8 @@ std::map<websocketpp::connection_hdl, luaRoomState, std::owner_less<websocketpp:
 RoomHandler roomHandler;
 GameHandler gameHandler;
 
-void on_message(server* s, websocketpp::connection_hdl hdl, server::message_ptr msg)
+
+void on_message(server* s, const websocketpp::connection_hdl& hdl, const server::message_ptr& msg)
 {
     std::string payload = msg->get_payload();
     json j = json::parse(payload);
@@ -112,20 +112,29 @@ int main()
 
         chessServer.set_pong_timeout(10000);
 
-        chessServer.set_pong_handler([](websocketpp::connection_hdl, std::string) { return true; });
+        chessServer.set_pong_handler([](const websocketpp::connection_hdl&, const std::string&) { return true; });
 
         chessServer.init_asio();
         chessServer.set_http_handler(
             [&chessServer](websocketpp::connection_hdl hdl)
             {
-                auto con = chessServer.get_con_from_hdl(hdl);
+                auto con = chessServer.get_con_from_hdl(std::move(hdl));
                 con->append_header("Access-Control-Allow-Origin", "*");
             }
         );
 
-        chessServer.set_message_handler(bind(&on_message, &chessServer, std::placeholders::_1, std::placeholders::_2));
-        chessServer.set_open_handler(bind(&on_open, std::placeholders::_1));
-        chessServer.set_close_handler(bind(&on_close, std::placeholders::_1));
+        chessServer.set_message_handler([&](const websocketpp::connection_hdl& hdl, const server::message_ptr& msg) {
+            on_message(&chessServer, hdl, msg);
+        });
+
+        chessServer.set_open_handler([&](const websocketpp::connection_hdl& hdl) {
+            on_open(hdl);
+        });
+
+        chessServer.set_close_handler([&](const websocketpp::connection_hdl& hdl) {
+            on_close(hdl);
+        });
+
         chessServer.set_reuse_addr(true);
         chessServer.listen(9002);
         chessServer.start_accept();

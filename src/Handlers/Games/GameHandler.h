@@ -10,6 +10,7 @@
 #include "../Handler.h"
 #include "Game.h"
 #include "GameFactory.h"
+#include "../Rooms/Player.h"
 #include "PlayerCreatedLuaGameFactory.h"
 
 class GameHandler : public Handler
