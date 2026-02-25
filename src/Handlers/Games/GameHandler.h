@@ -8,18 +8,20 @@
 #include "../../luaController.h"
 #include "../ActionContext.h"
 #include "../Handler.h"
+#include "../Rooms/Player.h"
+#include "../Rooms/RoomHandler.h"
 #include "Game.h"
 #include "GameFactory.h"
-#include "../Rooms/Player.h"
 #include "PlayerCreatedLuaGameFactory.h"
 
 class GameHandler : public Handler
 {
     public:
-	GameHandler() {
-	    auto factory = std::make_unique<PlayerCreatedLuaGameFactory>();
-	    factories.push_back(std::move(factory));
-	};
+	GameHandler(const RoomHandler& roomHandler) : roomHandler(roomHandler)
+      {
+          auto factory = std::make_unique<PlayerCreatedLuaGameFactory>();
+          factories.push_back(std::move(factory));
+      };
 	void router(std::string action, const ActionContext& ctx) override;
     void startGame(ActionContext ctx);
     void onMove(ActionContext ctx);
@@ -27,6 +29,7 @@ class GameHandler : public Handler
     private:
 	std::vector<std::unique_ptr<Game>> games;
 	std::vector<std::unique_ptr<GameFactory>> factories;
+    RoomHandler roomHandler;
 };
 
 #endif // LUACHESS_GAMEHANDLER_H

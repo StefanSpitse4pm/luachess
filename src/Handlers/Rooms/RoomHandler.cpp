@@ -166,7 +166,7 @@ Room RoomHandler::findRoomByName(const std::string& roomName) const
     throw std::invalid_argument("Room not found");
 }
 
-bool RoomHandler::removeRoom(Room room)
+void RoomHandler::removeRoom(Room room)
 {
     auto it = std::ranges::remove_if(
                   rooms, [&room](const std::unique_ptr<Room>& r) { return r && r->getId() == room.getId(); }
@@ -174,7 +174,5 @@ bool RoomHandler::removeRoom(Room room)
     if (it != rooms.end())
     {
         rooms.erase(it, rooms.end());
-        return true;
     }
-    return false;
 }

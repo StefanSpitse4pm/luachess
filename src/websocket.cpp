@@ -14,7 +14,7 @@ typedef websocketpp::server<websocketpp::config::asio> server;
 using json = nlohmann::json;
 std::map<websocketpp::connection_hdl, luaRoomState, std::owner_less<websocketpp::connection_hdl>> games;
 RoomHandler roomHandler;
-GameHandler gameHandler;
+GameHandler gameHandler(roomHandler);
 
 
 void on_message(server* s, const websocketpp::connection_hdl& hdl, const server::message_ptr& msg)
