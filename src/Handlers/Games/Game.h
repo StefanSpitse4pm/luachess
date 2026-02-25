@@ -29,6 +29,21 @@ class Game
             return *chessboard;
         }
 
+        void addPlayers(const std::vector<SessionContext>& players)
+        {
+            sessionContexts.insert(sessionContexts.end(), players.begin(), players.end());
+        }
+
+        [[nodiscard]] const std::vector<SessionContext>& getSessionContexts() const
+        {
+            return sessionContexts;
+        }
+
+        [[nodiscard]] uint32_t getId() const
+        {
+            return id;
+        }
+
       private:
         std::unique_ptr<Engine> engine;
         std::unique_ptr<Chessboard> chessboard;
