@@ -21,7 +21,7 @@ void on_message(server* s, const websocketpp::connection_hdl& hdl, const server:
 {
     std::string payload = msg->get_payload();
     json j = json::parse(payload);
-    std::string type = j["type"];
+    const std::string type = j["type"];
 
     ActionContext ctx;
     ctx.action = j["payload"]["action"];
@@ -70,6 +70,11 @@ void on_message(server* s, const websocketpp::connection_hdl& hdl, const server:
         if (j["payload"].contains("gameType"))
         {
             ctx.gameContext.gameType = j["payload"]["gameType"];
+        }
+
+        if (j["payload"].contains("roomName"))
+        {
+            ctx.roomContext.desiredRoomName = j["payload"]["roomName"];
         }
         gameHandler.router(ctx.action, ctx);
         return;

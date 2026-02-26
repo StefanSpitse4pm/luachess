@@ -47,6 +47,20 @@ export default function Room() {
         }
     }
 
+    function handleStartGame() {
+        if (currentRoom && username) {
+            sendMessage({
+                type: "game",
+                payload: {
+                    gameType: "PlayerCreatedLuaGame",
+                    roomName: currentRoom.roomName,
+                    action: "startGame"
+                }
+            });
+            router.push(`/games/room/play?roomName=${encodeURIComponent(currentRoom.roomName)}&username=${encodeURIComponent(username)}`);
+        }
+    }
+
     if (!currentRoom) {
         return (
             <main className="flex min-h-screen flex-col items-center justify-center p-24">
@@ -105,6 +119,12 @@ export default function Room() {
                     {currentRoom.filledSpots === currentRoom.roomSize && (
                         <div className="bg-green-900 border-2 border-green-500 rounded p-4 text-center">
                             <p className="text-green-300 font-semibold text-lg">Room is full! Ready to start game.</p>
+                            <button
+                                onClick={handleStartGame}
+                                className="mt-4 px-6 py-3 bg-green-600 text-white text-lg font-bold rounded hover:bg-green-700 transition-colors"
+                            >
+                                Start Game
+                            </button>
                         </div>
                     )}
 

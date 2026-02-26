@@ -2,11 +2,11 @@
 import React, { useState, useEffect  } from 'react';
 import Piece from './piece';
 import { piece } from '../types/piece';
-import useWebsocket from '../service/socket'
+import { useWebSocketContext } from '../context/WebSocketContext';
 
 export default function Chessboard() {
 
-    const { sendMessage, lastMessage, isConnected } = useWebsocket("ws://localhost:9002")
+    const { sendMessage, lastMessage } = useWebSocketContext();
     const [possibleMoves, setPossibleMoves] = useState(new Set<string>());
     const [isPieceSelected, setIsPieceSelected] = useState(true);
     const [selectedPiece, setSelectedPiece] = useState<piece | null>(null);
@@ -17,11 +17,6 @@ export default function Chessboard() {
         return initialBoard;
     });
 
-    useEffect(() => {
-        if (isConnected) {
-            sendMessage({ type: "Game", payload: {"action":"startGame", "gameType": "PlayerCreatedLuaGame"} });
-        }
-    }, [isConnected]);
 
     useEffect(() => {
         if (lastMessage) {
