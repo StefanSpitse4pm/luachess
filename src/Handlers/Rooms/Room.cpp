@@ -6,7 +6,6 @@
 
 #include <nlohmann/json.hpp>
 
-constexpr int MAX_PLAYER_COUNT = 2;
 
 void Room::addUser(const SessionContext& sessionContext)
 {
@@ -54,7 +53,7 @@ nlohmann::json Room::toJson() const
     };
 }
 
-const std::vector<SessionContext>& Room::getSessionContexts() const
+bool Room::isReady() const
 {
-    return sessionContexts;
+    return sessionContexts.size() == MAX_PLAYER_COUNT;
 }

@@ -34,12 +34,23 @@ class Room
         return id;
     }
 
+    [[nodiscard]] int getMaxPlayerCount() const
+    {
+        return MAX_PLAYER_COUNT;
+    }
+
+    [[nodiscard]] std::vector<SessionContext> getSessionContexts() const
+    {
+        return sessionContexts;
+    }
+
     void addUser(const SessionContext& sessionContext);
     void removeUser(SessionContext userContext);
+    bool isReady() const;
     [[nodiscard]] nlohmann::json toJson() const;
-    [[nodiscard]] const std::vector<SessionContext>& getSessionContexts() const;
 
   private:
+    int MAX_PLAYER_COUNT = 2;
     uint32_t id;
     inline static std::atomic<uint32_t> nextId{1};
     std::string roomName;
