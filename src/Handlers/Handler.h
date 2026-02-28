@@ -14,6 +14,9 @@ class Handler
 
 	using ActionFn = std::function<void(const ActionContext&)>;
 	virtual void router(std::string action, const ActionContext& ctx) = 0;
+    static void sendError(const ActionContext& ctx, const std::string& message);
+    void notify(SessionContext);
+
 };
 
 #endif // LUACHESS_ACTION_H

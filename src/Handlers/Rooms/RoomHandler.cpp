@@ -23,11 +23,7 @@ void RoomHandler::router(const std::string action, const ActionContext& ctx)
         }
         catch (...)
         {
-            ctx.serverPtr->send(
-                ctx.sessionContext.hdl,
-                R"({"type": "Error", "payload": {"message": "Cant find that action"}})",
-                websocketpp::frame::opcode::text
-            );
+            sendError(ctx, "An error occurred while processing the action: " + action);
         }
     }
     else
@@ -53,13 +49,13 @@ void RoomHandler::joinRoom(const ActionContext& ctx)
 
     if (ctx.roomContext.desiredRoomName.empty())
     {
-        ctx.serverPtr->send(ctx.sessionContext.hdl, R"({"type": "Error", "payload": {"message": "Missing Room name"}})", websocketpp::frame::opcode::text);
+        sendError(ctx, "Missing Room name");
         return;
     }
 
     if (ctx.sessionContext.player->get_username().empty())
     {
-        ctx.serverPtr->send(ctx.sessionContext.hdl, R"({"type": "Error", "payload": {"message": "Missing username"}})", websocketpp::frame::opcode::text);
+        sendError(ctx, "Missing username");
         return;
     }
 
@@ -98,13 +94,13 @@ void RoomHandler::leaveRoom(const ActionContext& ctx)
 {
     if (ctx.roomContext.desiredRoomName.empty())
     {
-        ctx.serverPtr->send(ctx.sessionContext.hdl, R"({"type": "Error", "payload": {"message": "Missing Room name"}})", websocketpp::frame::opcode::text);
+        sendError(ctx, "Missing Room name");
         return;
     }
 
     if (ctx.sessionContext.player->get_username().empty())
     {
-        ctx.serverPtr->send(ctx.sessionContext.hdl, R"({"type": "Error", "payload": {"message": "Missing username"}})", websocketpp::frame::opcode::text);
+        sendError(ctx, "Missing username");
         return;
     }
 
@@ -113,10 +109,10 @@ void RoomHandler::leaveRoom(const ActionContext& ctx)
         Room* room = ctx.roomContext.room;
         room->removeUser(ctx.sessionContext);
 
-        std::string roomJson = room->toJson().dump();
-        for (const auto& playerCtx : room->getSessionContexts())
+        const std::string roomJson = room->toJson().dump();
+        for (const auto& [player, hdl] : room->getSessionContexts())
         {
-            ctx.serverPtr->send(playerCtx.hdl, roomJson, websocketpp::frame::opcode::text);
+            ctx.serverPtr->send(hdl, roomJson, websocketpp::frame::opcode::text);
         }
         return;
     }

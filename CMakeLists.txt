@@ -30,6 +30,7 @@ add_executable(luachess
         src/Handlers/Games/GameFactory.h
         src/Handlers/Games/PlayerCreatedLuaGameFactory.cpp
         src/Handlers/Games/PlayerCreatedLuaGameFactory.h
+        src/Handlers/Handler.cpp
 )
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/extern/sol2)

@@ -19,10 +19,7 @@ void GameHandler::router(std::string action, const ActionContext& ctx)
         }
         catch (...)
         {
-            ctx.serverPtr->send(
-                ctx.sessionContext.hdl, R"({"type": "Error", "payload": {"message": "Cant find that action"}})",
-                websocketpp::frame::opcode::text
-            );
+            sendError(ctx, "An error occurred while processing the action: " + action);
         }
     }
     else
@@ -35,19 +32,13 @@ void GameHandler::startGame(ActionContext ctx)
 {
     if (ctx.gameContext.gameType.empty())
     {
-        ctx.serverPtr->send(
-            ctx.sessionContext.hdl, R"({"type": "Error", "payload": {"message": "Missing game type"}})",
-            websocketpp::frame::opcode::text
-        );
+        sendError(ctx, "Missing game type");
         return;
     }
 
     if (ctx.roomContext.desiredRoomName.empty())
     {
-        ctx.serverPtr->send(
-            ctx.sessionContext.hdl, R"({"type": "Error", "payload": {"message": "Missing room name"}})",
-            websocketpp::frame::opcode::text
-        );
+        sendError(ctx, "Missing room name");
         return;
     }
 
@@ -58,10 +49,7 @@ void GameHandler::startGame(ActionContext ctx)
         const Room room = roomHandler.findRoomByName(ctx.roomContext.desiredRoomName);
         if (!room.isReady())
         {
-            ctx.serverPtr->send(
-                ctx.sessionContext.hdl, R"({"type": "Error", "payload": {"message": "Room is not ready"}})",
-                websocketpp::frame::opcode::text
-            );
+            sendError(ctx, "Room is not ready");
             return;
         }
 
@@ -77,4 +65,5 @@ void GameHandler::startGame(ActionContext ctx)
 
 void GameHandler::onMove(ActionContext ctx)
 {
+
 }
