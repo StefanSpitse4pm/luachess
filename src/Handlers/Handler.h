@@ -6,6 +6,12 @@
 #define LUACHESS_ACTION_H
 #include "ActionContext.h"
 #include <string>
+#include <ranges>
+#include <type_traits>
+#include <websocketpp/roles/server_endpoint.hpp>
+
+typedef websocketpp::server<websocketpp::config::asio> server;
+
 
 class Handler
 {
@@ -15,8 +21,11 @@ class Handler
 	using ActionFn = std::function<void(const ActionContext&)>;
 	virtual void router(std::string action, const ActionContext& ctx) = 0;
     static void sendError(const ActionContext& ctx, const std::string& message);
-    void notify(SessionContext);
 
+    template <std::ranges::range R>
+    requires std::same_as<std::ranges::range_value_t<R>, SessionContext>
+    void notify(R sessions, std::string& message, server* serverPtr);
+private:
 };
 
 #endif // LUACHESS_ACTION_H

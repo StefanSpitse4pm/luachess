@@ -65,10 +65,7 @@ void RoomHandler::joinRoom(const ActionContext& ctx)
         room->addUser(ctx.sessionContext);
 
         std::string roomJson = room->toJson().dump();
-        for (const auto& playerCtx : room->getSessionContexts())
-        {
-            ctx.serverPtr->send(playerCtx.hdl, roomJson, websocketpp::frame::opcode::text);
-        }
+        notify(room->getSessionContexts(), roomJson, ctx.serverPtr);
         return;
     }
 
@@ -79,10 +76,7 @@ void RoomHandler::joinRoom(const ActionContext& ctx)
             room->addUser(ctx.sessionContext);
 
             std::string roomJson = room->toJson().dump();
-            for (const auto& playerCtx : room->getSessionContexts())
-            {
-                ctx.serverPtr->send(playerCtx.hdl, roomJson, websocketpp::frame::opcode::text);
-            }
+            notify(room->getSessionContexts(), roomJson, ctx.serverPtr);
             return;
         }
     }
@@ -109,11 +103,8 @@ void RoomHandler::leaveRoom(const ActionContext& ctx)
         Room* room = ctx.roomContext.room;
         room->removeUser(ctx.sessionContext);
 
-        const std::string roomJson = room->toJson().dump();
-        for (const auto& [player, hdl] : room->getSessionContexts())
-        {
-            ctx.serverPtr->send(hdl, roomJson, websocketpp::frame::opcode::text);
-        }
+        nlohmann::basic_json<>::string_t roomJson = room->toJson().dump();
+        notify(room->getSessionContexts(), roomJson, ctx.serverPtr);
         return;
     }
 
@@ -124,10 +115,7 @@ void RoomHandler::leaveRoom(const ActionContext& ctx)
             room->removeUser(ctx.sessionContext);
 
             std::string roomJson = room->toJson().dump();
-            for (const auto& playerCtx : room->getSessionContexts())
-            {
-                ctx.serverPtr->send(playerCtx.hdl, roomJson, websocketpp::frame::opcode::text);
-            }
+            notify(room->getSessionContexts(), roomJson, ctx.serverPtr);
             return;
         }
     }

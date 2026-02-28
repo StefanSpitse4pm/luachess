@@ -22,7 +22,7 @@ class GameHandler : public Handler
           auto factory = std::make_unique<PlayerCreatedLuaGameFactory>();
           factories.push_back(std::move(factory));
 	};
-	void router(std::string action, const ActionContext& ctx) override;
+	void router(std::string action, const ActionContext& ctx);
     void startGame(ActionContext ctx);
     void onMove(ActionContext ctx);
 
