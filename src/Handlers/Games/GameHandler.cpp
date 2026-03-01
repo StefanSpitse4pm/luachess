@@ -4,18 +4,18 @@
 
 #include "GameHandler.h"
 
-void GameHandler::router(std::string action, const ActionContext& ctx)
+json GameHandler::router(std::string action, const ActionContext& ctx)
 {
     static const std::unordered_map<std::string, ActionFn> actionMap = {
         {"startGame", [this](const ActionContext& a_ctx) { startGame(a_ctx); }},
-        {"onMove", [this](const ActionContext& a_ctx) { onMove(a_ctx); }},
+        {"boardState", [this](const ActionContext& a_ctx) { getBoardState(a_ctx); }},
     };
     auto it = actionMap.find(action);
     if (it != actionMap.end())
     {
         try
         {
-            it->second(ctx);
+            json response = it->second(ctx);
         }
         catch (...)
         {
@@ -28,18 +28,16 @@ void GameHandler::router(std::string action, const ActionContext& ctx)
     }
 }
 
-void GameHandler::startGame(ActionContext ctx)
+json GameHandler::startGame(const ActionContext& ctx)
 {
     if (ctx.gameContext.gameType.empty())
     {
-        sendError(ctx, "Missing game type");
-        return;
+        throw std::invalid_argument("Missing game type");
     }
 
     if (ctx.roomContext.desiredRoomName.empty())
     {
-        sendError(ctx, "Missing room name");
-        return;
+        throw std::invalid_argument("Missing desired room name");
     }
 
     if (ctx.gameContext.gameType == "PlayerCreatedLuaGame")
@@ -49,8 +47,7 @@ void GameHandler::startGame(ActionContext ctx)
         const Room room = roomHandler.findRoomByName(ctx.roomContext.desiredRoomName);
         if (!room.isReady())
         {
-            sendError(ctx, "Room is not ready");
-            return;
+            throw std::invalid_argument("Room is not ready");
         }
 
         game->addPlayers(room.getSessionContexts());
@@ -59,11 +56,29 @@ void GameHandler::startGame(ActionContext ctx)
         game->start();
         const json response = game->getChessboard().to_json();
         games.push_back(std::move(game));
-        ctx.serverPtr->send(ctx.sessionContext.hdl, response.dump(), websocketpp::frame::opcode::text);
+        return response;
     }
+    throw std::invalid_argument("Unsupported game type: " + ctx.gameContext.gameType);
 }
 
-void GameHandler::onMove(ActionContext ctx)
-{
 
+json GameHandler::getBoardState(ActionContext ctx)
+{
+    if (ctx.gameContext.gameId == 0)
+    {
+        throw new std::invalid_argument("Missing game ID");
+    }
+
+    auto it = std::ranges::find_if(
+        games, [&ctx](const std::unique_ptr<Game>& game) {
+        return game->getId() == ctx.gameContext.gameId;
+    });
+
+    if (it == games.end())
+    {
+        throw std::invalid_argument("Game not found");
+    }
+
+    const json response = (*it)->getChessboard().to_json();
+    return response;
 }

@@ -28,6 +28,7 @@ struct GameContext
     sendMove* send = nullptr;
     int boardSize = 8;
     std::string gameType;
+    u_int32_t gameId = 0;
 };
 
 struct SessionContext

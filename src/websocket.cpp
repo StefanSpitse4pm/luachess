@@ -76,7 +76,18 @@ void on_message(server* s, const websocketpp::connection_hdl& hdl, const server:
         {
             ctx.roomContext.desiredRoomName = j["payload"]["roomName"];
         }
-        gameHandler.router(ctx.action, ctx);
+        try
+        {
+            json response = gameHandler.router(ctx.action, ctx);
+            s->send(hdl, response.dump(), msg->get_opcode());
+        }
+        catch (const std::exception& e)
+        {
+            json response;
+            response["type"] = "Error";
+            response["payload"]["message"] = e.what();
+            s->send(hdl, response.dump(), msg->get_opcode());
+        }
         return;
     }
 

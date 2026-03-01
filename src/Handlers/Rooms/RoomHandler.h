@@ -19,7 +19,6 @@ class RoomHandler : public Handler
     RoomHandler() = default;
     ~RoomHandler() override = default;
 
-
     void router(std::string action, const ActionContext& ctx) override;
     void createRoom(const ActionContext& ctx);
     void joinRoom(const ActionContext& ctx);
