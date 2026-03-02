@@ -1,62 +1,60 @@
 //
 // Created by stefanspitse on 1/31/26.
 //
-#include <algorithm>
 #include "RoomHandler.h"
 #include "../ActionContext.h"
 #include "Room.h"
+#include <algorithm>
 
-void RoomHandler::router(const std::string action, const ActionContext& ctx)
+nlohmann::json RoomHandler::router(std::string action, const ActionContext& ctx)
 {
     static const std::unordered_map<std::string, ActionFn> actionMap = {
-        {"CreateRoom", [this](const ActionContext& a_ctx) { createRoom(a_ctx); }},
-        {"JoinRoom", [this](const ActionContext& a_ctx) { joinRoom(a_ctx); }},
-        {"ListRooms", [this](const ActionContext& a_ctx) { listRooms(a_ctx); }},
-        {"LeaveRoom", [this](const ActionContext& a_ctx) { leaveRoom(a_ctx); }},
+        {"CreateRoom", [this](const ActionContext& a_ctx) -> nlohmann::json { return createRoom(a_ctx); }},
+        {"JoinRoom", [this](const ActionContext& a_ctx) -> nlohmann::json { return joinRoom(a_ctx); }},
+        {"ListRooms", [this](const ActionContext& a_ctx) -> nlohmann::json { return listRooms(a_ctx); }},
+        {"LeaveRoom", [this](const ActionContext& a_ctx) -> nlohmann::json { return leaveRoom(a_ctx); }},
     };
     auto it = actionMap.find(action);
     if (it != actionMap.end())
     {
         try
         {
-            it->second(ctx);
+            return it->second(ctx);
         }
         catch (...)
         {
-            sendError(ctx, "An error occurred while processing the action: " + action);
+            throw std::runtime_error("An error occurred while processing the action: " + action);
         }
     }
     else
     {
         throw std::invalid_argument("Unknown action: " + action);
     }
+    throw std::runtime_error("This should never be reached");
 }
 
-void RoomHandler::createRoom(const ActionContext& ctx)
+nlohmann::json RoomHandler::createRoom(const ActionContext& ctx)
 {
     int newRoomId = static_cast<int>(rooms.size()) + 1;
     auto newRoom = std::make_unique<Room>(newRoomId, ctx.roomContext.desiredRoomName);
     newRoom->addUser(ctx.sessionContext);
     rooms.push_back(std::move(newRoom));
 
-    std::string roomJson = rooms.back()->toJson().dump();
-    ctx.serverPtr->send(ctx.sessionContext.hdl, roomJson, websocketpp::frame::opcode::text);
+    nlohmann::json roomJson = rooms.back()->toJson();
+    return roomJson;
 }
 
 // TODO figure out why compiler wants this to Const
-void RoomHandler::joinRoom(const ActionContext& ctx)
+nlohmann::json RoomHandler::joinRoom(const ActionContext& ctx)
 {
-
     if (ctx.roomContext.desiredRoomName.empty())
     {
-        sendError(ctx, "Missing Room name");
-        return;
+        throw std::invalid_argument("Missing Room name");
     }
 
     if (ctx.sessionContext.player->get_username().empty())
     {
-        sendError(ctx, "Missing username");
-        return;
+        throw std::invalid_argument("Missing username");
     }
 
     if (ctx.roomContext.room != nullptr)
@@ -65,8 +63,9 @@ void RoomHandler::joinRoom(const ActionContext& ctx)
         room->addUser(ctx.sessionContext);
 
         std::string roomJson = room->toJson().dump();
-        notify(room->getSessionContexts(), roomJson, ctx.serverPtr);
-        return;
+        // Record notification instead of sending directly so handlers are testable
+        ctx.pendingNotifications.push_back({room->getSessionContexts(), roomJson});
+        return room->toJson();
     }
 
     for (const auto& room : rooms)
@@ -76,53 +75,15 @@ void RoomHandler::joinRoom(const ActionContext& ctx)
             room->addUser(ctx.sessionContext);
 
             std::string roomJson = room->toJson().dump();
-            notify(room->getSessionContexts(), roomJson, ctx.serverPtr);
-            return;
+            ctx.pendingNotifications.push_back({room->getSessionContexts(), roomJson});
+            return room->toJson();
         }
     }
     // TODO return error
     throw std::invalid_argument("Room not found");
 }
 
-void RoomHandler::leaveRoom(const ActionContext& ctx)
-{
-    if (ctx.roomContext.desiredRoomName.empty())
-    {
-        sendError(ctx, "Missing Room name");
-        return;
-    }
-
-    if (ctx.sessionContext.player->get_username().empty())
-    {
-        sendError(ctx, "Missing username");
-        return;
-    }
-
-    if (ctx.roomContext.room != nullptr)
-    {
-        Room* room = ctx.roomContext.room;
-        room->removeUser(ctx.sessionContext);
-
-        nlohmann::basic_json<>::string_t roomJson = room->toJson().dump();
-        notify(room->getSessionContexts(), roomJson, ctx.serverPtr);
-        return;
-    }
-
-    for (const auto& room : rooms)
-    {
-        if (room && room->getRoomName() == ctx.roomContext.desiredRoomName)
-        {
-            room->removeUser(ctx.sessionContext);
-
-            std::string roomJson = room->toJson().dump();
-            notify(room->getSessionContexts(), roomJson, ctx.serverPtr);
-            return;
-        }
-    }
-    throw std::invalid_argument("Room not found");
-}
-
-void RoomHandler::listRooms(const ActionContext& ctx) const
+nlohmann::json RoomHandler::listRooms(const ActionContext& ctx) const
 {
     nlohmann::json response;
     response["rooms"] = nlohmann::json::array();
@@ -135,7 +96,58 @@ void RoomHandler::listRooms(const ActionContext& ctx) const
         }
     }
 
-    ctx.serverPtr->send(ctx.sessionContext.hdl, response.dump(), websocketpp::frame::opcode::text);
+    return response;
+}
+
+nlohmann::json RoomHandler::leaveRoom(const ActionContext& ctx)
+{
+    if (ctx.roomContext.desiredRoomName.empty())
+    {
+        throw std::invalid_argument("Missing Room name");
+    }
+
+    if (ctx.sessionContext.player->get_username().empty())
+    {
+        throw std::invalid_argument("Missing username");
+    }
+
+    if (ctx.roomContext.room != nullptr)
+    {
+        Room* room = ctx.roomContext.room;
+        room->removeUser(ctx.sessionContext);
+
+        std::string roomJson = room->toJson().dump();
+        ctx.pendingNotifications.push_back({room->getSessionContexts(), roomJson});
+        return room->toJson();
+    }
+
+    for (const auto& room : rooms)
+    {
+        if (room && room->getRoomName() == ctx.roomContext.desiredRoomName)
+        {
+            room->removeUser(ctx.sessionContext);
+
+            std::string roomJson = room->toJson().dump();
+            ctx.pendingNotifications.push_back({room->getSessionContexts(), roomJson});
+            return room->toJson();
+        }
+    }
+    throw std::invalid_argument("Room not found");
+}
+
+nlohmann::json RoomHandler::removeRoom(Room room)
+{
+    auto it = std::ranges::remove_if(
+                  rooms, [&room](const std::unique_ptr<Room>& r) { return r && r->getId() == room.getId(); }
+    ).begin();
+    if (it != rooms.end())
+    {
+        rooms.erase(it, rooms.end());
+    }
+
+    nlohmann::json response;
+    response["removed"] = room.getId();
+    return response;
 }
 
 Room RoomHandler::findRoomByName(const std::string& roomName) const
@@ -148,15 +160,4 @@ Room RoomHandler::findRoomByName(const std::string& roomName) const
         }
     }
     throw std::invalid_argument("Room not found");
-}
-
-void RoomHandler::removeRoom(Room room)
-{
-    auto it = std::ranges::remove_if(
-                  rooms, [&room](const std::unique_ptr<Room>& r) { return r && r->getId() == room.getId(); }
-    ).begin();
-    if (it != rooms.end())
-    {
-        rooms.erase(it, rooms.end());
-    }
 }

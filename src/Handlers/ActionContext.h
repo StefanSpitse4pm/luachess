@@ -43,6 +43,12 @@ struct RoomContext
     std::string desiredRoomName;
 };
 
+struct Notification
+{
+    std::vector<SessionContext> recipients;
+    std::string message;
+};
+
 struct ActionContext
 {
     std::string action;
@@ -51,6 +57,8 @@ struct ActionContext
     SessionContext sessionContext;
     RoomContext roomContext;
     GameContext gameContext;
+
+    mutable std::vector<Notification> pendingNotifications;
 };
 
 #endif // LUACHESS_ACTIONCONTEXT_H

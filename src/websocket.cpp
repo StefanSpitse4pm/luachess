@@ -16,7 +16,6 @@ std::map<websocketpp::connection_hdl, luaRoomState, std::owner_less<websocketpp:
 RoomHandler roomHandler;
 GameHandler gameHandler(roomHandler);
 
-
 void on_message(server* s, const websocketpp::connection_hdl& hdl, const server::message_ptr& msg)
 {
     std::string payload = msg->get_payload();
@@ -38,31 +37,31 @@ void on_message(server* s, const websocketpp::connection_hdl& hdl, const server:
 
     // if (type == "ChessboardState")
     // {
-        // Chessboard& chessboard = games[hdl].chessboard;
-        //
-        // std::filesystem::path scriptPath = std::filesystem::current_path() / "lua" / "regularChess.lua";
-        // sol::state& lua = games[hdl].lua;
-        //
-        // int fromRow = j["payload"]["from"]["row"];
-        // int fromCol = j["payload"]["from"]["col"];
-        // int toRow = j["payload"]["to"]["row"];
-        // int toCol = j["payload"]["to"]["col"];
-        // chessboard.movePiece(fromRow, fromCol, toRow, toCol);
-        // lua.script_file(scriptPath);
-        // sol::protected_function f = lua["getLegalMoves"];
-        // if (f.valid())
-        // {
-        //     sol::protected_function_result res = f(chessboard);
-        //     if (!res.valid())
-        //     {
-        //         sol::error err = res;
-        //         std::cerr << "Error calling Lua function: " << err.what() << std::endl;
-        //     }
-        // }
-        // chessboard.calculateRepeatMoves();
-        // json response = chessboard.to_json();
-        // s->send(hdl, response.dump(), msg->get_opcode());
-        // return;
+    // Chessboard& chessboard = games[hdl].chessboard;
+    //
+    // std::filesystem::path scriptPath = std::filesystem::current_path() / "lua" / "regularChess.lua";
+    // sol::state& lua = games[hdl].lua;
+    //
+    // int fromRow = j["payload"]["from"]["row"];
+    // int fromCol = j["payload"]["from"]["col"];
+    // int toRow = j["payload"]["to"]["row"];
+    // int toCol = j["payload"]["to"]["col"];
+    // chessboard.movePiece(fromRow, fromCol, toRow, toCol);
+    // lua.script_file(scriptPath);
+    // sol::protected_function f = lua["getLegalMoves"];
+    // if (f.valid())
+    // {
+    //     sol::protected_function_result res = f(chessboard);
+    //     if (!res.valid())
+    //     {
+    //         sol::error err = res;
+    //         std::cerr << "Error calling Lua function: " << err.what() << std::endl;
+    //     }
+    // }
+    // chessboard.calculateRepeatMoves();
+    // json response = chessboard.to_json();
+    // s->send(hdl, response.dump(), msg->get_opcode());
+    // return;
     // }
 
     if (type == "Game")
@@ -102,8 +101,18 @@ void on_message(server* s, const websocketpp::connection_hdl& hdl, const server:
         {
             ctx.roomContext.desiredRoomName = j["payload"]["roomName"];
         }
-
-        roomHandler.router(ctx.action, ctx);
+        try
+        {
+            json response = roomHandler.router(ctx.action, ctx);
+            s->send(hdl, response.dump(), msg->get_opcode());
+        }
+        catch (const std::exception& e)
+        {
+            json response;
+            response["type"] = "Error";
+            response["payload"]["message"] = e.what();
+            s->send(hdl, response.dump(), msg->get_opcode());
+        }
     }
 }
 
@@ -139,17 +148,12 @@ int main()
             }
         );
 
-        chessServer.set_message_handler([&](const websocketpp::connection_hdl& hdl, const server::message_ptr& msg) {
-            on_message(&chessServer, hdl, msg);
-        });
+        chessServer.set_message_handler([&](const websocketpp::connection_hdl& hdl, const server::message_ptr& msg)
+                                        { on_message(&chessServer, hdl, msg); });
 
-        chessServer.set_open_handler([&](const websocketpp::connection_hdl& hdl) {
-            on_open(hdl);
-        });
+        chessServer.set_open_handler([&](const websocketpp::connection_hdl& hdl) { on_open(hdl); });
 
-        chessServer.set_close_handler([&](const websocketpp::connection_hdl& hdl) {
-            on_close(hdl);
-        });
+        chessServer.set_close_handler([&](const websocketpp::connection_hdl& hdl) { on_close(hdl); });
 
         chessServer.set_reuse_addr(true);
         chessServer.listen(9002);

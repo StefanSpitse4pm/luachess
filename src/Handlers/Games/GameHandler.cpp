@@ -7,15 +7,15 @@
 json GameHandler::router(std::string action, const ActionContext& ctx)
 {
     static const std::unordered_map<std::string, ActionFn> actionMap = {
-        {"startGame", [this](const ActionContext& a_ctx) { startGame(a_ctx); }},
-        {"boardState", [this](const ActionContext& a_ctx) { getBoardState(a_ctx); }},
+        {"startGame", [this](const ActionContext& a_ctx) -> nlohmann::json { startGame(a_ctx); }},
+        {"boardState", [this](const ActionContext& a_ctx) -> nlohmann::json { getBoardState(a_ctx); }},
     };
     auto it = actionMap.find(action);
     if (it != actionMap.end())
     {
         try
         {
-            json response = it->second(ctx);
+            return it->second(ctx);
         }
         catch (...)
         {
@@ -26,6 +26,7 @@ json GameHandler::router(std::string action, const ActionContext& ctx)
     {
         throw std::invalid_argument("Unknown action: " + action);
     }
+    throw std::runtime_error("This should never be reached");
 }
 
 json GameHandler::startGame(const ActionContext& ctx)
@@ -61,7 +62,6 @@ json GameHandler::startGame(const ActionContext& ctx)
     throw std::invalid_argument("Unsupported game type: " + ctx.gameContext.gameType);
 }
 
-
 json GameHandler::getBoardState(ActionContext ctx)
 {
     if (ctx.gameContext.gameId == 0)
@@ -70,9 +70,8 @@ json GameHandler::getBoardState(ActionContext ctx)
     }
 
     auto it = std::ranges::find_if(
-        games, [&ctx](const std::unique_ptr<Game>& game) {
-        return game->getId() == ctx.gameContext.gameId;
-    });
+        games, [&ctx](const std::unique_ptr<Game>& game) { return game->getId() == ctx.gameContext.gameId; }
+    );
 
     if (it == games.end())
     {

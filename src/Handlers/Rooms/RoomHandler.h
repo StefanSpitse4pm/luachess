@@ -19,18 +19,16 @@ class RoomHandler : public Handler
     RoomHandler() = default;
     ~RoomHandler() override = default;
 
-    void router(std::string action, const ActionContext& ctx) override;
-    void createRoom(const ActionContext& ctx);
-    void joinRoom(const ActionContext& ctx);
-    void listRooms(const ActionContext& ctx) const;
-    void leaveRoom(const ActionContext& ctx);
-    void removeRoom(Room room);
+    nlohmann::json router(std::string action, const ActionContext& ctx) override;
+    nlohmann::json createRoom(const ActionContext& ctx);
+    nlohmann::json joinRoom(const ActionContext& ctx);
+    [[nodiscard]] nlohmann::json listRooms(const ActionContext& ctx) const;
+    nlohmann::json leaveRoom(const ActionContext& ctx);
+    nlohmann::json removeRoom(Room room);
     [[nodiscard]] Room findRoomByName(const std::string& roomName) const;
-
 
   private:
     std::vector<std::unique_ptr<Room>> rooms{};
-
 };
 
 #endif // LUACHESS_ROOMHANDLER_H

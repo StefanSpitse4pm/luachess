@@ -13,18 +13,17 @@
 
 typedef websocketpp::server<websocketpp::config::asio> server;
 
-
 class Handler
 {
   public:
-	virtual ~Handler() = default;
+    virtual ~Handler() = default;
 
-	using ActionFn = std::function<void(const ActionContext&)>;
-	virtual nlohmann::json router(std::string action, const ActionContext& ctx) = 0;
+    using ActionFn = std::function<nlohmann::json(const ActionContext&)>;
+    virtual nlohmann::json router(std::string action, const ActionContext& ctx) = 0;
     static void sendError(const ActionContext& ctx, const std::string& message);
 
     template <std::ranges::range R>
-    requires std::same_as<std::ranges::range_value_t<R>, SessionContext>
+        requires std::same_as<std::ranges::range_value_t<R>, SessionContext>
     void notify(R sessions, std::string& message, server* serverPtr)
     {
         for (const auto& session : sessions)
