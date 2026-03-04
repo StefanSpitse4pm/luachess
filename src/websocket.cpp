@@ -16,6 +16,32 @@ std::map<websocketpp::connection_hdl, luaRoomState, std::owner_less<websocketpp:
 RoomHandler roomHandler;
 GameHandler gameHandler(roomHandler);
 
+template <std::ranges::range R>
+    requires std::same_as<std::ranges::range_value_t<R>, SessionContext>
+void notify(const R& sessions, const std::string& message, server* serverPtr)
+{
+    for (const auto& session : sessions)
+    {
+        try
+        {
+            serverPtr->send(session.hdl, message, websocketpp::frame::opcode::text);
+        }
+        catch (const websocketpp::exception& e)
+        {
+            std::cerr << "Failed to send notification to a session: " << e.what() << std::endl;
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "Failed to send notification (std::exception): " << e.what() << std::endl;
+        }
+        catch (...)
+        {
+            std::cerr << "Failed to send notification (unknown error)" << std::endl;
+        }
+    }
+}
+
+
 void on_message(server* s, const websocketpp::connection_hdl& hdl, const server::message_ptr& msg)
 {
     std::string payload = msg->get_payload();
@@ -114,6 +140,15 @@ void on_message(server* s, const websocketpp::connection_hdl& hdl, const server:
             s->send(hdl, response.dump(), msg->get_opcode());
         }
     }
+
+    if (!ctx.pendingNotifications.empty())
+    {
+        for (const auto& notification : ctx.pendingNotifications)
+        {
+            // notification.message owns the string; send the same message to all recipients
+            notify(notification.recipients, notification.message, s);
+        }
+    }
 }
 
 void on_open(const websocketpp::connection_hdl& hdl)
@@ -126,6 +161,7 @@ void on_close(const websocketpp::connection_hdl& hdl)
 {
     games.erase(hdl);
 }
+
 
 int main()
 {

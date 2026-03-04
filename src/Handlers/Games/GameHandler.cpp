@@ -7,8 +7,8 @@
 json GameHandler::router(std::string action, const ActionContext& ctx)
 {
     static const std::unordered_map<std::string, ActionFn> actionMap = {
-        {"startGame", [this](const ActionContext& a_ctx) -> nlohmann::json { startGame(a_ctx); }},
-        {"boardState", [this](const ActionContext& a_ctx) -> nlohmann::json { getBoardState(a_ctx); }},
+        {"startGame", [this](const ActionContext& a_ctx) -> nlohmann::json { return startGame(a_ctx); }},
+        {"boardState", [this](const ActionContext& a_ctx) -> nlohmann::json { return getBoardState(a_ctx); }},
     };
     auto it = actionMap.find(action);
     if (it != actionMap.end())
@@ -19,7 +19,7 @@ json GameHandler::router(std::string action, const ActionContext& ctx)
         }
         catch (...)
         {
-            sendError(ctx, "An error occurred while processing the action: " + action);
+            throw std::runtime_error("An error occurred while processing the action: " + action);
         }
     }
     else
@@ -66,7 +66,7 @@ json GameHandler::getBoardState(ActionContext ctx)
 {
     if (ctx.gameContext.gameId == 0)
     {
-        throw new std::invalid_argument("Missing game ID");
+        throw std::invalid_argument("Missing game ID");
     }
 
     auto it = std::ranges::find_if(

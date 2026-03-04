@@ -63,8 +63,7 @@ nlohmann::json RoomHandler::joinRoom(const ActionContext& ctx)
         room->addUser(ctx.sessionContext);
 
         std::string roomJson = room->toJson().dump();
-        // Record notification instead of sending directly so handlers are testable
-        ctx.pendingNotifications.push_back({room->getSessionContexts(), roomJson});
+        ctx.pendingNotifications.push_back({room->getSessionContexts(), std::move(roomJson)});
         return room->toJson();
     }
 
@@ -75,7 +74,7 @@ nlohmann::json RoomHandler::joinRoom(const ActionContext& ctx)
             room->addUser(ctx.sessionContext);
 
             std::string roomJson = room->toJson().dump();
-            ctx.pendingNotifications.push_back({room->getSessionContexts(), roomJson});
+            ctx.pendingNotifications.push_back({room->getSessionContexts(), std::move(roomJson)});
             return room->toJson();
         }
     }
@@ -117,7 +116,7 @@ nlohmann::json RoomHandler::leaveRoom(const ActionContext& ctx)
         room->removeUser(ctx.sessionContext);
 
         std::string roomJson = room->toJson().dump();
-        ctx.pendingNotifications.push_back({room->getSessionContexts(), roomJson});
+        ctx.pendingNotifications.push_back({room->getSessionContexts(), std::move(roomJson)});
         return room->toJson();
     }
 
@@ -128,7 +127,7 @@ nlohmann::json RoomHandler::leaveRoom(const ActionContext& ctx)
             room->removeUser(ctx.sessionContext);
 
             std::string roomJson = room->toJson().dump();
-            ctx.pendingNotifications.push_back({room->getSessionContexts(), roomJson});
+            ctx.pendingNotifications.push_back({room->getSessionContexts(), std::move(roomJson)});
             return room->toJson();
         }
     }
