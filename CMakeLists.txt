@@ -59,7 +59,6 @@ target_link_libraries(luachess
 
 add_executable(tests
         tests/GameHandlerTests.cpp
-        src/websocket.cpp
         src/Chess/chessboard.cpp
         src/luaController.cpp
         src/Handlers/Handler.h
