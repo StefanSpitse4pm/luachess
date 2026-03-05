@@ -22,11 +22,7 @@ json GameHandler::router(std::string action, const ActionContext& ctx)
             throw std::runtime_error("An error occurred while processing the action: " + action);
         }
     }
-    else
-    {
-        throw std::invalid_argument("Unknown action: " + action);
-    }
-    throw std::runtime_error("This should never be reached");
+    throw std::invalid_argument("Unknown action: " + action);
 }
 
 json GameHandler::startGame(const ActionContext& ctx)

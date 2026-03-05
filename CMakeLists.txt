@@ -57,5 +57,47 @@ target_link_libraries(luachess
         lua5.4
 )
 
+add_executable(tests
+        tests/GameHandlerTests.cpp
+        src/websocket.cpp
+        src/Chess/chessboard.cpp
+        src/luaController.cpp
+        src/Handlers/Handler.h
+        src/Handlers/Rooms/RoomHandler.cpp
+        src/Handlers/Rooms/RoomHandler.h
+        src/Handlers/Rooms/Room.cpp
+        src/Handlers/Rooms/Room.h
+        src/Handlers/ActionContext.h
+        src/Handlers/Games/GameHandler.cpp
+        src/Handlers/Games/GameHandler.h
+        src/Chess/Piece.cpp
+        src/Chess/Piece.h
+        src/Chess/Move.h
+        src/Handlers/Rooms/Player.h
+        src/Handlers/Games/Game.cpp
+        src/Handlers/Games/Game.h
+        src/Handlers/Games/Engine/Engine.h
+        src/Handlers/Games/Engine/LuaEngine.cpp
+        src/Handlers/Games/Engine/LuaEngine.h
+        src/Handlers/Games/GameFactory.h
+        src/Handlers/Games/PlayerCreatedLuaGameFactory.cpp
+        src/Handlers/Games/PlayerCreatedLuaGameFactory.h
+)
+
+target_include_directories(tests
+        PRIVATE
+        /usr/include/lua5.4
+
+)
+
+target_link_libraries(tests
+        PRIVATE
+        GTest::gtest_main
+        sol2
+        lua5.4
+)
+
+include(GoogleTest)
+gtest_discover_tests(tests)
 
 file(COPY ${CMAKE_SOURCE_DIR}/src/lua DESTINATION ${CMAKE_BINARY_DIR})
