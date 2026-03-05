@@ -5,11 +5,20 @@
 #include "gtest/gtest.h"
 #include "../src/Handlers/Games/GameHandler.h"
 
-TEST(GameHandlerStartGame, StartGame_GameTypeIsEmpty_ThrowsInvalidArgument)
+class GameHandlerTest : public ::testing::Test
 {
-    RoomHandler roomHandler;
-    GameHandler gameHandler(roomHandler);
-    ActionContext ctx;
+    protected:
+        RoomHandler roomHandler;
+        GameHandler gameHandler;
+        ActionContext ctx;
+
+        GameHandlerTest() : gameHandler(roomHandler), ctx()
+        {
+        }
+};
+
+TEST_F(GameHandlerTest, StartGame_GameTypeIsEmpty_ThrowsInvalidArgument)
+{
     ctx.gameContext.gameType = "";
     ctx.roomContext.desiredRoomName = "TestRoom";
 
