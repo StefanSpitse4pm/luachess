@@ -33,4 +33,15 @@ TEST_F(GameHandlerTest, StartGame_DesiredRoomNameIsEmpty_ThrowsInvalidArgument)
     EXPECT_THROW(gameHandler.startGame(ctx), std::invalid_argument);
 }
 
+TEST_F(GameHandlerTest, StartGame_GametypeIsInvalid_ThrowsInvalidArgument)
+{
+    ctx.gameContext.gameType = "Gibberish";
+    EXPECT_THROW(gameHandler.startGame(ctx), std::invalid_argument);
+}
 
+TEST_F(GameHandlerTest, StartGame_RoomNameDoesNotExist_ThrowInvalidArgument)
+{
+
+    ctx.roomContext.desiredRoomName = "Gibberish";
+    EXPECT_THROW(gameHandler.startGame(ctx), std::invalid_argument);
+}
