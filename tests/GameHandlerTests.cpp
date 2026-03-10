@@ -4,6 +4,7 @@
 
 #include "gtest/gtest.h"
 #include "../src/Handlers/Games/GameHandler.h"
+#include <iostream>
 
 class GameHandlerTest : public ::testing::Test
 {
@@ -20,30 +21,82 @@ class GameHandlerTest : public ::testing::Test
         }
 };
 
+
 TEST_F(GameHandlerTest, StartGame_GameTypeIsEmpty_ShouldThrowsInvalidArgument)
 {
     ctx.gameContext.gameType = "";
-    EXPECT_THROW(gameHandler.startGame(ctx), std::invalid_argument);
+
+    try
+    {
+        gameHandler.startGame(ctx);
+        FAIL();
+    }
+    catch (const::std::invalid_argument& e)
+    {
+        EXPECT_STREQ("Missing game type", e.what());
+    }
+    catch (...)
+    {
+        FAIL();
+    }
 }
 
 
 TEST_F(GameHandlerTest, StartGame_DesiredRoomNameIsEmpty_ShouldThrowsInvalidArgument)
 {
     ctx.roomContext.desiredRoomName = "";
+
+    try
+    {
+        gameHandler.startGame(ctx);
+        FAIL();
+    }
+    catch (const::std::invalid_argument& e)
+    {
+        EXPECT_STREQ("Missing desired room name", e.what());
+    }
+    catch (...)
+    {
+        FAIL();
+    }
     EXPECT_THROW(gameHandler.startGame(ctx), std::invalid_argument);
 }
 
 TEST_F(GameHandlerTest, StartGame_GametypeIsInvalid_ShouldThrowsInvalidArgument)
 {
     ctx.gameContext.gameType = "Gibberish";
-    EXPECT_THROW(gameHandler.startGame(ctx), std::invalid_argument);
+    try
+    {
+        gameHandler.startGame(ctx);
+        FAIL();
+    }
+    catch (const std::invalid_argument& e)
+    {
+        std::string m =  "Unsupported game type: " + ctx.gameContext.gameType;
+        EXPECT_STREQ(m.c_str(), e.what());
+    }
+    catch (...)
+    {
+        FAIL();
+    }
 }
 
 TEST_F(GameHandlerTest, StartGame_RoomNameDoesNotExist_ShouldThrowInvalidArgument)
 {
-
     ctx.roomContext.desiredRoomName = "Gibberish";
-    EXPECT_THROW(gameHandler.startGame(ctx), std::invalid_argument);
+    try
+    {
+        gameHandler.startGame(ctx);
+        FAIL();
+    }
+    catch (const std::invalid_argument& e)
+    {
+        EXPECT_STREQ("", e.what());
+    }
+    catch (...)
+    {
+        FAIL();
+    }
 }
 
 TEST_F(GameHandlerTest, StartGame_RoomIsNotReady_ShouldThrowInvalidArgument)
