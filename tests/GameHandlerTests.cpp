@@ -20,28 +20,54 @@ class GameHandlerTest : public ::testing::Test
         }
 };
 
-TEST_F(GameHandlerTest, StartGame_GameTypeIsEmpty_ThrowsInvalidArgument)
+TEST_F(GameHandlerTest, StartGame_GameTypeIsEmpty_ShouldThrowsInvalidArgument)
 {
     ctx.gameContext.gameType = "";
     EXPECT_THROW(gameHandler.startGame(ctx), std::invalid_argument);
 }
 
 
-TEST_F(GameHandlerTest, StartGame_DesiredRoomNameIsEmpty_ThrowsInvalidArgument)
+TEST_F(GameHandlerTest, StartGame_DesiredRoomNameIsEmpty_ShouldThrowsInvalidArgument)
 {
     ctx.roomContext.desiredRoomName = "";
     EXPECT_THROW(gameHandler.startGame(ctx), std::invalid_argument);
 }
 
-TEST_F(GameHandlerTest, StartGame_GametypeIsInvalid_ThrowsInvalidArgument)
+TEST_F(GameHandlerTest, StartGame_GametypeIsInvalid_ShouldThrowsInvalidArgument)
 {
     ctx.gameContext.gameType = "Gibberish";
     EXPECT_THROW(gameHandler.startGame(ctx), std::invalid_argument);
 }
 
-TEST_F(GameHandlerTest, StartGame_RoomNameDoesNotExist_ThrowInvalidArgument)
+TEST_F(GameHandlerTest, StartGame_RoomNameDoesNotExist_ShouldThrowInvalidArgument)
 {
 
     ctx.roomContext.desiredRoomName = "Gibberish";
     EXPECT_THROW(gameHandler.startGame(ctx), std::invalid_argument);
 }
+
+TEST_F(GameHandlerTest, StartGame_RoomIsNotReady_ShouldThrowInvalidArgument)
+{
+    websocketpp::connection_hdl hdl;
+    Player player("JohnDoe");
+    SessionContext session;
+
+    session.hdl = hdl;
+    session.player = &player;
+    roomHandler.createRoom(ctx);
+    roomHandler.findRoomByName(ctx.roomContext.desiredRoomName).addUser(session);
+    try
+    {
+        gameHandler.startGame(ctx);
+        FAIL();
+    }
+    catch (const std::invalid_argument& e)
+    {
+        EXPECT_STREQ("Room is not ready", e.what());
+    }
+    catch (...)
+    {
+        FAIL(); // Did not get room is not ready error but did get an error.
+    }
+}
+
