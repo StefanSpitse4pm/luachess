@@ -60,36 +60,6 @@ void on_message(server* s, const websocketpp::connection_hdl& hdl, const server:
         s->send(hdl, response.dump(), msg->get_opcode());
         return;
     }
-
-    // if (type == "ChessboardState")
-    // {
-    // Chessboard& chessboard = games[hdl].chessboard;
-    //
-    // std::filesystem::path scriptPath = std::filesystem::current_path() / "lua" / "regularChess.lua";
-    // sol::state& lua = games[hdl].lua;
-    //
-    // int fromRow = j["payload"]["from"]["row"];
-    // int fromCol = j["payload"]["from"]["col"];
-    // int toRow = j["payload"]["to"]["row"];
-    // int toCol = j["payload"]["to"]["col"];
-    // chessboard.movePiece(fromRow, fromCol, toRow, toCol);
-    // lua.script_file(scriptPath);
-    // sol::protected_function f = lua["getLegalMoves"];
-    // if (f.valid())
-    // {
-    //     sol::protected_function_result res = f(chessboard);
-    //     if (!res.valid())
-    //     {
-    //         sol::error err = res;
-    //         std::cerr << "Error calling Lua function: " << err.what() << std::endl;
-    //     }
-    // }
-    // chessboard.calculateRepeatMoves();
-    // json response = chessboard.to_json();
-    // s->send(hdl, response.dump(), msg->get_opcode());
-    // return;
-    // }
-
     if (type == "Game")
     {
         if (j["payload"].contains("gameType"))
@@ -101,6 +71,12 @@ void on_message(server* s, const websocketpp::connection_hdl& hdl, const server:
         {
             ctx.roomContext.desiredRoomName = j["payload"]["roomName"];
         }
+
+        if (j["payload"].contains("gameId"))
+        {
+            ctx.gameContext.gameId = j["payload"]["gameId"];
+        }
+
         try
         {
             json response = gameHandler.router(ctx.action, ctx);
