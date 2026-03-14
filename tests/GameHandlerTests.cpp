@@ -91,7 +91,7 @@ TEST_F(GameHandlerTest, StartGame_RoomNameDoesNotExist_ShouldThrowInvalidArgumen
     }
     catch (const std::invalid_argument& e)
     {
-        EXPECT_STREQ("", e.what());
+        EXPECT_STREQ("Room not found", e.what());
     }
     catch (...)
     {
@@ -101,7 +101,7 @@ TEST_F(GameHandlerTest, StartGame_RoomNameDoesNotExist_ShouldThrowInvalidArgumen
 
 TEST_F(GameHandlerTest, StartGame_RoomIsNotReady_ShouldThrowInvalidArgument)
 {
-    websocketpp::connection_hdl hdl;
+    const websocketpp::connection_hdl hdl;
     Player player("JohnDoe");
     SessionContext session;
     session.hdl = hdl;
