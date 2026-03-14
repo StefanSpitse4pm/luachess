@@ -50,7 +50,7 @@ export default function Room() {
     function handleStartGame() {
         if (currentRoom && username) {
             sendMessage({
-                type: "game",
+                type: "Game",
                 payload: {
                     gameType: "PlayerCreatedLuaGame",
                     roomName: currentRoom.roomName,

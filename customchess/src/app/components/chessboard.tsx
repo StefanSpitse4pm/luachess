@@ -19,15 +19,35 @@ export default function Chessboard() {
 
 
     useEffect(() => {
-        if (lastMessage) {
-            setChessboard(prevBoard => {
-                const newBoard = prevBoard.map(row => [...row]);
-                lastMessage.forEach((element: any) => {
-                    newBoard[element.position.row][element.position.col] = element;
-                });
-                return newBoard;
-            });
+        if (!lastMessage) {
+            return;
         }
+
+        const boardData = Array.isArray(lastMessage)
+            ? lastMessage
+            : Array.isArray((lastMessage as any)?.board)
+                ? (lastMessage as any).board
+                : Array.isArray((lastMessage as any)?.payload?.board)
+                    ? (lastMessage as any).payload.board
+                    : null;
+
+        if (!boardData) {
+            return;
+        }
+
+        setChessboard(prevBoard => {
+            const newBoard = prevBoard.map(row => [...row]);
+            boardData.forEach((element: any) => {
+                if (
+                    element?.position &&
+                    Number.isInteger(element.position.row) &&
+                    Number.isInteger(element.position.col)
+                ) {
+                    newBoard[element.position.row][element.position.col] = element;
+                }
+            });
+            return newBoard;
+        });
     }, [lastMessage])
 
 

@@ -74,7 +74,7 @@ void on_message(server* s, const websocketpp::connection_hdl& hdl, const server:
 
         if (j["payload"].contains("gameId"))
         {
-            ctx.gameContext.gameId = j["payload"]["gameId"];
+            ctx.gameContext.gameId = static_cast<u_int32_t>(j["payload"]["gameId"]);
         }
 
         try

@@ -51,7 +51,7 @@ json GameHandler::startGame(const ActionContext& ctx)
         roomHandler.removeRoom(room);
 
         game->start();
-        const json response = game->getChessboard().to_json();
+        const json response = game->toJson();
         games.push_back(std::move(game));
         return response;
     }

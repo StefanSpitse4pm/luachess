@@ -44,6 +44,13 @@ class Game
             return id;
         }
 
+        [[nodiscard]] json toJson() const
+        {
+            json j;
+            j["id"] = id;
+            return j;
+        }
+
       private:
         std::unique_ptr<Engine> engine;
         std::unique_ptr<Chessboard> chessboard;

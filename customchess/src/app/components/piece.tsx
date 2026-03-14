@@ -8,7 +8,7 @@ type PieceProps = piece & {
 export default function Piece({ position, image, possibleMoves: posibleMoves, chessboard }: PieceProps) {
     return (
         <div className={`piece w-24 h-24 relative z-10 `}
-             style={{ backgroundImage: `url(${image})`,
+             style={{ backgroundImage: `${image})`,
              backgroundRepeat: 'no-repeat', backgroundPosition: `50% 50%`,
              backgroundSize: '100% 100%'}}>
 
@@ -17,5 +17,5 @@ export default function Piece({ position, image, possibleMoves: posibleMoves, ch
 }
 
 
-    
+
 
