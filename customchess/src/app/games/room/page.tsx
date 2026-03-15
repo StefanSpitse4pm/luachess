@@ -8,6 +8,7 @@ interface RoomData {
     players: string[];
     roomName: string;
     roomSize: number;
+    id: number | null;
 }
 
 export default function Room() {
@@ -18,6 +19,7 @@ export default function Room() {
 
     const { sendMessage, lastMessage, isConnected } = useWebSocketContext();
     const [currentRoom, setCurrentRoom] = useState<RoomData | null>(null);
+    const [roomId, setRoomId] = useState<number>(0)
 
     useEffect(() => {
         if (!roomName || !username) {
@@ -30,6 +32,9 @@ export default function Room() {
         console.log("Last message:", lastMessage);
         if (lastMessage && lastMessage.roomName && lastMessage.players) {
             setCurrentRoom(lastMessage as RoomData);
+        }
+        if (lastMessage.id) {
+            setRoomId(lastMessage.id);
         }
     }, [lastMessage]);
 
@@ -57,7 +62,7 @@ export default function Room() {
                     action: "startGame"
                 }
             });
-            router.push(`/games/room/play?roomName=${encodeURIComponent(currentRoom.roomName)}&username=${encodeURIComponent(username)}`);
+            router.push(`/games/room/play?roomName=${encodeURIComponent(currentRoom.roomName)}&username=${encodeURIComponent(username)}&room=${encodeURIComponent(roomId)}`);
         }
     }
 
