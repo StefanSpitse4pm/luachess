@@ -10,7 +10,7 @@ export default function Play() {
     const searchParams = useSearchParams();
     const roomName = searchParams.get('roomName');
     const username = searchParams.get('username');
-    const roomId = searchParams.get('room');
+    const gameId = searchParams.get('game');
 
     useEffect(() => {
         if (!roomName || !username) {
@@ -21,7 +21,7 @@ export default function Play() {
 
     useEffect(() => {
         if (isConnected) {
-            sendMessage({ type: "Game", payload: {"action":"boardState", "roomId":roomId} });
+            sendMessage({ type: "Game", payload: {"action":"boardState", "gameId":gameId} });
         }
     }, [isConnected]);
 

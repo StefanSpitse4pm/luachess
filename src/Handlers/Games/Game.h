@@ -46,9 +46,7 @@ class Game
 
         [[nodiscard]] json toJson() const
         {
-            json j;
-            j["id"] = id;
-            return j;
+            return {{"id", id}};
         }
 
       private:
@@ -57,7 +55,7 @@ class Game
         std::filesystem::path filepath;
         std::vector<SessionContext> sessionContexts; // players
         inline static std::atomic<uint32_t> nextId{1};
-        uint32_t id;
+        uint32_t id = 1;
 
 };
 

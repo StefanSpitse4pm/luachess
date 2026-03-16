@@ -19,7 +19,8 @@ export default function Room() {
 
     const { sendMessage, lastMessage, isConnected } = useWebSocketContext();
     const [currentRoom, setCurrentRoom] = useState<RoomData | null>(null);
-    const [roomId, setRoomId] = useState<number>(0)
+    const [, setGameId] = useState<number>(0);
+    const [isStartingGame, setIsStartingGame] = useState<boolean>(false);
 
     useEffect(() => {
         if (!roomName || !username) {
@@ -29,24 +30,33 @@ export default function Room() {
     }, [isConnected, roomName, username]);
 
     useEffect(() => {
-        console.log("Last message:", lastMessage);
+        console.log('Last message:', lastMessage);
         if (lastMessage && lastMessage.roomName && lastMessage.players) {
             setCurrentRoom(lastMessage as RoomData);
         }
-        if (lastMessage.id) {
-            setRoomId(lastMessage.id);
-        }
     }, [lastMessage]);
+
+    useEffect(() => {
+        if (!isStartingGame || !currentRoom || !username) return;
+
+        const maybeId = (lastMessage as any)?.id;
+        if (typeof maybeId !== 'number') return;
+
+        setGameId(maybeId);
+        setIsStartingGame(false);
+
+        router.push(`/games/room/play?roomName=${encodeURIComponent(currentRoom.roomName)}&username=${encodeURIComponent(username)}&game=${encodeURIComponent(String(maybeId))}`);
+    }, [isStartingGame, lastMessage, currentRoom, username, router]);
 
     function handleLeaveRoom() {
         if (currentRoom && username) {
             sendMessage({
-                type: "Room",
+                type: 'Room',
                 payload: {
-                    "action": "LeaveRoom",
-                    "roomName": currentRoom.roomName,
-                    "username": username
-                }
+                    action: 'LeaveRoom',
+                    roomName: currentRoom.roomName,
+                    username: username,
+                },
             });
             router.push('/games');
         }
@@ -54,15 +64,15 @@ export default function Room() {
 
     function handleStartGame() {
         if (currentRoom && username) {
+            setIsStartingGame(true);
             sendMessage({
-                type: "Game",
+                type: 'Game',
                 payload: {
-                    gameType: "PlayerCreatedLuaGame",
+                    gameType: 'PlayerCreatedLuaGame',
                     roomName: currentRoom.roomName,
-                    action: "startGame"
-                }
+                    action: 'startGame',
+                },
             });
-            router.push(`/games/room/play?roomName=${encodeURIComponent(currentRoom.roomName)}&username=${encodeURIComponent(username)}&room=${encodeURIComponent(roomId)}`);
         }
     }
 
@@ -82,10 +92,7 @@ export default function Room() {
                 <div className="bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-700">
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-3xl font-bold text-white">{currentRoom.roomName}</h2>
-                        <button
-                            onClick={handleLeaveRoom}
-                            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                        >
+                        <button onClick={handleLeaveRoom} className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
                             Leave Room
                         </button>
                     </div>
@@ -97,7 +104,7 @@ export default function Room() {
                         <div className="w-full bg-gray-700 rounded-full h-4">
                             <div
                                 className="bg-blue-600 h-4 rounded-full transition-all duration-300"
-                                style={{width: `${(currentRoom.filledSpots / currentRoom.roomSize) * 100}%`}}
+                                style={{ width: `${(currentRoom.filledSpots / currentRoom.roomSize) * 100}%` }}
                             ></div>
                         </div>
                     </div>
@@ -112,9 +119,7 @@ export default function Room() {
                                 >
                                     <div className="flex items-center">
                                         <span className="text-lg text-white">{player}</span>
-                                        {player === username && (
-                                            <span className="ml-2 text-sm text-blue-400 font-semibold">(You)</span>
-                                        )}
+                                        {player === username && <span className="ml-2 text-sm text-blue-400 font-semibold">(You)</span>}
                                     </div>
                                 </li>
                             ))}

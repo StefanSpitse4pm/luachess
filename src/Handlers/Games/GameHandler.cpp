@@ -13,14 +13,7 @@ json GameHandler::router(std::string action, const ActionContext& ctx)
     auto it = actionMap.find(action);
     if (it != actionMap.end())
     {
-        try
-        {
-            return it->second(ctx);
-        }
-        catch (...)
-        {
-            throw std::runtime_error("An error occurred while processing the action: " + action);
-        }
+        return it->second(ctx);
     }
     throw std::invalid_argument("Unknown action: " + action);
 }
