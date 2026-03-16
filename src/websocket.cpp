@@ -74,7 +74,23 @@ void on_message(server* s, const websocketpp::connection_hdl& hdl, const server:
 
         if (j["payload"].contains("gameId"))
         {
-            ctx.gameContext.gameId = static_cast<u_int32_t>(j["payload"]["gameId"]);
+            const auto& rawGameId = j["payload"]["gameId"];
+            if (rawGameId.is_number_unsigned())
+            {
+                ctx.gameContext.gameId = rawGameId.get<std::uint32_t>();
+            }
+            else if (rawGameId.is_number_integer())
+            {
+                const auto v = rawGameId.get<std::int64_t>();
+                if (v >= 0)
+                {
+                    ctx.gameContext.gameId = static_cast<std::uint32_t>(v);
+                }
+            }
+            else if (rawGameId.is_string())
+            {
+                ctx.gameContext.gameId = static_cast<std::uint32_t>(std::stoul(rawGameId.get<std::string>()));
+            }
         }
 
         try
