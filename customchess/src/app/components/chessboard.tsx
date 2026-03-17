@@ -4,10 +4,11 @@ import Piece from './piece';
 import { piece } from '../types/piece';
 import { useWebSocketContext } from '../context/WebSocketContext';
 
-export default function Chessboard() {
+export default function Chessboard(gameId: number | undefined) {
 
     const { sendMessage, lastMessage } = useWebSocketContext();
     const [possibleMoves, setPossibleMoves] = useState(new Set<string>());
+    const [firstLoaded, setFirstLoaded] = useState(false);
     const [isPieceSelected, setIsPieceSelected] = useState(true);
     const [selectedPiece, setSelectedPiece] = useState<piece | null>(null);
     const size = 8;
@@ -19,8 +20,9 @@ export default function Chessboard() {
 
 
     useEffect(() => {
-        if (!lastMessage) {
-            return;
+        if (!firstLoaded) {
+            sendMessage({ type: "Game", payload: {"action":"boardState", "gameId":gameId} });
+            setFirstLoaded(true);
         }
 
         const boardData = Array.isArray(lastMessage)
