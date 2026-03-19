@@ -22,12 +22,13 @@ class GameHandler : public Handler
           auto factory = std::make_unique<PlayerCreatedLuaGameFactory>();
           factories.push_back(std::move(factory));
 	};
-
     json router(std::string action, const ActionContext& ctx) override;
     json startGame(const ActionContext& ctx);
     json getBoardState(ActionContext ctx);
+    Game& getGameByGameId(const ActionContext& ctx);
+    json onMove(ActionContext ctx);
 
-    private:
+  private:
 	std::vector<std::unique_ptr<Game>> games;
 	std::vector<std::unique_ptr<GameFactory>> factories;
     RoomHandler& roomHandler;
