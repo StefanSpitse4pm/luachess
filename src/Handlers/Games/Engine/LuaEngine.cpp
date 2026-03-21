@@ -49,3 +49,21 @@ void LuaEngine::initialize(std::filesystem::path scriptPath, Chessboard& board)
     }
     board.calculateRepeatMoves();
 }
+
+void LuaEngine::executeScript(std::string& functionName, Chessboard& board)
+{
+    sol::protected_function func = luaState[functionName];
+    if (func.valid())
+    {
+        sol::protected_function_result result = func(board);
+        if (!result.valid())
+        {
+            sol::error err = result;
+            std::cerr << "Error calling Lua function '" << functionName << "': " << err.what() << std::endl;
+        }
+    }
+    else
+    {
+        std::cerr << "Lua function '" << functionName << "' not found." << std::endl;
+    }
+}

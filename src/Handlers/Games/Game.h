@@ -23,7 +23,7 @@ class Game
 
         void start() const;
         void stop();
-
+        void executeScript(std::string functionName) const;
         [[nodiscard]] Chessboard& getChessboard() const
         {
             return *chessboard;
@@ -48,6 +48,7 @@ class Game
         {
             return {{"id", id}};
         }
+
 
       private:
         std::unique_ptr<Engine> engine;
