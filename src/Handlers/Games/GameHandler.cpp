@@ -90,6 +90,7 @@ json GameHandler::onMove(ActionContext ctx)
 
     const auto* m = ctx.gameContext.send;
     game.getChessboard().movePiece(m->fromRow, m->fromCol, m->toRow, m->toCol);
-
+    game.executeScript("getLegalMoves");
+    game.getChessboard().calculateRepeatMoves();
     return game.getChessboard().to_json();
 }
