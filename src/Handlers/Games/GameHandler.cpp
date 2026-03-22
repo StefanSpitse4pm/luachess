@@ -61,11 +61,13 @@ json GameHandler::startGame(const ActionContext& ctx)
         }
 
         game->addPlayers(room.getSessionContexts());
+
         roomHandler.removeRoom(room);
 
         game->start();
         const json response = game->toJson();
         games.push_back(std::move(game));
+        ctx.pendingNotifications.push_back({game->getSessionContexts(), response.dump()});
         return response;
     }
     throw std::invalid_argument("Unsupported game type: " + ctx.gameContext.gameType);

@@ -20,7 +20,6 @@ export default function Room() {
     const { sendMessage, lastMessage, isConnected } = useWebSocketContext();
     const [currentRoom, setCurrentRoom] = useState<RoomData | null>(null);
     const [, setGameId] = useState<number>(0);
-    const [isStartingGame, setIsStartingGame] = useState<boolean>(false);
 
     useEffect(() => {
         if (!roomName || !username) {
@@ -37,16 +36,15 @@ export default function Room() {
     }, [lastMessage]);
 
     useEffect(() => {
-        if (!isStartingGame || !currentRoom || !username) return;
+        if (!currentRoom || !username) return;
 
         const maybeId = (lastMessage as any)?.id;
         if (typeof maybeId !== 'number') return;
 
         setGameId(maybeId);
-        setIsStartingGame(false);
 
-        router.push(`/games/room/play?roomName=${encodeURIComponent(currentRoom.roomName)}&username=${encodeURIComponent(username)}&game=${encodeURIComponent(String(maybeId))}`);
-    }, [isStartingGame, lastMessage, currentRoom, username, router]);
+        router.push(`/games/room/play?username=${encodeURIComponent(username)}&game=${encodeURIComponent(String(maybeId))}`);
+    }, [lastMessage, currentRoom, username, router]);
 
     function handleLeaveRoom() {
         if (currentRoom && username) {
@@ -64,7 +62,6 @@ export default function Room() {
 
     function handleStartGame() {
         if (currentRoom && username) {
-            setIsStartingGame(true);
             sendMessage({
                 type: 'Game',
                 payload: {

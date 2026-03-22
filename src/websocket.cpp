@@ -146,11 +146,12 @@ void on_message(server* s, const websocketpp::connection_hdl& hdl, const server:
         }
     }
 
+    // This is here to send any pending notifications that were generated during the handling of the message.
+    // This ensures that clients receive updates about changes in game state, room status, or other relevant events after their action has been processed.
     if (!ctx.pendingNotifications.empty())
     {
         for (const auto& notification : ctx.pendingNotifications)
         {
-            // notification.message owns the string; send the same message to all recipients
             notify(notification.recipients, notification.message, s);
         }
     }
