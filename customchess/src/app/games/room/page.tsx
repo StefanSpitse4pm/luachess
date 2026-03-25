@@ -33,18 +33,13 @@ export default function Room() {
         if (lastMessage && lastMessage.roomName && lastMessage.players) {
             setCurrentRoom(lastMessage as RoomData);
         }
+
+        if (lastMessage.id && typeof lastMessage.id === 'number') {
+            // @ts-ignore
+            router.push(`/games/room/play?username=${encodeURIComponent(username)}&game=${encodeURIComponent(String(lastMessage.id))}`);
+        }
     }, [lastMessage]);
 
-    useEffect(() => {
-        if (!currentRoom || !username) return;
-
-        const maybeId = (lastMessage as any)?.id;
-        if (typeof maybeId !== 'number') return;
-
-        setGameId(maybeId);
-
-        router.push(`/games/room/play?username=${encodeURIComponent(username)}&game=${encodeURIComponent(String(maybeId))}`);
-    }, [lastMessage, currentRoom, username, router]);
 
     function handleLeaveRoom() {
         if (currentRoom && username) {

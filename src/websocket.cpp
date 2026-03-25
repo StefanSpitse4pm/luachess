@@ -118,7 +118,6 @@ void on_message(server* s, const websocketpp::connection_hdl& hdl, const server:
             response["payload"]["message"] = e.what();
             s->send(hdl, response.dump(), msg->get_opcode());
         }
-        return;
     }
 
     if (type == "Room")

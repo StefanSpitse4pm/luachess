@@ -66,8 +66,8 @@ json GameHandler::startGame(const ActionContext& ctx)
 
         game->start();
         const json response = game->toJson();
-        games.push_back(std::move(game));
         ctx.pendingNotifications.push_back({game->getSessionContexts(), response.dump()});
+        games.push_back(std::move(game));
         return response;
     }
     throw std::invalid_argument("Unsupported game type: " + ctx.gameContext.gameType);
