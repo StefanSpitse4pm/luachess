@@ -74,7 +74,7 @@ json GameHandler::startGame(const ActionContext& ctx)
 }
 
 
-json GameHandler::getBoardState(const ActionContext& ctx)
+json GameHandler::getBoardState(ActionContext ctx)
 {
     Game& game = getGameByGameId(ctx);
     return game.getChessboard().toJson();
@@ -93,38 +93,10 @@ json GameHandler::onMove(const ActionContext& ctx)
     game.getChessboard().movePiece(m->fromRow, m->fromCol, m->toRow, m->toCol);
     game.executeScript("getLegalMoves");
     game.getChessboard().calculateRepeatMoves();
-    json updateMove = {
-        {"type", "Move"},
-        {"fromRow", m->fromRow},
-        {"fromCol", m->fromCol},
-        {"toRow", m->toRow},
-        {"toCol", m->toCol}
-    };
 
     const json board = game.getChessboard().toJson();
 
-    auto it = std::find_if(board.begin(), board.end(), [m](const json& piece)
-    {
-        return piece.contains("position") && piece["position"].contains("row") && piece["position"].contains("col")
-            && piece["position"]["row"] == m->toRow && piece["position"]["col"] == m->toCol;
-    });
 
-    json possibleMoves = json::array();
-    json possibleTakes = json::array();
-    if (it != board.end())
-    {
-        const json& movedPiece = *it;
-        possibleMoves = movedPiece.value("possibleMoves", json::array());
-        possibleTakes = movedPiece.value("possibleTakes", json::array());
-    }
-
-    json response = {
-        {"type", "move"},
-        {"lastMove", updateMove},
-        {"PossibleMoves", possibleMoves},
-        {"PossibleTakes", possibleTakes},
-    };
-
-    ctx.pendingNotifications.push_back({game.getSessionContexts(), response.dump()});
-    return response;
+    ctx.pendingNotifications.push_back({game.getSessionContexts(), board.dump()});
+    return board;
 }

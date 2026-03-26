@@ -24,7 +24,7 @@ class GameHandler : public Handler
 	};
     json router(std::string action, const ActionContext& ctx) override;
     json startGame(const ActionContext& ctx);
-    json getBoardState(const ActionContext& ctx);
+    json getBoardState(ActionContext ctx);
     Game& getGameByGameId(const ActionContext& ctx);
     json onMove(const ActionContext& ctx);
 
