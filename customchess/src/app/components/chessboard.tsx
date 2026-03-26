@@ -33,24 +33,7 @@ export default function Chessboard(gameId: number | undefined) {
                     ? (lastMessage as any).payload.board
                     : null;
 
-        if (lastMessage.lastMove)
-        {
-            const fromRow = lastMessage.lastMove.fromCol;
-            const fromCol = lastMessage.lastMove.fromCol;
-            const toRow = lastMessage.lastMove.toRow;
-            const toCol = lastMessage.lastMove.toCol;
 
-            setChessboard(prevBoard => {
-                const newBoard = prevBoard.map(row => [...row]);
-                const pieceToMove = newBoard[fromRow][fromCol];
-                if (pieceToMove) {
-                    newBoard[toRow][toCol] = { ...pieceToMove, position: { row: toRow, col: toCol } };
-                    newBoard[fromRow][fromCol] = null;
-                }
-                return newBoard;
-            });
-            return;
-        }
 
         if (!boardData) {
             return;

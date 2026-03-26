@@ -74,7 +74,7 @@ json GameHandler::startGame(const ActionContext& ctx)
 }
 
 
-json GameHandler::getBoardState(ActionContext ctx)
+json GameHandler::getBoardState(const ActionContext& ctx)
 {
     Game& game = getGameByGameId(ctx);
     return game.getChessboard().toJson();
@@ -102,10 +102,27 @@ json GameHandler::onMove(const ActionContext& ctx)
     };
 
     const json board = game.getChessboard().toJson();
+
+    auto it = std::find_if(board.begin(), board.end(), [m](const json& piece)
+    {
+        return piece.contains("position") && piece["position"].contains("row") && piece["position"].contains("col")
+            && piece["position"]["row"] == m->toRow && piece["position"]["col"] == m->toCol;
+    });
+
+    json possibleMoves = json::array();
+    json possibleTakes = json::array();
+    if (it != board.end())
+    {
+        const json& movedPiece = *it;
+        possibleMoves = movedPiece.value("possibleMoves", json::array());
+        possibleTakes = movedPiece.value("possibleTakes", json::array());
+    }
+
     json response = {
-        {"type", "BoardState"},
-        {"board", board},
-        {"lastMove", updateMove}
+        {"type", "move"},
+        {"lastMove", updateMove},
+        {"PossibleMoves", possibleMoves},
+        {"PossibleTakes", possibleTakes},
     };
 
     ctx.pendingNotifications.push_back({game.getSessionContexts(), response.dump()});
