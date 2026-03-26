@@ -26,7 +26,7 @@ class GameHandler : public Handler
     json startGame(const ActionContext& ctx);
     json getBoardState(ActionContext ctx);
     Game& getGameByGameId(const ActionContext& ctx);
-    json onMove(ActionContext ctx);
+    json onMove(const ActionContext& ctx);
 
   private:
 	std::vector<std::unique_ptr<Game>> games;

@@ -77,11 +77,10 @@ json GameHandler::startGame(const ActionContext& ctx)
 json GameHandler::getBoardState(ActionContext ctx)
 {
     Game& game = getGameByGameId(ctx);
-    return game.getChessboard().to_json();
+    return game.getChessboard().toJson();
 }
 
-
-json GameHandler::onMove(ActionContext ctx)
+json GameHandler::onMove(const ActionContext& ctx)
 {
     Game& game = getGameByGameId(ctx);
 
@@ -94,5 +93,21 @@ json GameHandler::onMove(ActionContext ctx)
     game.getChessboard().movePiece(m->fromRow, m->fromCol, m->toRow, m->toCol);
     game.executeScript("getLegalMoves");
     game.getChessboard().calculateRepeatMoves();
-    return game.getChessboard().to_json();
+    json updateMove = {
+        {"type", "Move"},
+        {"fromRow", m->fromRow},
+        {"fromCol", m->fromCol},
+        {"toRow", m->toRow},
+        {"toCol", m->toCol}
+    };
+
+    const json board = game.getChessboard().toJson();
+    json response = {
+        {"type", "BoardState"},
+        {"board", board},
+        {"lastMove", updateMove}
+    };
+
+    ctx.pendingNotifications.push_back({game.getSessionContexts(), response.dump()});
+    return response;
 }

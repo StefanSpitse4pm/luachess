@@ -85,7 +85,7 @@ class Chessboard
         return cols_;
     }
 
-    json to_json();
+    json toJson();
     void calculateRepeatMoves();
 
   private:

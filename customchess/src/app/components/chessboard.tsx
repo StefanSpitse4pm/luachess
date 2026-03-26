@@ -1,8 +1,8 @@
 "use client";
-import React, { useState, useEffect  } from 'react';
+import React, {useEffect, useState} from 'react';
 import Piece from './piece';
-import { piece } from '../types/piece';
-import { useWebSocketContext } from '../context/WebSocketContext';
+import {piece} from '../types/piece';
+import {useWebSocketContext} from '../context/WebSocketContext';
 
 export default function Chessboard(gameId: number | undefined) {
 
@@ -33,9 +33,29 @@ export default function Chessboard(gameId: number | undefined) {
                     ? (lastMessage as any).payload.board
                     : null;
 
+        if (lastMessage.lastMove)
+        {
+            const fromRow = lastMessage.lastMove.fromCol;
+            const fromCol = lastMessage.lastMove.fromCol;
+            const toRow = lastMessage.lastMove.toRow;
+            const toCol = lastMessage.lastMove.toCol;
+
+            setChessboard(prevBoard => {
+                const newBoard = prevBoard.map(row => [...row]);
+                const pieceToMove = newBoard[fromRow][fromCol];
+                if (pieceToMove) {
+                    newBoard[toRow][toCol] = { ...pieceToMove, position: { row: toRow, col: toCol } };
+                    newBoard[fromRow][fromCol] = null;
+                }
+                return newBoard;
+            });
+            return;
+        }
+
         if (!boardData) {
             return;
         }
+
 
         setChessboard(prevBoard => {
             const newBoard = prevBoard.map(row => [...row]);
@@ -55,7 +75,7 @@ export default function Chessboard(gameId: number | undefined) {
 
 
     function handleSquareClick(piecePosition: piece | null) {
-        const newPosibleMoves = new Set<string>();
+        const newPossibleMoves = new Set<string>();
         isPieceSelected ? setIsPieceSelected(false) : setIsPieceSelected(true);
         if (piecePosition && isPieceSelected) {
             setSelectedPiece(piecePosition);
@@ -66,13 +86,13 @@ export default function Chessboard(gameId: number | undefined) {
                 const c = piecePosition.position.col + move.dx + (move.basedOnLastMove ? lastdx : 0);
                 if (r < 0 || r >= size || c < 0 || c >= size) return;
 
-                newPosibleMoves.add(`${r},${c}`);
+                newPossibleMoves.add(`${r},${c}`);
                 if (move.repeat) {
                     let repeatRow = r;
                     let repeatCol = c;
                     while (repeatRow >= 0 && repeatRow < size && repeatCol >= 0 && repeatCol < size) {
                         if (chessboard[repeatRow][repeatCol] !== null && !piecePosition.canJumpOverPieces) break;
-                        newPosibleMoves.add(`${repeatRow},${repeatCol}`);
+                        newPossibleMoves.add(`${repeatRow},${repeatCol}`);
                         repeatRow += move.dy;
                         repeatCol += move.dx;
                     }
@@ -87,10 +107,10 @@ export default function Chessboard(gameId: number | undefined) {
 
                 // Validate bounds
                 if (r >= 0 && r < size && c >= 0 && c < size) {
-                    newPosibleMoves.add(`${r},${c}`);
+                    newPossibleMoves.add(`${r},${c}`);
                 }
             });
-            setPossibleMoves(newPosibleMoves);
+            setPossibleMoves(newPossibleMoves);
         }
         return;
 

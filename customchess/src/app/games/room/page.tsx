@@ -19,7 +19,7 @@ export default function Room() {
 
     const { sendMessage, lastMessage, isConnected } = useWebSocketContext();
     const [currentRoom, setCurrentRoom] = useState<RoomData | null>(null);
-    const [, setGameId] = useState<number>(0);
+    const [gameId , setGameId] = useState<number>(0);
 
     useEffect(() => {
         if (!roomName || !username) {

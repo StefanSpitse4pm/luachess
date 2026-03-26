@@ -1,7 +1,7 @@
 #include "chessboard.h"
 #include <iostream>
 
-json Chessboard::to_json()
+json Chessboard::toJson()
 {
     json j = json::array();
     for (int r = 0; r < rows_; ++r)
