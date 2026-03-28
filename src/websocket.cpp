@@ -41,7 +41,6 @@ void notify(const R& sessions, const std::string& message, server* serverPtr)
     }
 }
 
-
 void on_message(server* s, const websocketpp::connection_hdl& hdl, const server::message_ptr& msg)
 {
     std::string payload = msg->get_payload();
@@ -95,12 +94,12 @@ void on_message(server* s, const websocketpp::connection_hdl& hdl, const server:
 
         if (j["payload"].contains("move"))
         {
-            if (const auto& move = j["payload"]["move"]; move.is_object() && move.contains("fromRow") && move.contains("fromCol") && move.contains("toRow") && move.contains("toCol"))
+            if (const auto& move = j["payload"]["move"]; move.is_object() && move.contains("fromRow") &&
+                                                         move.contains("fromCol") && move.contains("toRow") &&
+                                                         move.contains("toCol"))
             {
                 ctx.gameContext.send = new sendMove{
-                    move["fromRow"].get<int>(),
-                    move["fromCol"].get<int>(),
-                    move["toRow"].get<int>(),
+                    move["fromRow"].get<int>(), move["fromCol"].get<int>(), move["toRow"].get<int>(),
                     move["toCol"].get<int>()
                 };
             }
@@ -146,7 +145,8 @@ void on_message(server* s, const websocketpp::connection_hdl& hdl, const server:
     }
 
     // This is here to send any pending notifications that were generated during the handling of the message.
-    // This ensures that clients receive updates about changes in game state, room status, or other relevant events after their action has been processed.
+    // This ensures that clients receive updates about changes in game state, room status, or other relevant events
+    // after their action has been processed.
     if (!ctx.pendingNotifications.empty())
     {
         for (const auto& notification : ctx.pendingNotifications)
@@ -166,7 +166,6 @@ void on_close(const websocketpp::connection_hdl& hdl)
 {
     games.erase(hdl);
 }
-
 
 int main()
 {

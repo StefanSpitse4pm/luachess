@@ -2,25 +2,23 @@
 // Created by stefanspitse on 3/5/26.
 //
 
-#include "gtest/gtest.h"
 #include "../src/Handlers/Games/GameHandler.h"
+#include "gtest/gtest.h"
 #include <iostream>
 
 class GameHandlerTest : public ::testing::Test
 {
-    protected:
-        RoomHandler roomHandler;
-        GameHandler gameHandler;
-        ActionContext ctx;
+  protected:
+    RoomHandler roomHandler;
+    GameHandler gameHandler;
+    ActionContext ctx;
 
-
-        GameHandlerTest() : gameHandler(roomHandler), ctx()
-        {
-            ctx.gameContext.gameType = "PlayerCreatedLuaGame";
-            ctx.roomContext.desiredRoomName = "TestRoom";
-        }
+    GameHandlerTest() : gameHandler(roomHandler), ctx()
+    {
+        ctx.gameContext.gameType = "PlayerCreatedLuaGame";
+        ctx.roomContext.desiredRoomName = "TestRoom";
+    }
 };
-
 
 TEST_F(GameHandlerTest, StartGame_GameTypeIsEmpty_ShouldThrowsInvalidArgument)
 {
@@ -31,7 +29,7 @@ TEST_F(GameHandlerTest, StartGame_GameTypeIsEmpty_ShouldThrowsInvalidArgument)
         gameHandler.startGame(ctx);
         FAIL();
     }
-    catch (const::std::invalid_argument& e)
+    catch (const ::std::invalid_argument& e)
     {
         EXPECT_STREQ("Missing game type", e.what());
     }
@@ -40,7 +38,6 @@ TEST_F(GameHandlerTest, StartGame_GameTypeIsEmpty_ShouldThrowsInvalidArgument)
         FAIL();
     }
 }
-
 
 TEST_F(GameHandlerTest, StartGame_DesiredRoomNameIsEmpty_ShouldThrowsInvalidArgument)
 {
@@ -51,7 +48,7 @@ TEST_F(GameHandlerTest, StartGame_DesiredRoomNameIsEmpty_ShouldThrowsInvalidArgu
         gameHandler.startGame(ctx);
         FAIL();
     }
-    catch (const::std::invalid_argument& e)
+    catch (const ::std::invalid_argument& e)
     {
         EXPECT_STREQ("Missing desired room name", e.what());
     }
@@ -72,7 +69,7 @@ TEST_F(GameHandlerTest, StartGame_GametypeIsInvalid_ShouldThrowsInvalidArgument)
     }
     catch (const std::invalid_argument& e)
     {
-        std::string m =  "Unsupported game type: " + ctx.gameContext.gameType;
+        std::string m = "Unsupported game type: " + ctx.gameContext.gameType;
         EXPECT_STREQ(m.c_str(), e.what());
     }
     catch (...)
@@ -123,4 +120,3 @@ TEST_F(GameHandlerTest, StartGame_RoomIsNotReady_ShouldThrowInvalidArgument)
         FAIL(); // Did not get room is not ready error but did get an error.
     }
 }
-

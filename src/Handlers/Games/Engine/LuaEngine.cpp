@@ -5,7 +5,6 @@
 #include "LuaEngine.h"
 #include "../../../Chess/chessboard.h"
 
-
 void LuaEngine::setup(Chessboard& board)
 {
     luaState.open_libraries(sol::lib::base, sol::lib::package, sol::lib::table, sol::lib::string, sol::lib::math);
@@ -35,7 +34,6 @@ void LuaEngine::setup(Chessboard& board)
 
 void LuaEngine::initialize(std::filesystem::path scriptPath, Chessboard& board)
 {
-
     luaState.script_file(scriptPath);
     sol::protected_function setupFunc = luaState["setup"];
     if (setupFunc.valid())

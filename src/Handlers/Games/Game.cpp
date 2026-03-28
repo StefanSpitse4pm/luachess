@@ -15,7 +15,6 @@ void Game::stop()
     // TODO: Implement game stop logic here
 }
 
-
 void Game::executeScript(std::string functionName) const
 {
     engine->executeScript(functionName, *chessboard);

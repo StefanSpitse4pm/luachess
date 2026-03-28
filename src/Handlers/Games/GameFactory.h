@@ -11,9 +11,9 @@
 
 class GameFactory
 {
-    public:
-        virtual ~GameFactory() = default;
-        virtual std::unique_ptr<Game> createGame(ActionContext ctx) = 0;
+  public:
+    virtual ~GameFactory() = default;
+    virtual std::unique_ptr<Game> createGame(ActionContext ctx) = 0;
 };
 
 #endif // LUACHESS_GAMEFACTORY_H

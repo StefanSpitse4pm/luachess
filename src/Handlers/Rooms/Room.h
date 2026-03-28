@@ -15,7 +15,9 @@
 class Room
 {
   public:
-    Room(int id, std::string room_name) : id(nextId++), roomName(std::move(room_name)){}
+    Room(int id, std::string room_name) : id(nextId++), roomName(std::move(room_name))
+    {
+    }
 
     ~Room() = default;
 

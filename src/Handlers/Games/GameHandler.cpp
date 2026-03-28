@@ -73,7 +73,6 @@ json GameHandler::startGame(const ActionContext& ctx)
     throw std::invalid_argument("Unsupported game type: " + ctx.gameContext.gameType);
 }
 
-
 json GameHandler::getBoardState(ActionContext ctx)
 {
     Game& game = getGameByGameId(ctx);
@@ -95,7 +94,6 @@ json GameHandler::onMove(const ActionContext& ctx)
     game.getChessboard().calculateRepeatMoves();
 
     const json board = game.getChessboard().toJson();
-
 
     ctx.pendingNotifications.push_back({game.getSessionContexts(), board.dump()});
     return board;
