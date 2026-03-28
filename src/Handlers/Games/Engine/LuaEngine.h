@@ -9,7 +9,6 @@
 
 class LuaEngine : public Engine
 {
-    // TODO state should be created on constructor
   public:
     LuaEngine() = default;
     void setup(Chessboard& board) override;

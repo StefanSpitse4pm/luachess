@@ -4,19 +4,14 @@
 
 #include "GameHandler.h"
 
-json GameHandler::router(std::string action, const ActionContext& ctx)
+json GameHandler::action(std::string action, const ActionContext& ctx)
 {
     static const std::unordered_map<std::string, ActionFn> actionMap = {
         {"startGame", [this](const ActionContext& a_ctx) -> nlohmann::json { return startGame(a_ctx); }},
         {"boardState", [this](const ActionContext& a_ctx) -> nlohmann::json { return getBoardState(a_ctx); }},
         {"move", [this](const ActionContext& a_ctx) -> nlohmann::json { return onMove(a_ctx); }},
     };
-    auto it = actionMap.find(action);
-    if (it != actionMap.end())
-    {
-        return it->second(ctx);
-    }
-    throw std::invalid_argument("Unknown action: " + action);
+    return route(actionMap, action)(ctx);
 }
 
 Game& GameHandler::getGameByGameId(const ActionContext& ctx)
@@ -26,7 +21,7 @@ Game& GameHandler::getGameByGameId(const ActionContext& ctx)
         throw std::invalid_argument("Missing game ID");
     }
 
-    auto it = std::ranges::find_if(
+    const auto it = std::ranges::find_if(
         games, [&ctx](const std::unique_ptr<Game>& game) { return game->getId() == ctx.gameContext.gameId; }
     );
 

@@ -23,7 +23,7 @@ class GameHandler : public Handler
         factories.push_back(std::move(factory));
     };
 
-    json router(std::string action, const ActionContext& ctx) override;
+    json action(std::string action, const ActionContext& ctx) override;
     json startGame(const ActionContext& ctx);
     json getBoardState(ActionContext ctx);
     Game& getGameByGameId(const ActionContext& ctx);

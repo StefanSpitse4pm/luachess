@@ -107,7 +107,7 @@ void on_message(server* s, const websocketpp::connection_hdl& hdl, const server:
 
         try
         {
-            json response = gameHandler.router(ctx.action, ctx);
+            json response = gameHandler.action(ctx.action, ctx);
             s->send(hdl, response.dump(), msg->get_opcode());
         }
         catch (const std::exception& e)
@@ -132,7 +132,7 @@ void on_message(server* s, const websocketpp::connection_hdl& hdl, const server:
         }
         try
         {
-            json response = roomHandler.router(ctx.action, ctx);
+            json response = roomHandler.action(ctx.action, ctx);
             s->send(hdl, response.dump(), msg->get_opcode());
         }
         catch (const std::exception& e)

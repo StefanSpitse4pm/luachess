@@ -19,9 +19,9 @@ class RoomHandler : public Handler
     RoomHandler() = default;
     ~RoomHandler() override = default;
 
-    nlohmann::json router(std::string action, const ActionContext& ctx) override;
+    nlohmann::json action(std::string action, const ActionContext& ctx) override;
     nlohmann::json createRoom(const ActionContext& ctx);
-    nlohmann::json joinRoom(const ActionContext& ctx);
+    nlohmann::json joinRoom(const ActionContext& ctx) const;
     [[nodiscard]] nlohmann::json listRooms(const ActionContext& ctx) const;
     nlohmann::json leaveRoom(const ActionContext& ctx);
     nlohmann::json removeRoom(Room room);

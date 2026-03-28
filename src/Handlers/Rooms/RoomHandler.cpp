@@ -6,7 +6,7 @@
 #include "Room.h"
 #include <algorithm>
 
-nlohmann::json RoomHandler::router(std::string action, const ActionContext& ctx)
+nlohmann::json RoomHandler::action(std::string action, const ActionContext& ctx)
 {
     static const std::unordered_map<std::string, ActionFn> actionMap = {
         {"CreateRoom", [this](const ActionContext& a_ctx) -> nlohmann::json { return createRoom(a_ctx); }},
@@ -14,23 +14,7 @@ nlohmann::json RoomHandler::router(std::string action, const ActionContext& ctx)
         {"ListRooms", [this](const ActionContext& a_ctx) -> nlohmann::json { return listRooms(a_ctx); }},
         {"LeaveRoom", [this](const ActionContext& a_ctx) -> nlohmann::json { return leaveRoom(a_ctx); }},
     };
-    auto it = actionMap.find(action);
-    if (it != actionMap.end())
-    {
-        try
-        {
-            return it->second(ctx);
-        }
-        catch (...)
-        {
-            throw std::runtime_error("An error occurred while processing the action: " + action);
-        }
-    }
-    else
-    {
-        throw std::invalid_argument("Unknown action: " + action);
-    }
-    throw std::runtime_error("This should never be reached");
+    return route(actionMap, action)(ctx);
 }
 
 nlohmann::json RoomHandler::createRoom(const ActionContext& ctx)
@@ -44,8 +28,7 @@ nlohmann::json RoomHandler::createRoom(const ActionContext& ctx)
     return roomJson;
 }
 
-// TODO figure out why compiler wants this to Const
-nlohmann::json RoomHandler::joinRoom(const ActionContext& ctx)
+nlohmann::json RoomHandler::joinRoom(const ActionContext& ctx) const
 {
     if (ctx.roomContext.desiredRoomName.empty())
     {
@@ -78,7 +61,6 @@ nlohmann::json RoomHandler::joinRoom(const ActionContext& ctx)
             return room->toJson();
         }
     }
-    // TODO return error
     throw std::invalid_argument("Room not found");
 }
 
