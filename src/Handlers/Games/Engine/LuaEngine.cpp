@@ -32,36 +32,36 @@ void LuaEngine::setup(Chessboard& board)
     );
 }
 
-void LuaEngine::initialize(std::filesystem::path scriptPath, Chessboard& board)
+void LuaEngine::initialize(const std::filesystem::path scriptPath, Chessboard& board)
 {
     luaState.script_file(scriptPath);
-    sol::protected_function setupFunc = luaState["setup"];
-    if (setupFunc.valid())
+    const sol::protected_function setupFunc = luaState["setup"];
+
+    if (!setupFunc.valid())
     {
-        sol::protected_function_result result = setupFunc(board);
-        if (!result.valid())
-        {
-            sol::error err = result;
-            std::cerr << "Error calling Lua setup function: " << err.what() << std::endl;
-        }
+       throw std::invalid_argument("Lua setup function not found in script: " + scriptPath.string());
+    }
+
+    if (const sol::protected_function_result result = setupFunc(board); !result.valid())
+    {
+        const sol::error err = result;
+        std::cerr << "Error calling Lua setup function: " << err.what() << std::endl;
     }
     board.calculateRepeatMoves();
 }
 
 void LuaEngine::executeScript(std::string& functionName, Chessboard& board)
 {
-    sol::protected_function func = luaState[functionName];
-    if (func.valid())
+    if (const sol::protected_function func = luaState[functionName]; func.valid())
     {
-        sol::protected_function_result result = func(board);
-        if (!result.valid())
+        if (const sol::protected_function_result result = func(board); !result.valid())
         {
-            sol::error err = result;
-            std::cerr << "Error calling Lua function '" << functionName << "': " << err.what() << std::endl;
+            const sol::error err = result;
+            throw std::invalid_argument("Error calling Lua function '" + functionName + "': " + err.what());
         }
     }
     else
     {
-        std::cerr << "Lua function '" << functionName << "' not found." << std::endl;
+        throw std::invalid_argument("Lua function '" + functionName + "' not found.");
     }
 }
