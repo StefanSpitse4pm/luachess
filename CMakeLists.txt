@@ -21,7 +21,6 @@ enable_testing()
 add_executable(luachess
         src/websocket.cpp
         src/Chess/chessboard.cpp
-        src/luaController.cpp
         src/Handlers/Handler.h
         src/Handlers/Rooms/RoomHandler.cpp
         src/Handlers/Rooms/RoomHandler.h
@@ -61,7 +60,6 @@ target_link_libraries(luachess
 add_executable(tests
         tests/GameHandlerTests.cpp
         src/Chess/chessboard.cpp
-        src/luaController.cpp
         src/Handlers/Handler.h
         src/Handlers/Rooms/RoomHandler.cpp
         src/Handlers/Rooms/RoomHandler.h

@@ -5,7 +5,6 @@
 #ifndef LUACHESS_GAMEHANDLER_H
 #define LUACHESS_GAMEHANDLER_H
 
-#include "../../luaController.h"
 #include "../ActionContext.h"
 #include "../Handler.h"
 #include "../Rooms/Player.h"

@@ -12,7 +12,6 @@
 
 typedef websocketpp::server<websocketpp::config::asio> server;
 using json = nlohmann::json;
-std::map<websocketpp::connection_hdl, luaRoomState, std::owner_less<websocketpp::connection_hdl>> games;
 RoomHandler roomHandler;
 GameHandler gameHandler(roomHandler);
 
@@ -156,17 +155,6 @@ void on_message(server* s, const websocketpp::connection_hdl& hdl, const server:
     }
 }
 
-void on_open(const websocketpp::connection_hdl& hdl)
-{
-    sol::state lua;
-    games[hdl] = luaRoomState{std::move(lua)};
-}
-
-void on_close(const websocketpp::connection_hdl& hdl)
-{
-    games.erase(hdl);
-}
-
 int main()
 {
     server chessServer;
@@ -190,10 +178,6 @@ int main()
 
         chessServer.set_message_handler([&](const websocketpp::connection_hdl& hdl, const server::message_ptr& msg)
                                         { on_message(&chessServer, hdl, msg); });
-
-        chessServer.set_open_handler([&](const websocketpp::connection_hdl& hdl) { on_open(hdl); });
-
-        chessServer.set_close_handler([&](const websocketpp::connection_hdl& hdl) { on_close(hdl); });
 
         chessServer.set_reuse_addr(true);
         chessServer.listen(9002);

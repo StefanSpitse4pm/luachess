@@ -32,12 +32,12 @@ class Game
 
     void addPlayers(const std::vector<SessionContext>& players)
     {
-        sessionContexts.insert(sessionContexts.end(), players.begin(), players.end());
+        playerSessionContexts.insert(playerSessionContexts.end(), players.begin(), players.end());
     }
 
     [[nodiscard]] const std::vector<SessionContext>& getSessionContexts() const
     {
-        return sessionContexts;
+        return playerSessionContexts;
     }
 
     [[nodiscard]] uint32_t getId() const
@@ -54,7 +54,7 @@ class Game
     std::unique_ptr<Engine> engine;
     std::unique_ptr<Chessboard> chessboard;
     std::filesystem::path filepath;
-    std::vector<SessionContext> sessionContexts; // players
+    std::vector<SessionContext> playerSessionContexts;
     inline static std::atomic<uint32_t> nextId{1};
     uint32_t id = 1;
 };
