@@ -4,7 +4,7 @@
 
 #include "PlayerCreatedLuaGameFactory.h"
 
-#include "../../Chess/chessboard.h"
+#include "../Chess/chessboard.h"
 #include "Engine/LuaEngine.h"
 
 std::unique_ptr<Game> PlayerCreatedLuaGameFactory::createGame(ActionContext)

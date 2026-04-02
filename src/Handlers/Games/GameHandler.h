@@ -22,11 +22,11 @@ class GameHandler : public Handler
         factories.push_back(std::move(factory));
     };
 
-    json action(std::string action, const ActionContext& ctx) override;
-    json startGame(const ActionContext& ctx);
-    json getBoardState(ActionContext ctx);
+    nlohmann::json action(std::string action, const ActionContext& ctx) override;
+    nlohmann::json startGame(const ActionContext& ctx);
+    nlohmann::json getBoardState(ActionContext ctx);
     Game& getGameByGameId(const ActionContext& ctx);
-    json onMove(const ActionContext& ctx);
+    nlohmann::json onMove(const ActionContext& ctx);
 
   private:
     std::vector<std::unique_ptr<Game>> games;

@@ -4,11 +4,11 @@
 
 #ifndef LUACHESS_PIECE_H
 #define LUACHESS_PIECE_H
+#include "Move.h"
 #include <array>
 #include <string>
 #include <utility>
 #include <vector>
-#include "Move.h"
 
 class Piece
 {

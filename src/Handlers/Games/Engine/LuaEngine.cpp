@@ -3,7 +3,7 @@
 //
 
 #include "LuaEngine.h"
-#include "../../../Chess/chessboard.h"
+#include "../../Chess/chessboard.h"
 
 void LuaEngine::setup(Chessboard& board)
 {

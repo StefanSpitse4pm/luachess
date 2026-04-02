@@ -4,8 +4,8 @@
 
 #ifndef LUACHESS_GAME_H
 #define LUACHESS_GAME_H
-#include "../../Chess/chessboard.h"
 #include "../ActionContext.h"
+#include "../../Chess/chessboard.h"
 #include "Engine/Engine.h"
 
 #include <atomic>

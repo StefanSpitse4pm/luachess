@@ -4,7 +4,7 @@
 
 #include "GameHandler.h"
 
-json GameHandler::action(std::string action, const ActionContext& ctx)
+nlohmann::json GameHandler::action(std::string action, const ActionContext& ctx)
 {
     static const std::unordered_map<std::string, ActionFn> actionMap = {
         {"startGame", [this](const ActionContext& a_ctx) -> nlohmann::json { return startGame(a_ctx); }},
@@ -30,10 +30,10 @@ Game& GameHandler::getGameByGameId(const ActionContext& ctx)
         throw std::invalid_argument("Game not found");
     }
 
-    return *(*it);
+    return **it;
 }
 
-json GameHandler::startGame(const ActionContext& ctx)
+nlohmann::json GameHandler::startGame(const ActionContext& ctx)
 {
     if (ctx.gameContext.gameType.empty())
     {
@@ -68,13 +68,13 @@ json GameHandler::startGame(const ActionContext& ctx)
     throw std::invalid_argument("Unsupported game type: " + ctx.gameContext.gameType);
 }
 
-json GameHandler::getBoardState(ActionContext ctx)
+nlohmann::json GameHandler::getBoardState(ActionContext ctx)
 {
     Game& game = getGameByGameId(ctx);
     return game.getChessboard().toJson();
 }
 
-json GameHandler::onMove(const ActionContext& ctx)
+nlohmann::json GameHandler::onMove(const ActionContext& ctx)
 {
     Game& game = getGameByGameId(ctx);
 
