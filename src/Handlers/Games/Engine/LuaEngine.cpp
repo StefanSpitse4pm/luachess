@@ -34,7 +34,7 @@ void LuaEngine::setup(Chessboard& board)
     luaState.new_usertype<Chessboard>(
         "Chessboard", "isOccupied", &Chessboard::isOccupied, "getPieceAt", &Chessboard::getPieceAt, "setPieceAt",
         &Chessboard::setPieceAt, "movePiece", &Chessboard::movePiece, "rows", sol::property(&Chessboard::getRows),
-        "cols", sol::property(&Chessboard::getCols), "calculateRepeatMoves", &Chessboard::calculateRepeatMoves
+        "cols", sol::property(&Chessboard::getCols), "calculateRepeatMoves", &Chessboard::unrollRepeatMoves
     );
 
     luaState.new_usertype<Piece>(
@@ -69,7 +69,7 @@ void LuaEngine::initialize(const std::filesystem::path scriptPath, Chessboard& b
         const sol::error err = result;
         std::cerr << "Error calling Lua setup function: " << err.what() << std::endl;
     }
-    board.calculateRepeatMoves();
+    board.unrollRepeatMoves();
 }
 
 void LuaEngine::executeScript(std::string& functionName, Chessboard& board)

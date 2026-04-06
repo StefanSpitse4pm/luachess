@@ -1,5 +1,12 @@
 #include "chessboard.h"
 #include <iostream>
+#include <ranges>
+
+struct Chessboard::repeatingMoves
+{
+    std::vector<size_t> indices;
+    std::vector<Move>   ToExpand;
+};
 
 json Chessboard::toJson()
 {
@@ -46,89 +53,69 @@ json Chessboard::toJson()
     return j;
 }
 
-void Chessboard::calculateRepeatMoves()
+void Chessboard::unrollRepeatMoves()
 {
     foreachPiece(
         [this](Piece& piece)
         {
-            std::vector<size_t> repeatMovesIndices;
-            std::vector<size_t> repeatTakesIndices;
-            std::vector<Move> repeatMovesToExpand;
-            std::vector<Move> repeatTakesToExpand;
+            repeatingMoves repeatMoves;
+            repeatingMoves repeatTakes;
+            repeatMoves = findRepeatingMoves(piece.possibleMoves, repeatMoves);
+            repeatTakes = findRepeatingMoves(piece.possibleTakes, repeatTakes);
+            piece.possibleMoves = removeRepeatingMoves(piece.possibleMoves, repeatMoves);
+            piece.possibleTakes = removeRepeatingMoves(piece.possibleTakes, repeatTakes);
 
-            for (size_t i = 0; i < piece.possibleMoves.size(); ++i)
-            {
-                if (piece.possibleMoves[i].repeat)
-                {
-                    repeatMovesToExpand.push_back(piece.possibleMoves[i]);
-                    repeatMovesIndices.push_back(i);
-                }
-            }
-            for (size_t i = 0; i < piece.possibleTakes.size(); ++i)
-            {
-                if (piece.possibleTakes[i].repeat)
-                {
-                    repeatTakesToExpand.push_back(piece.possibleTakes[i]);
-                    repeatTakesIndices.push_back(i);
-                }
-            }
-
-            for (auto it = repeatMovesIndices.rbegin(); it != repeatMovesIndices.rend(); ++it)
-            {
-                piece.possibleMoves.erase(piece.possibleMoves.begin() + *it);
-            }
-            for (auto it = repeatTakesIndices.rbegin(); it != repeatTakesIndices.rend(); ++it)
-            {
-                piece.possibleTakes.erase(piece.possibleTakes.begin() + *it);
-            }
-
-            for (const Move& repeatMove : repeatMovesToExpand)
-            {
-                int step = 1;
-                while (true)
-                {
-                    int newRow = piece.position[0] + repeatMove.dy * step;
-                    int newCol = piece.position[1] + repeatMove.dx * step;
-                    if (newRow < 0 || newRow >= rows_ || newCol < 0 || newCol >= cols_)
-                    {
-                        break; // Out of bounds
-                    }
-                    if (isOccupied(newRow, newCol))
-                    {
-                        break; // Blocked by another piece
-                    }
-                    piece.possibleMoves.push_back(
-                        {repeatMove.dx * step, repeatMove.dy * step, false, repeatMove.basedOnLastMove}
-                    );
-                    step++;
-                }
-            }
-
-            // Expand repeat takes
-            for (const Move& repeatTake : repeatTakesToExpand)
-            {
-                int step = 1;
-                while (true)
-                {
-                    int newRow = piece.position[0] + repeatTake.dy * step;
-                    int newCol = piece.position[1] + repeatTake.dx * step;
-                    if (newRow < 0 || newRow >= rows_ || newCol < 0 || newCol >= cols_)
-                    {
-                        break; // Out of bounds
-                    }
-                    if (isOccupied(newRow, newCol))
-                    {
-                        // If there's a piece at this position, we can potentially take it
-                        // (the game logic will determine if it's an enemy piece)
-                        piece.possibleTakes.push_back(
-                            {repeatTake.dx * step, repeatTake.dy * step, false, repeatTake.basedOnLastMove}
-                        );
-                        break; // Stop after finding a piece (can't continue past it)
-                    }
-                    // If no piece at this position, we can't take here, but continue looking
-                    step++;
-                }
-            }
+            repeatUntilBlocked(repeatMoves.ToExpand, piece);
         }
     );
+}
+
+void Chessboard::repeatUntilBlocked(const std::vector<Move>& repeatMovesToExpand, Piece& piece) const
+{
+
+    for (const Move& repeatMove : repeatMovesToExpand)
+    {
+        int step = 1;
+        while (true)
+        {
+            int newRow = piece.position[0] + repeatMove.dy * step;
+            int newCol = piece.position[1] + repeatMove.dx * step;
+            if (newRow < 0 || newRow >= rows_ || newCol < 0 || newCol >= cols_)
+            {
+                break;
+            }
+
+            if (isOccupied(newRow, newCol))
+            {
+                break;
+            }
+
+            piece.possibleMoves.push_back(
+                {repeatMove.dx * step, repeatMove.dy * step, false, repeatMove.basedOnLastMove}
+            );
+            step++;
+        }
+    }
+}
+
+Chessboard::repeatingMoves Chessboard::findRepeatingMoves(const std::vector<Move>& moves, repeatingMoves& repeat)
+{
+    for (size_t i = 0; i < moves.size(); ++i)
+    {
+        if (moves[i].repeat)
+        {
+            repeat.ToExpand.push_back(moves[i]);
+            repeat.indices.push_back(i);
+        }
+    }
+    return repeat;
+}
+
+std::vector<Move> Chessboard::removeRepeatingMoves(std::vector<Move>& moves, repeatingMoves& repeat)
+{
+    for (const unsigned long & repeatMovesIndice : std::views::reverse(repeat.indices))
+    {
+        moves.erase(moves.begin() + repeatMovesIndice);
+    }
+    return moves;
 }
