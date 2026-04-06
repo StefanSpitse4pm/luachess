@@ -12,7 +12,7 @@
 
 class Piece
 {
-public:
+  public:
     std::array<int, 2> position; // position[0] = row, position[1] = col
     std::string type;
     std::string image;
@@ -21,10 +21,7 @@ public:
     bool canJumpOverPieces = false;
     std::string color;
 
-    Piece(
-        const std::array<int, 2>& position, std::string  type, std::string  image,
-        std::string  color
-    )
+    Piece(const std::array<int, 2>& position, std::string type, std::string image, std::string color)
         : position(position), type(std::move(type)), image(std::move(image)), color(std::move(color))
     {
     }

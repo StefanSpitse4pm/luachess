@@ -44,7 +44,7 @@ add_executable(luachess
         src/Handlers/Handler.cpp
 )
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/src/extern/sol2)
+add_subdirectory(${PROJECT_SOURCE_DIR}/extern/sol2)
 
 target_include_directories(luachess
         PRIVATE
