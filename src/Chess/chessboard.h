@@ -14,83 +14,89 @@ using json = nlohmann::json;
 
 class Chessboard
 {
-  public:
-    Chessboard(int rows, int cols)
-        : rows_(rows), cols_(cols), board(rows, std::vector<std::optional<Piece>>(cols, std::nullopt))
-    {
-    }
+    struct repeatingMoves;
+    repeatingMoves* repeatMove_;
 
-    [[nodiscard]] bool isOccupied(int row, int col) const
-    {
-        if (row < 0 || row >= rows_ || col < 0 || col >= cols_)
+    public:
+        Chessboard(int rows, int cols)
+            : rows_(rows), cols_(cols), board(rows, std::vector<std::optional<Piece>>(cols, std::nullopt))
         {
-            return false;
         }
-        return board[row][col].has_value();
-    }
 
-    std::optional<Piece>& getPieceAt(int row, int col)
-    {
-        if (row < 0 || row >= rows_ || col < 0 || col >= cols_)
+        [[nodiscard]] bool isOccupied(int row, int col) const
         {
-            throw std::out_of_range("Position out of bounds");
-        }
-        return board[row][col];
-    }
-
-    void setPieceAt(const Piece& piece)
-    {
-        board[piece.position[0]][piece.position[1]] = piece;
-    }
-
-    void movePiece(int fromRow, int fromCol, int toRow, int toCol)
-    {
-        if (fromRow < 0 || fromRow >= rows_ || fromCol < 0 || fromCol >= cols_)
-        {
-            throw std::out_of_range("Position out of bounds");
-        }
-        board[toRow][toCol] = board[fromRow][fromCol];
-        board[fromRow][fromCol] = std::nullopt;
-
-        board[toRow][toCol]->position[0] = toRow;
-        board[toRow][toCol]->position[1] = toCol;
-    }
-
-    void foreachPiece(const std::function<void(Piece&)>& func)
-    {
-        for (int r = 0; r < rows_; ++r)
-        {
-            for (int c = 0; c < cols_; ++c)
+            if (row < 0 || row >= rows_ || col < 0 || col >= cols_)
             {
-                if (board[r][c].has_value())
+                return false;
+            }
+            return board[row][col].has_value();
+        }
+
+        std::optional<Piece>& getPieceAt(int row, int col)
+        {
+            if (row < 0 || row >= rows_ || col < 0 || col >= cols_)
+            {
+                throw std::out_of_range("Position out of bounds");
+            }
+            return board[row][col];
+        }
+
+        void setPieceAt(const Piece& piece)
+        {
+            board[piece.position[0]][piece.position[1]] = piece;
+        }
+
+        void movePiece(int fromRow, int fromCol, int toRow, int toCol)
+        {
+            if (fromRow < 0 || fromRow >= rows_ || fromCol < 0 || fromCol >= cols_)
+            {
+                throw std::out_of_range("Position out of bounds");
+            }
+            board[toRow][toCol] = board[fromRow][fromCol];
+            board[fromRow][fromCol] = std::nullopt;
+
+            board[toRow][toCol]->position[0] = toRow;
+            board[toRow][toCol]->position[1] = toCol;
+        }
+
+        void foreachPiece(const std::function<void(Piece&)>& func)
+        {
+            for (int r = 0; r < rows_; ++r)
+            {
+                for (int c = 0; c < cols_; ++c)
                 {
-                    func(board[r][c].value());
+                    if (board[r][c].has_value())
+                    {
+                        func(board[r][c].value());
+                    }
                 }
             }
         }
-    }
 
-    std::vector<std::vector<std::optional<Piece>>> getBoard()
-    {
-        return board;
-    }
+        std::vector<std::vector<std::optional<Piece>>> getBoard()
+        {
+            return board;
+        }
 
-    int getRows() const
-    {
-        return rows_;
-    }
+        int getRows() const
+        {
+            return rows_;
+        }
 
-    int getCols() const
-    {
-        return cols_;
-    }
+        int getCols() const
+        {
+            return cols_;
+        }
 
-    json to_json();
-    void calculateRepeatMoves();
+        json toJson();
+        void unrollRepeatMoves();
+        void repeatUntilBlocked(const std::vector<Move>& moves, Piece& piece) const;
+        static repeatingMoves findRepeatingMoves(const std::vector<Move>&, repeatingMoves& repeat);
+        static std::vector<Move> removeRepeatingMoves(std::vector<Move>& moves, repeatingMoves& repeat);
 
-  private:
-    int rows_, cols_;
-    std::vector<std::vector<std::optional<Piece>>> board;
-};
+      private:
+        int rows_, cols_;
+        std::vector<std::vector<std::optional<Piece>>> board;
+    };
 
 #endif // CHESSBOARD_H

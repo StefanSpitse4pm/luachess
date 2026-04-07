@@ -21,7 +21,6 @@ enable_testing()
 add_executable(luachess
         src/websocket.cpp
         src/Chess/chessboard.cpp
-        src/luaController.cpp
         src/Handlers/Handler.h
         src/Handlers/Rooms/RoomHandler.cpp
         src/Handlers/Rooms/RoomHandler.h
@@ -42,9 +41,11 @@ add_executable(luachess
         src/Handlers/Games/GameFactory.h
         src/Handlers/Games/PlayerCreatedLuaGameFactory.cpp
         src/Handlers/Games/PlayerCreatedLuaGameFactory.h
+        src/Handlers/Handler.cpp
+        src/Handlers/Games/Decorator/GameDecorator.h
 )
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/src/extern/sol2)
+add_subdirectory(${PROJECT_SOURCE_DIR}/extern/sol2)
 
 target_include_directories(luachess
         PRIVATE
@@ -60,7 +61,6 @@ target_link_libraries(luachess
 add_executable(tests
         tests/GameHandlerTests.cpp
         src/Chess/chessboard.cpp
-        src/luaController.cpp
         src/Handlers/Handler.h
         src/Handlers/Rooms/RoomHandler.cpp
         src/Handlers/Rooms/RoomHandler.h
@@ -81,6 +81,8 @@ add_executable(tests
         src/Handlers/Games/GameFactory.h
         src/Handlers/Games/PlayerCreatedLuaGameFactory.cpp
         src/Handlers/Games/PlayerCreatedLuaGameFactory.h
+        src/Handlers/Handler.cpp
+        tests/GameTests.cpp
 )
 
 target_include_directories(tests
