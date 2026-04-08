@@ -27,7 +27,7 @@
 #include "../../Chess/chessboard.h"
 #include "Engine/LuaEngine.h"
 
-std::unique_ptr<Game> PlayerCreatedLuaGameFactory::createGame(ActionContext)
+std::unique_ptr<Game> PlayerCreatedLuaGameFactory::createGame(ActionContext ctx)
 {
     auto engine = std::make_unique<LuaEngine>();
     auto board = std::make_unique<Chessboard>(8, 8);
