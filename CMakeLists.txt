@@ -59,6 +59,7 @@ target_link_libraries(luachess
 
 add_executable(tests
         tests/GameHandlerTests.cpp
+        tests/GameTests.cpp
         src/Chess/chessboard.cpp
         src/Handlers/Handler.h
         src/Handlers/Rooms/RoomHandler.cpp
