@@ -27,11 +27,11 @@
 #include "../../Chess/chessboard.h"
 #include "Engine/LuaEngine.h"
 
-std::unique_ptr<Game> PlayerCreatedLuaGameFactory::createGame(ActionContext ctx)
+std::unique_ptr<LuaGame> PlayerCreatedLuaGameFactory::createGame(ActionContext ctx)
 {
     auto engine = std::make_unique<LuaEngine>();
     auto board = std::make_unique<Chessboard>(8, 8);
-    auto newGame = std::make_unique<Game>(
+    auto newGame = std::make_unique<LuaGame>(
         std::move(engine), std::move(board), std::filesystem::current_path() / "lua" / "regularChess.lua"
     );
 

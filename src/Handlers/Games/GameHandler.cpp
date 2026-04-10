@@ -36,7 +36,7 @@ nlohmann::json GameHandler::action(std::string action, const ActionContext& ctx)
     return route(actionMap, action)(ctx);
 }
 
-Game& GameHandler::getGameByGameId(const ActionContext& ctx)
+LuaGame& GameHandler::getGameByGameId(const ActionContext& ctx)
 {
     if (ctx.gameContext.gameId == 0)
     {
@@ -44,7 +44,7 @@ Game& GameHandler::getGameByGameId(const ActionContext& ctx)
     }
 
     const auto it = std::ranges::find_if(
-        games, [&ctx](const std::unique_ptr<Game>& game) { return game->getId() == ctx.gameContext.gameId; }
+        games, [&ctx](const std::unique_ptr<LuaGame>& game) { return game->getId() == ctx.gameContext.gameId; }
     );
 
     if (it == games.end())
@@ -92,26 +92,20 @@ nlohmann::json GameHandler::startGame(const ActionContext& ctx)
 
 nlohmann::json GameHandler::getBoardState(ActionContext ctx)
 {
-    Game& game = getGameByGameId(ctx);
+    LuaGame& game = getGameByGameId(ctx);
     return game.getChessboard().toJson();
 }
 
 nlohmann::json GameHandler::onMove(const ActionContext& ctx)
 {
-    Game& game = getGameByGameId(ctx);
+    LuaGame& game = getGameByGameId(ctx);
 
     if (ctx.gameContext.send == nullptr)
     {
         throw std::invalid_argument("Missing move payload");
     }
 
-    const auto* m = ctx.gameContext.send;
-    game.getChessboard().movePiece(m->fromRow, m->fromCol, m->toRow, m->toCol);
-    game.executeScript("getLegalMoves");
-    game.getChessboard().unrollRepeatMoves();
-
-    const json board = game.getChessboard().toJson();
-
+    json board = game.applyMove(*ctx.gameContext.send);
     ctx.pendingNotifications.push_back({game.getSessionContexts(), board.dump()});
     return board;
 }

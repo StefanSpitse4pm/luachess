@@ -24,20 +24,28 @@
 // Created by stefanspitse on 2/19/26.
 //
 
-#include "Game.h"
+#include "LuaGame.h"
 
-void Game::start() const
+void LuaGame::start() const
 {
     engine->setup(*chessboard);
     engine->initialize(filepath, *chessboard);
 }
 
-void Game::stop()
+void LuaGame::stop()
 {
     // TODO: Implement game stop logic here
 }
 
-void Game::executeScript(std::string functionName) const
+void LuaGame::executeScript(std::string functionName) const
 {
     engine->executeScript(functionName, *chessboard);
+}
+
+json LuaGame::applyMove(const sendMove& move) const
+{
+    getChessboard().movePiece(move.fromRow, move.fromCol, move.toRow, move.toCol);
+    executeScript("getLegalMoves");
+    getChessboard().unrollRepeatMoves();
+    return getChessboard().toJson();
 }

@@ -83,7 +83,6 @@ local pieces = {
             piece:addMove(0, 1, true, false)
             piece:addMove(1, 0, true, false)
             piece = takeStraight(piece, board)
-            print(piece)
             board:calculateRepeatMoves(piece)
             board:setPieceAt(piece)
         end
