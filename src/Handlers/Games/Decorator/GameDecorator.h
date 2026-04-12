@@ -11,7 +11,7 @@
 class GameDecorator : public Game
 {
   public:
-    explicit GameDecorator(const Game& source) : wrapped(source)
+    explicit GameDecorator(Game& source) : wrapped(source)
     {
 
     }
@@ -19,7 +19,7 @@ class GameDecorator : public Game
     void stop() override;
     [[nodiscard]] nlohmann::json applyMove(const sendMove& move) const override;
   protected:
-    Game wrapped;
+    Game& wrapped;
 
 };
 

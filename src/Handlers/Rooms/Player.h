@@ -47,6 +47,7 @@ class Player
         return id;
     }
 
+
   private:
     std::string username{};
     uint32_t id;

@@ -54,6 +54,7 @@ void LuaEngine::setup(Chessboard& board)
     );
 }
 
+
 void LuaEngine::initialize(const std::filesystem::path scriptPath, Chessboard& board)
 {
     luaState.script_file(scriptPath);

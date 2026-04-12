@@ -36,6 +36,7 @@ class LuaEngine : public Engine
     void setup(Chessboard& board) override;
     void initialize(std::filesystem::path scriptPath, Chessboard& board) override;
     void executeScript(std::string& functionName, Chessboard& board) override;
+    void addPlayer();
 
   private:
     sol::state luaState;

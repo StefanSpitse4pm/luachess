@@ -1,12 +1,10 @@
 //
 // Created by stefanspitse on 4/7/26.
 //
-#ifndef LUACHESS_GAMEDECORATOR_H
-#define LUACHESS_GAMEDECORATOR_H
+#pragma once
 #include "../ActionContext.h"
 #include <nlohmann/json_fwd.hpp>
-
-#endif // LUACHESS_GAMEDECORATOR_H
+#define LUACHESS_GAMEDECORATOR_H
 
 class Game
 {
@@ -16,3 +14,4 @@ class Game
     virtual void stop() = 0;
     [[nodiscard]] virtual nlohmann::json applyMove(const sendMove& move) const = 0;
 };
+
