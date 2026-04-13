@@ -22,5 +22,21 @@ TEST_F(TurnOrderTests, TurnOrder_CreateTurnOrder_ShouldNotFail)
 {
     std::unique_ptr<Player> player1;
     players.push_back(std::move(player1));
-    ASSERT_NO_THROW(auto turnOrder = TurnOrder(players, players[0]));
+    ASSERT_NO_THROW(auto turnOrder = TurnOrder(players, *players[0]));
+}
+
+TEST_F(TurnOrderTests, TurnTo_SwitchActivePlayer_AssertEqualsPlayer2)
+{
+
+    std::unique_ptr<Player> player1 = std::make_unique<Player>("Player1");
+    std::unique_ptr<Player> player2 = std::make_unique<Player>("Player2");
+    Player& player1Ref = *player1;
+    Player& player2Ref = *player2;
+
+    players.push_back(std::move(player1));
+    players.push_back(std::move(player2));
+    auto turnOrder = TurnOrder(players, player1Ref);
+
+    turnOrder.turnTo(player2Ref);
+    ASSERT_EQ(player2Ref.get_id(), turnOrder.getCurrentPlayer().get_id());
 }

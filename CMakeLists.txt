@@ -88,6 +88,8 @@ add_executable(tests
         src/Handlers/Games/PlayerCreatedLuaGameFactory.cpp
         src/Handlers/Games/PlayerCreatedLuaGameFactory.h
         src/Handlers/Handler.cpp
+        src/Handlers/Games/TurnOrder.cpp
+        src/Handlers/Games/TurnOrder.h
         tests/TurnOrderTests.cpp
 )
 

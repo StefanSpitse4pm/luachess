@@ -12,17 +12,27 @@
 
 class TurnOrder {
   public:
-    TurnOrder(std::vector<std::unique_ptr<Player>>& players, std::unique_ptr<Player>& player)
-        : players(std::move(players)), player(std::move(player))
+    TurnOrder(std::vector<std::unique_ptr<Player>>& players, Player& player)
+        : players(std::move(players)), currentPlayer(&player)
     {
     }
-    void turnTo(SessionContext player);
+    [[nodiscard]] Player getCurrentPlayer() const
+    {
+        return *currentPlayer;
+    }
+
+    void turnTo(Player& player);
     void defaultTurnOrder(bool);
 
 
   private:
         std::vector<std::unique_ptr<Player>> players;
-        std::unique_ptr<Player> player;
+        Player* currentPlayer;
+
+        void setCurrentPlayer(Player& current_player)
+        {
+            currentPlayer = &current_player;
+        }
 };
 
 

@@ -28,8 +28,13 @@ SOFTWARE.
 
 #include "TurnOrder.h"
 
-void TurnOrder::turnTo(SessionContext player)
+void TurnOrder::turnTo(Player& player)
 {
+    if (player.get_id() == getCurrentPlayer().get_id())
+    {
+        return;
+    }
+    setCurrentPlayer(player);
 }
 
 void TurnOrder::defaultTurnOrder(bool)
