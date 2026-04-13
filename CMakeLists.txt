@@ -46,8 +46,8 @@ add_executable(luachess
         src/Handlers/Games/Decorator/GameDecorator.cpp
         src/Handlers/Games/Decorator/TurnOrderDecorator.cpp
         src/Handlers/Games/Decorator/TurnOrderDecorator.h
-        src/Handlers/Games/turnOrder.cpp
-        src/Handlers/Games/turnOrder.h
+        src/Handlers/Games/TurnOrder.cpp
+        src/Handlers/Games/TurnOrder.h
 )
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/extern/sol2)
@@ -88,7 +88,7 @@ add_executable(tests
         src/Handlers/Games/PlayerCreatedLuaGameFactory.cpp
         src/Handlers/Games/PlayerCreatedLuaGameFactory.h
         src/Handlers/Handler.cpp
-        tests/turnOrderTests.cpp
+        tests/TurnOrderTests.cpp
 )
 
 target_include_directories(tests

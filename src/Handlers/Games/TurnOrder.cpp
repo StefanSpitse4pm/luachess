@@ -26,12 +26,12 @@ SOFTWARE.
 // Created by stefanspitse on 4/12/26.
 //
 
-#include "turnOrder.h"
+#include "TurnOrder.h"
 
-void turnOrder::turnTo(SessionContext player)
+void TurnOrder::turnTo(SessionContext player)
 {
 }
 
-void turnOrder::defaultTurnOrder(bool)
+void TurnOrder::defaultTurnOrder(bool)
 {
 }

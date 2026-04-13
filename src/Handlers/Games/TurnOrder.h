@@ -10,9 +10,9 @@
 #include <memory>
 #include <websocketpp/connection.hpp>
 
-class turnOrder {
+class TurnOrder {
   public:
-    turnOrder(std::vector<std::unique_ptr<Player>>& players, std::unique_ptr<Player>& player)
+    TurnOrder(std::vector<std::unique_ptr<Player>>& players, std::unique_ptr<Player>& player)
         : players(std::move(players)), player(std::move(player))
     {
     }
