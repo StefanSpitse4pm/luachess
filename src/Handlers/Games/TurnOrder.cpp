@@ -34,7 +34,21 @@ void TurnOrder::turnTo(Player& player)
     {
         return;
     }
-    setCurrentPlayer(player);
+
+    const auto it = std::ranges::find_if(
+        this->players, [&](const std::unique_ptr<Player>& uPlayer)
+    {
+        return uPlayer->get_id() == player.get_id();
+    });
+    if (it != this->players.end())
+    {
+        setCurrentPlayer(player);
+    }
+    else
+    {
+        throw std::invalid_argument("Player is not inside players list");
+    }
+
 }
 
 void TurnOrder::defaultTurnOrder(bool)
