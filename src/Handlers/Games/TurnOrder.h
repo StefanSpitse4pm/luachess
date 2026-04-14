@@ -21,6 +21,7 @@ class TurnOrder {
         return *currentPlayer;
     }
 
+    std::ranges::borrowed_iterator_t<std::vector<std::unique_ptr<Player>>&> isPlayerInTurnOrder(Player& player);
     void turnTo(Player& player);
     void defaultTurnOrder(bool);
 
