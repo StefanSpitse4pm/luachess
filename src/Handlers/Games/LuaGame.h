@@ -59,7 +59,7 @@ class LuaGame : public Game
         playerSessionContexts.insert(playerSessionContexts.end(), players.begin(), players.end());
     }
 
-    [[nodiscard]] const std::vector<SessionContext>& getSessionContexts() const
+    [[nodiscard]] const std::vector<SessionContext>& getSessionContexts() const override
     {
         return playerSessionContexts;
     }
@@ -73,12 +73,13 @@ class LuaGame : public Game
     {
         return {{"id", id}};
     }
+  protected:
+    std::vector<SessionContext> playerSessionContexts;
 
   private:
     std::unique_ptr<Engine> engine;
     std::unique_ptr<Chessboard> chessboard;
     std::filesystem::path filepath;
-    std::vector<SessionContext> playerSessionContexts;
     inline static std::atomic<uint32_t> nextId{1};
     uint32_t id = 1;
 };

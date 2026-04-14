@@ -8,10 +8,11 @@
 
 class Game
 {
-  public:
-    virtual ~Game() = default;
-    virtual void start() const = 0;
-    virtual void stop() = 0;
-    [[nodiscard]] virtual nlohmann::json applyMove(const sendMove& move) const = 0;
+    public:
+        virtual ~Game() = default;
+        virtual void start() const = 0;
+        virtual void stop() = 0;
+        [[nodiscard]] virtual nlohmann::json applyMove(const sendMove& move) const = 0;
+        [[nodiscard]] virtual const std::vector<SessionContext>& getSessionContexts() const = 0;
 };
 

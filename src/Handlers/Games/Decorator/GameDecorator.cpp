@@ -18,5 +18,5 @@ void GameDecorator::stop()
 
 nlohmann::json GameDecorator::applyMove(const sendMove& move) const
 {
-    return this->wrapped.applyMove();
+    return this->wrapped.applyMove(move);
 }
