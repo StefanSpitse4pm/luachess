@@ -29,12 +29,11 @@ SOFTWARE.
 #include "TurnOrder.h"
 
 std::ranges::borrowed_iterator_t<std::vector<std::unique_ptr<Player>>&>
-TurnOrder::isPlayerInTurnOrder(Player& player)
+TurnOrder::isPlayerInTurnOrder(const Player& player)
 {
-    const auto it = std::ranges::find_if(
+    return std::ranges::find_if(
         this->players, [&](const std::unique_ptr<Player>& uPlayer) { return uPlayer->get_id() == player.get_id(); }
     );
-    return it;
 }
 
 void TurnOrder::turnTo(Player& player)
@@ -55,6 +54,19 @@ void TurnOrder::turnTo(Player& player)
 
 }
 
-void TurnOrder::defaultTurnOrder(bool)
+void TurnOrder::defaultTurnOrder()
 {
+    const auto it = isPlayerInTurnOrder(this->getCurrentPlayer());
+    if (it != this->players.end())
+    {
+        if (int index = std::distance(players.begin(), it); this->players.size() == index)
+        {
+            turnTo(*this->players[0]);
+        }
+        else
+        {
+            index += 1;
+            turnTo(*this->players[index]);
+        }
+    }
 }

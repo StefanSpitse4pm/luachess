@@ -16,14 +16,14 @@ class TurnOrder {
         : players(std::move(players)), currentPlayer(&player)
     {
     }
-    [[nodiscard]] Player getCurrentPlayer() const
+    [[nodiscard]] Player& getCurrentPlayer() const
     {
         return *currentPlayer;
     }
 
-    std::ranges::borrowed_iterator_t<std::vector<std::unique_ptr<Player>>&> isPlayerInTurnOrder(Player& player);
+    std::ranges::borrowed_iterator_t<std::vector<std::unique_ptr<Player>>&> isPlayerInTurnOrder(const Player& player);
     void turnTo(Player& player);
-    void defaultTurnOrder(bool);
+    void defaultTurnOrder();
 
 
   private:
