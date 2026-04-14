@@ -67,3 +67,19 @@ TEST_F(TurnOrderTests, TurnTo_PlayerNotInsidePlayers_ShouldThrowInvalidArgument)
 
     ASSERT_THROW(turnOrder.turnTo(player2Ref), std::invalid_argument);
 }
+
+TEST_F(TurnOrderTests, DefaultTurnOrder_TurnToNextPlayer_ShouldNotWrap)
+{
+
+    auto player1 = std::make_unique<Player>("Player1");
+    auto player2 = std::make_unique<Player>("Player2");
+    Player& player1Ref = *player1;
+    Player& player2Ref = *player2;
+
+    players.push_back(std::move(player1));
+    players.push_back(std::move(player2));
+    auto turnOrder = TurnOrder(players, player1Ref);
+
+    ASSERT_NO_THROW(turnOrder.defaultTurnOrder());
+    ASSERT_EQ(player2Ref.get_id(), turnOrder.getCurrentPlayer().get_id());
+}
