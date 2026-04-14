@@ -83,3 +83,19 @@ TEST_F(TurnOrderTests, DefaultTurnOrder_TurnToNextPlayer_ShouldNotWrap)
     ASSERT_NO_THROW(turnOrder.defaultTurnOrder());
     ASSERT_EQ(player2Ref.get_id(), turnOrder.getCurrentPlayer().get_id());
 }
+
+TEST_F(TurnOrderTests, DefaultTurnOrder_TurnToNextPlayer_ShouldWrap)
+{
+
+    auto player1 = std::make_unique<Player>("Player1");
+    auto player2 = std::make_unique<Player>("Player2");
+    Player& player1Ref = *player1;
+    Player& player2Ref = *player2;
+
+    players.push_back(std::move(player1));
+    players.push_back(std::move(player2));
+    auto turnOrder = TurnOrder(players, player2Ref);
+
+    ASSERT_NO_THROW(turnOrder.defaultTurnOrder());
+    ASSERT_EQ(player1Ref.get_id(), turnOrder.getCurrentPlayer().get_id());
+}

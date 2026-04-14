@@ -59,7 +59,7 @@ void TurnOrder::defaultTurnOrder()
     const auto it = isPlayerInTurnOrder(this->getCurrentPlayer());
     if (it != this->players.end())
     {
-        if (int index = std::distance(players.begin(), it); this->players.size() == index)
+        if (int index = std::distance(players.begin(), it); index == this->players.size() - 1)
         {
             turnTo(*this->players[0]);
         }
