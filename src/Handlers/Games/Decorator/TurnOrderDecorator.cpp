@@ -30,9 +30,28 @@ SOFTWARE.
 
 #include <nlohmann/json.hpp>
 
-void TurnOrderDecorator::start() const
+
+void TurnOrderDecorator::start()
 {
+    if (turnOrder == nullptr)
+    {
+        createTurnOrderFromSessionContexts();
+    }
     GameDecorator::start();
+}
+
+void TurnOrderDecorator::createTurnOrderFromSessionContexts()
+{
+    std::vector<std::unique_ptr<Player>> players;
+    for (const auto& [player, hdl] : getSessionContexts())
+    {
+        if (player == nullptr)
+        {
+            throw std::invalid_argument("Player in session context is null");
+        }
+        players.push_back(std::make_unique<Player>(*player));
+    }
+    turnOrder = new TurnOrder(players, *players.front());
 }
 
 nlohmann::json TurnOrderDecorator::applyMove(const sendMove& move) const

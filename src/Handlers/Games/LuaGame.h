@@ -44,7 +44,7 @@ class LuaGame : public Game
     {
     }
 
-    void start() const override;
+    void start() override;
     void stop() override;
     void executeScript(std::string functionName) const;
     [[nodiscard]] json applyMove(const sendMove& move) const override;

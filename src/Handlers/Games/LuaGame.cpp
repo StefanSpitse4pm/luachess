@@ -28,7 +28,7 @@
 
 
 
-void LuaGame::start() const
+void LuaGame::start()
 {
     engine->setup(*chessboard);
     engine->initialize(filepath, *chessboard);
