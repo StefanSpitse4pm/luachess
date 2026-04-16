@@ -9,7 +9,7 @@
 #ifndef LUACHESS_TURNORDERDECORATOR_H
 #define LUACHESS_TURNORDERDECORATOR_H
 
-class TurnOrderDecorator: GameDecorator {
+class TurnOrderDecorator: public GameDecorator {
     public:
     explicit TurnOrderDecorator(Game& source) : GameDecorator(source)
     {
@@ -17,8 +17,12 @@ class TurnOrderDecorator: GameDecorator {
 
     void createTurnOrderFromSessionContexts();
     void start() override;
-        [[nodiscard]] nlohmann::json applyMove(const sendMove& move) const override;
-    private:
+    [[nodiscard]] nlohmann::json applyMove(const sendMove& move) const override;
+    [[nodiscard]] TurnOrder& getTurnOrder() const
+    {
+        return *turnOrder;
+    }
+    protected:
         TurnOrder *turnOrder = nullptr;
 };
 

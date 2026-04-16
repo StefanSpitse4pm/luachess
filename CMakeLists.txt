@@ -90,7 +90,12 @@ add_executable(tests
         src/Handlers/Handler.cpp
         src/Handlers/Games/TurnOrder.cpp
         src/Handlers/Games/TurnOrder.h
+        src/Handlers/Games/Decorator/GameDecorator.h
+        src/Handlers/Games/Decorator/GameDecorator.cpp
+        src/Handlers/Games/Decorator/TurnOrderDecorator.h
+        src/Handlers/Games/Decorator/TurnOrderDecorator.cpp
         tests/TurnOrderTests.cpp
+        tests/TurnOrderDecoratorTests.cpp
 )
 
 target_include_directories(tests

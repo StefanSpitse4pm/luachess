@@ -6,7 +6,7 @@
 
 #include <nlohmann/json.hpp>
 
-void GameDecorator::start() const
+void GameDecorator::start()
 {
     this->wrapped.start();
 }
@@ -19,4 +19,9 @@ void GameDecorator::stop()
 nlohmann::json GameDecorator::applyMove(const sendMove& move) const
 {
     return this->wrapped.applyMove(move);
+}
+
+const std::vector<SessionContext>& GameDecorator::getSessionContexts() const
+{
+    return this->wrapped.getSessionContexts();
 }
