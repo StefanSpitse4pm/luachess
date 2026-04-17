@@ -42,6 +42,22 @@ void TurnOrderDecorator::start()
     GameDecorator::start();
 }
 
+nlohmann::json TurnOrderDecorator::applyMove(const sendMove& move) const
+{
+    if (turnOrder == nullptr)
+    {
+        const_cast<TurnOrderDecorator*>(this)->createTurnOrderFromSessionContexts();
+    }
+
+    if (move.actorPlayerId != 0)
+    {
+        isPlayersTurn(move);
+    }
+
+    nlohmann::json result = GameDecorator::applyMove(move);
+    return result;
+}
+
 void TurnOrderDecorator::createTurnOrderFromSessionContexts()
 {
     std::vector<std::unique_ptr<Player>> players;
@@ -69,26 +85,11 @@ void TurnOrderDecorator::createTurnOrderFromSessionContexts()
     turnOrder = new TurnOrder(players, *firstPlayer);
 }
 
+
 void TurnOrderDecorator::isPlayersTurn(const sendMove& move) const
 {
     if (turnOrder->getCurrentPlayer().get_id() != move.actorPlayerId)
     {
         throw std::invalid_argument("It's not this player's turn");
     }
-}
-
-nlohmann::json TurnOrderDecorator::applyMove(const sendMove& move) const
-{
-    if (turnOrder == nullptr)
-    {
-        const_cast<TurnOrderDecorator*>(this)->createTurnOrderFromSessionContexts();
-    }
-
-    if (move.actorPlayerId != 0)
-    {
-        isPlayersTurn(move);
-    }
-
-    nlohmann::json result = GameDecorator::applyMove(move);
-    return result;
 }
