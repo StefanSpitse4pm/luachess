@@ -24,6 +24,7 @@ class TurnOrder {
     std::ranges::borrowed_iterator_t<std::vector<std::unique_ptr<Player>>&> isPlayerInTurnOrder(const Player& player);
     void turnTo(Player& player);
     void defaultTurnOrder();
+    
 
 
   private:

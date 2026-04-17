@@ -31,6 +31,7 @@
 #include "../Handler.h"
 #include "../Rooms/Player.h"
 #include "../Rooms/RoomHandler.h"
+#include "Decorator/TurnOrderDecorator.h"
 #include "GameFactory.h"
 #include "LuaGame.h"
 #include "PlayerCreatedLuaGameFactory.h"
@@ -47,11 +48,13 @@ class GameHandler : public Handler
     nlohmann::json action(std::string action, const ActionContext& ctx) override;
     nlohmann::json startGame(const ActionContext& ctx);
     nlohmann::json getBoardState(ActionContext ctx);
-    LuaGame& getGameByGameId(const ActionContext& ctx);
+    Game& getGameByGameId(const ActionContext& ctx);
     nlohmann::json onMove(const ActionContext& ctx);
 
   private:
-    std::vector<std::unique_ptr<LuaGame>> games;
+    std::unique_ptr<Game> decorateGame(std::unique_ptr<LuaGame> game) const;
+
+    std::vector<std::unique_ptr<Game>> games;
     std::vector<std::unique_ptr<GameFactory>> factories;
     RoomHandler& roomHandler;
 };

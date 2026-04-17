@@ -21,6 +21,21 @@ nlohmann::json GameDecorator::applyMove(const sendMove& move) const
     return this->wrapped.applyMove(move);
 }
 
+uint32_t GameDecorator::getId() const
+{
+    return this->wrapped.getId();
+}
+
+nlohmann::json GameDecorator::toJson() const
+{
+    return this->wrapped.toJson();
+}
+
+nlohmann::json GameDecorator::getBoardState() const
+{
+    return this->wrapped.getBoardState();
+}
+
 const std::vector<SessionContext>& GameDecorator::getSessionContexts() const
 {
     return this->wrapped.getSessionContexts();

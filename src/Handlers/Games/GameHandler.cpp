@@ -26,6 +26,20 @@
 
 #include "GameHandler.h"
 
+std::unique_ptr<Game> GameHandler::decorateGame(std::unique_ptr<LuaGame> game) const
+{
+    struct OwnedDecorator : public TurnOrderDecorator
+    {
+        explicit OwnedDecorator(std::unique_ptr<LuaGame> g)
+            : TurnOrderDecorator(*g), owned(std::move(g))
+        {
+        }
+        std::unique_ptr<LuaGame> owned;
+    };
+
+    return std::make_unique<OwnedDecorator>(std::move(game));
+}
+
 nlohmann::json GameHandler::action(std::string action, const ActionContext& ctx)
 {
     static const std::unordered_map<std::string, ActionFn> actionMap = {
@@ -36,7 +50,7 @@ nlohmann::json GameHandler::action(std::string action, const ActionContext& ctx)
     return route(actionMap, action)(ctx);
 }
 
-LuaGame& GameHandler::getGameByGameId(const ActionContext& ctx)
+Game& GameHandler::getGameByGameId(const ActionContext& ctx)
 {
     if (ctx.gameContext.gameId == 0)
     {
@@ -44,7 +58,11 @@ LuaGame& GameHandler::getGameByGameId(const ActionContext& ctx)
     }
 
     const auto it = std::ranges::find_if(
-        games, [&ctx](const std::unique_ptr<LuaGame>& game) { return game->getId() == ctx.gameContext.gameId; }
+        games,
+        [&ctx](const std::unique_ptr<Game>& game)
+        {
+            return game->getId() == ctx.gameContext.gameId;
+        }
     );
 
     if (it == games.end())
@@ -69,7 +87,7 @@ nlohmann::json GameHandler::startGame(const ActionContext& ctx)
 
     if (ctx.gameContext.gameType == "PlayerCreatedLuaGame")
     {
-        auto game = factories[0]->createGame(ctx);
+        auto luaGame = factories[0]->createGame(ctx);
 
         const Room room = roomHandler.findRoomByName(ctx.roomContext.desiredRoomName);
         if (!room.isReady())
@@ -77,11 +95,13 @@ nlohmann::json GameHandler::startGame(const ActionContext& ctx)
             throw std::invalid_argument("Room is not ready");
         }
 
-        game->addPlayers(room.getSessionContexts());
+        luaGame->addPlayers(room.getSessionContexts());
 
         roomHandler.removeRoom(room);
 
+        auto game = decorateGame(std::move(luaGame));
         game->start();
+
         const json response = game->toJson();
         ctx.pendingNotifications.push_back({game->getSessionContexts(), response.dump()});
         games.push_back(std::move(game));
@@ -92,13 +112,13 @@ nlohmann::json GameHandler::startGame(const ActionContext& ctx)
 
 nlohmann::json GameHandler::getBoardState(ActionContext ctx)
 {
-    LuaGame& game = getGameByGameId(ctx);
-    return game.getChessboard().toJson();
+    Game& game = getGameByGameId(ctx);
+    return game.getBoardState();
 }
 
 nlohmann::json GameHandler::onMove(const ActionContext& ctx)
 {
-    LuaGame& game = getGameByGameId(ctx);
+    Game& game = getGameByGameId(ctx);
 
     if (ctx.gameContext.send == nullptr)
     {

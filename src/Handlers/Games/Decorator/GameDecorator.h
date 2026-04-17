@@ -15,9 +15,18 @@ class GameDecorator : public Game
     {
 
     }
+
+    [[nodiscard]] Game& getWrapped() const
+    {
+        return wrapped;
+    }
+
     void start() override;
     void stop() override;
     [[nodiscard]] nlohmann::json applyMove(const sendMove& move) const override;
+    [[nodiscard]] uint32_t getId() const override;
+    [[nodiscard]] nlohmann::json toJson() const override;
+    [[nodiscard]] nlohmann::json getBoardState() const override;
     [[nodiscard]] const std::vector<SessionContext>& getSessionContexts() const override;
   protected:
     Game& wrapped;

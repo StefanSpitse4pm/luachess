@@ -49,6 +49,21 @@ class LuaGame : public Game
     void executeScript(std::string functionName) const;
     [[nodiscard]] json applyMove(const sendMove& move) const override;
 
+    [[nodiscard]] uint32_t getId() const override
+    {
+        return id;
+    }
+
+    [[nodiscard]] json toJson() const override
+    {
+        return {{"id", id}};
+    }
+
+    [[nodiscard]] json getBoardState() const override
+    {
+        return getChessboard().toJson();
+    }
+
     [[nodiscard]] Chessboard& getChessboard() const
     {
         return *chessboard;
@@ -64,15 +79,6 @@ class LuaGame : public Game
         return playerSessionContexts;
     }
 
-    [[nodiscard]] uint32_t getId() const
-    {
-        return id;
-    }
-
-    [[nodiscard]] json toJson() const
-    {
-        return {{"id", id}};
-    }
   protected:
     std::vector<SessionContext> playerSessionContexts;
 
