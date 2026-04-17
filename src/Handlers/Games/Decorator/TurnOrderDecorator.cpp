@@ -69,6 +69,14 @@ void TurnOrderDecorator::createTurnOrderFromSessionContexts()
     turnOrder = new TurnOrder(players, *firstPlayer);
 }
 
+void TurnOrderDecorator::isPlayersTurn(const sendMove& move) const
+{
+    if (turnOrder->getCurrentPlayer().get_id() != move.actorPlayerId)
+    {
+        throw std::invalid_argument("It's not this player's turn");
+    }
+}
+
 nlohmann::json TurnOrderDecorator::applyMove(const sendMove& move) const
 {
     if (turnOrder == nullptr)
@@ -78,19 +86,9 @@ nlohmann::json TurnOrderDecorator::applyMove(const sendMove& move) const
 
     if (move.actorPlayerId != 0)
     {
-        if (turnOrder->getCurrentPlayer().get_id() != move.actorPlayerId)
-        {
-            throw std::invalid_argument("It's not this player's turn");
-        }
+        isPlayersTurn(move);
     }
 
     nlohmann::json result = GameDecorator::applyMove(move);
-
-    // Only advance the turn if the move was accepted by the wrapped game.
-    if (turnOrder != nullptr)
-    {
-        turnOrder->defaultTurnOrder();
-    }
-
     return result;
 }

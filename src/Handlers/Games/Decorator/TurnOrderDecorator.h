@@ -22,6 +22,7 @@ class TurnOrderDecorator: public GameDecorator {
     }
 
     void createTurnOrderFromSessionContexts();
+    void isPlayersTurn(const sendMove& move) const;
     void start() override;
     [[nodiscard]] nlohmann::json applyMove(const sendMove& move) const override;
     [[nodiscard]] TurnOrder& getTurnOrder() const
