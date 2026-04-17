@@ -30,6 +30,8 @@ SOFTWARE.
 
 #include <nlohmann/json.hpp>
 
+#include <stdexcept>
+
 
 void TurnOrderDecorator::start()
 {
@@ -43,18 +45,52 @@ void TurnOrderDecorator::start()
 void TurnOrderDecorator::createTurnOrderFromSessionContexts()
 {
     std::vector<std::unique_ptr<Player>> players;
+    Player* firstPlayer = nullptr;
     for (const auto& [player, hdl] : getSessionContexts())
     {
         if (player == nullptr)
         {
             throw std::invalid_argument("Player in session context is null");
         }
-        players.push_back(std::make_unique<Player>(*player));
+
+        auto created = std::make_unique<Player>(player->get_username());
+        if (firstPlayer == nullptr)
+        {
+            firstPlayer = created.get();
+        }
+        players.push_back(std::move(created));
     }
-    turnOrder = new TurnOrder(players, *players.front());
+
+    if (firstPlayer == nullptr)
+    {
+        throw std::invalid_argument("No players found in session contexts");
+    }
+
+    turnOrder = new TurnOrder(players, *firstPlayer);
 }
 
 nlohmann::json TurnOrderDecorator::applyMove(const sendMove& move) const
 {
-    return GameDecorator::applyMove(move);
+    if (turnOrder == nullptr)
+    {
+        const_cast<TurnOrderDecorator*>(this)->createTurnOrderFromSessionContexts();
+    }
+
+    if (move.actorPlayerId != 0)
+    {
+        if (turnOrder->getCurrentPlayer().get_id() != move.actorPlayerId)
+        {
+            throw std::invalid_argument("It's not this player's turn");
+        }
+    }
+
+    nlohmann::json result = GameDecorator::applyMove(move);
+
+    // Only advance the turn if the move was accepted by the wrapped game.
+    if (turnOrder != nullptr)
+    {
+        turnOrder->defaultTurnOrder();
+    }
+
+    return result;
 }

@@ -15,6 +15,12 @@ class TurnOrderDecorator: public GameDecorator {
     {
     }
 
+    ~TurnOrderDecorator() override
+    {
+        delete turnOrder;
+        turnOrder = nullptr;
+    }
+
     void createTurnOrderFromSessionContexts();
     void start() override;
     [[nodiscard]] nlohmann::json applyMove(const sendMove& move) const override;

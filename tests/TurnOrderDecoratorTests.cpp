@@ -33,7 +33,10 @@ TEST_F(TurnOrderDecoratorTests, createTurnOrderFromSessionContexts_ShouldReturnP
     const auto turnOrderNewGame = std::make_unique<TurnOrderDecorator>(*newGame);
 
     ASSERT_NO_THROW(turnOrderNewGame->createTurnOrderFromSessionContexts());
-    ASSERT_EQ(turnOrderNewGame->getTurnOrder().isPlayerInTurnOrder(*player1)->get()->get_id(), player1.get()->get_id());
-    ASSERT_EQ(turnOrderNewGame->getTurnOrder().isPlayerInTurnOrder(*player2)->get()->get_id(), player2.get()->get_id());
+
+    ASSERT_EQ(turnOrderNewGame->getTurnOrder().getCurrentPlayer().get_username(), "Player1");
+
+    turnOrderNewGame->getTurnOrder().defaultTurnOrder();
+    ASSERT_EQ(turnOrderNewGame->getTurnOrder().getCurrentPlayer().get_username(), "Player2");
 
 }
