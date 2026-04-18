@@ -28,6 +28,8 @@ SOFTWARE.
 
 #include "TurnOrder.h"
 
+#include <nlohmann/json.hpp>
+
 std::ranges::borrowed_iterator_t<std::vector<std::unique_ptr<Player>>&>
 TurnOrder::isPlayerInTurnOrder(const Player& player)
 {
@@ -69,4 +71,9 @@ void TurnOrder::defaultTurnOrder()
             turnTo(*this->players[index]);
         }
     }
+}
+
+nlohmann::json TurnOrder::toJson() const
+{
+    return {{"activePlayer", getCurrentPlayer().get_username()}};
 }

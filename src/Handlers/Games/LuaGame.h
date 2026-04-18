@@ -54,10 +54,7 @@ class LuaGame : public Game
         return id;
     }
 
-    [[nodiscard]] json toJson() const override
-    {
-        return {{"id", id}};
-    }
+    [[nodiscard]] json toJson() const override;
 
     [[nodiscard]] json getBoardState() const override
     {

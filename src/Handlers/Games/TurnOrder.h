@@ -4,10 +4,11 @@
 
 #ifndef LUACHESS_TURNORDER_H
 #define LUACHESS_TURNORDER_H
-#include <vector>
-#include "../Rooms/Player.h"
 #include "../ActionContext.h"
+#include "../Rooms/Player.h"
 #include <memory>
+#include <nlohmann/json_fwd.hpp>
+#include <vector>
 #include <websocketpp/connection.hpp>
 
 class TurnOrder {
@@ -24,7 +25,8 @@ class TurnOrder {
     std::ranges::borrowed_iterator_t<std::vector<std::unique_ptr<Player>>&> isPlayerInTurnOrder(const Player& player);
     void turnTo(Player& player);
     void defaultTurnOrder();
-    
+    [[nodiscard]] nlohmann::json toJson() const ;
+
 
 
   private:

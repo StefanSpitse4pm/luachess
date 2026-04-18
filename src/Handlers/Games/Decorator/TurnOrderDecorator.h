@@ -25,6 +25,7 @@ class TurnOrderDecorator: public GameDecorator {
     void isPlayersTurn(const sendMove& move) const;
     void start() override;
     [[nodiscard]] nlohmann::json applyMove(const sendMove& move) const override;
+    [[nodiscard]] nlohmann::json toJson() const override;
     [[nodiscard]] TurnOrder& getTurnOrder() const
     {
         return *turnOrder;

@@ -51,3 +51,8 @@ json LuaGame::applyMove(const sendMove& move) const
     getChessboard().unrollRepeatMoves();
     return getChessboard().toJson();
 }
+
+json LuaGame::toJson() const
+{
+    return {{"id", id}};
+}

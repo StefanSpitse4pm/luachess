@@ -111,7 +111,7 @@ export default function Chessboard(gameId: number | undefined) {
                 selectedPiece.possibleTakes = selectedPiece.possibleTakes.filter((take) => !(moveTo.row === take.dy) && moveTo.col === take.dx);
             }
 
-            sendMessage({type: "Game", payload:{action: "move", move: {fromRow: row, fromCol: col, toRow: moveTo.row, toCol: moveTo.col}, "gameId":gameId}})
+            sendMessage({type: "Game", payload:{action: "move", move: {fromRow: row, fromCol: col, toRow: moveTo.row, toCol: moveTo.col, }, "gameId":gameId}})
 
             setChessboard(prevBoard => {
                 const newBoard = prevBoard.map(row => [...row]);

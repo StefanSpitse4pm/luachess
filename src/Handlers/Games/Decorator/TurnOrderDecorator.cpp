@@ -30,8 +30,8 @@ SOFTWARE.
 
 #include <nlohmann/json.hpp>
 
+#include <sol/function_types_templated.hpp>
 #include <stdexcept>
-
 
 void TurnOrderDecorator::start()
 {
@@ -88,8 +88,16 @@ void TurnOrderDecorator::createTurnOrderFromSessionContexts()
 
 void TurnOrderDecorator::isPlayersTurn(const sendMove& move) const
 {
+    wrapped->
     if (turnOrder->getCurrentPlayer().get_id() != move.actorPlayerId)
     {
         throw std::invalid_argument("It's not this player's turn");
     }
+}
+
+nlohmann::json TurnOrderDecorator::toJson() const
+{
+    nlohmann::json game = GameDecorator::toJson();
+    game.merge_patch(getTurnOrder().toJson());
+    return game;
 }
