@@ -26,6 +26,8 @@
 
 #ifndef LUACHESS_PLAYER_H
 #define LUACHESS_PLAYER_H
+#include "../../utils.h"
+
 #include <atomic>
 #include <string>
 #include <utility>
@@ -33,7 +35,7 @@
 class Player
 {
   public:
-    explicit Player(std::string username) : username(std::move(username)), id(nextId++)
+    explicit Player(std::string username) : username(std::move(username)), id(nextId++), publicId(utils::generate_hex_id())
     {
     }
 
@@ -47,9 +49,15 @@ class Player
         return id;
     }
 
+    [[nodiscard]] std::string get_public_id() const
+    {
+        return publicId;
+    }
+
   private:
     std::string username{};
     uint32_t id;
+    std::string publicId;
     inline static std::atomic<uint32_t> nextId{1};
 };
 

@@ -77,7 +77,6 @@ nlohmann::json RoomHandler::joinRoom(const ActionContext& ctx) const
         if (room && room->getRoomName() == ctx.roomContext.desiredRoomName)
         {
             room->addUser(ctx.sessionContext);
-
             std::string roomJson = room->toJson().dump();
             ctx.pendingNotifications.push_back({room->getSessionContexts(), std::move(roomJson)});
             return room->toJson();

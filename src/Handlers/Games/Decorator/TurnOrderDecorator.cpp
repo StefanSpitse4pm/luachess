@@ -49,7 +49,7 @@ nlohmann::json TurnOrderDecorator::applyMove(const sendMove& move) const
         const_cast<TurnOrderDecorator*>(this)->createTurnOrderFromSessionContexts();
     }
 
-    if (move.actorPlayerId != 0)
+    if (move.publicPlayerId != 0)
     {
         isPlayersTurn(move);
     }
@@ -88,8 +88,7 @@ void TurnOrderDecorator::createTurnOrderFromSessionContexts()
 
 void TurnOrderDecorator::isPlayersTurn(const sendMove& move) const
 {
-    wrapped->
-    if (turnOrder->getCurrentPlayer().get_id() != move.actorPlayerId)
+    if (turnOrder->getCurrentPlayer().get_public_id() != move.publicPlayerId)
     {
         throw std::invalid_argument("It's not this player's turn");
     }

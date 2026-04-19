@@ -43,7 +43,7 @@ struct sendMove
     int fromCol;
     int toRow;
     int toCol;
-    uint32_t actorPlayerId = 0;
+    std::string publicPlayerId;
 };
 
 struct GameContext

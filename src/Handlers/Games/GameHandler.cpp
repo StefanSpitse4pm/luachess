@@ -130,7 +130,7 @@ nlohmann::json GameHandler::onMove(const ActionContext& ctx)
         throw std::invalid_argument("Missing session player");
     }
 
-    ctx.gameContext.send->actorPlayerId = ctx.sessionContext.player->get_id();
+    ctx.gameContext.send->publicPlayerId = ctx.sessionContext.player->get_id();
 
     json board = game.applyMove(*ctx.gameContext.send);
     ctx.pendingNotifications.push_back({game.getSessionContexts(), board.dump()});

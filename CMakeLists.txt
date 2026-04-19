@@ -48,6 +48,8 @@ add_executable(luachess
         src/Handlers/Games/Decorator/TurnOrderDecorator.h
         src/Handlers/Games/TurnOrder.cpp
         src/Handlers/Games/TurnOrder.h
+        src/utils.cpp
+        src/utils.h
 )
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/extern/sol2)
