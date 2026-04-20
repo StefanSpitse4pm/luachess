@@ -49,7 +49,7 @@ nlohmann::json TurnOrderDecorator::applyMove(const sendMove& move) const
         const_cast<TurnOrderDecorator*>(this)->createTurnOrderFromSessionContexts();
     }
 
-    if (move.publicPlayerId != 0)
+    if (!move.publicPlayerId.empty())
     {
         isPlayersTurn(move);
     }

@@ -65,7 +65,8 @@ nlohmann::json Room::toJson() const
         usernames.push_back(player->get_username());
         playersArray.push_back({{"username", player->get_username()}, {"playerId", player->get_id()}});
     }
-    return {
+    return
+{
         {"roomName", roomName},
         {"roomSize", MAX_PLAYER_COUNT},
         {"filledSpots", sessionContexts.size()},

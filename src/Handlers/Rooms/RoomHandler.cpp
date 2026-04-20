@@ -69,7 +69,11 @@ nlohmann::json RoomHandler::joinRoom(const ActionContext& ctx) const
 
         std::string roomJson = room->toJson().dump();
         ctx.pendingNotifications.push_back({room->getSessionContexts(), std::move(roomJson)});
-        return room->toJson();
+        const nlohmann::json playerPublicID = {{"publicPlayerId", ctx.sessionContext.player->get_public_id()}};
+
+        nlohmann::json out = room->toJson();
+        out.merge_patch(playerPublicID);
+        return out;
     }
 
     for (const auto& room : rooms)
@@ -79,6 +83,7 @@ nlohmann::json RoomHandler::joinRoom(const ActionContext& ctx) const
             room->addUser(ctx.sessionContext);
             std::string roomJson = room->toJson().dump();
             ctx.pendingNotifications.push_back({room->getSessionContexts(), std::move(roomJson)});
+
             return room->toJson();
         }
     }
