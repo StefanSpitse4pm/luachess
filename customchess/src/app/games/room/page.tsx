@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useWebSocketContext } from '../../context/WebSocketContext';
 
@@ -17,9 +17,11 @@ export default function Room() {
     const roomName = searchParams.get('roomName');
     const username = searchParams.get('username');
 
-    const { sendMessage, lastMessage, isConnected } = useWebSocketContext();
+    const { sendMessage, lastMessage, isConnected, publicPlayerId } = useWebSocketContext();
     const [currentRoom, setCurrentRoom] = useState<RoomData | null>(null);
-    const [publicId , setPublicId] = useState<string>("");
+
+    // Prevent multiple navigations if we receive multiple messages containing a game id.
+    const hasNavigatedRef = useRef<boolean>(false);
 
     useEffect(() => {
         if (!roomName || !username) {
@@ -31,25 +33,27 @@ export default function Room() {
     useEffect(() => {
         if (!lastMessage) return;
 
+        // Keep room UI updated
         if (lastMessage.roomName && lastMessage.players) {
             setCurrentRoom(lastMessage as RoomData);
         }
 
-        const nextPublicId =
-            typeof lastMessage.publicPlayerId === "string" ? lastMessage.publicPlayerId : null;
+        // Navigate to game once we have an id AND we've previously received a public id.
+        const id = lastMessage.id;
+        if (typeof id !== 'number') return;
+        if (!username) return;
+        if (hasNavigatedRef.current) return;
 
-        if (nextPublicId) {
-            setPublicId(nextPublicId)
-            console.log("websocket public id", lastMessage?.publicPlayerId);
-        }
+        // publicPlayerId is persisted in WebSocketContext, so it survives route transitions.
+        if (!publicPlayerId) return;
 
-        console.log("publicId state", publicId);
-
-        if (lastMessage.id && typeof lastMessage.id === 'number') {
-            // @ts-ignore
-            router.push(`/games/room/play?username=${encodeURIComponent(username)}&game=${encodeURIComponent(String(lastMessage.id))}&publicId=${encodeURIComponent(publicId)}`);
-        }
-    }, [lastMessage, publicId]);
+        hasNavigatedRef.current = true;
+        router.push(
+            `/games/room/play?username=${encodeURIComponent(username)}&game=${encodeURIComponent(
+                String(id)
+            )}&publicId=${encodeURIComponent(publicPlayerId)}`
+        );
+    }, [lastMessage, username, router, publicPlayerId]);
 
 
     function handleLeaveRoom() {

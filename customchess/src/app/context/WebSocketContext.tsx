@@ -5,6 +5,7 @@ interface WebSocketContextType {
     sendMessage: (data: any) => void;
     lastMessage: any | null;
     isConnected: boolean;
+    publicPlayerId: string;
 }
 
 const WebSocketContext = createContext<WebSocketContextType | undefined>(undefined);
@@ -13,6 +14,7 @@ export function WebSocketProvider({ children, url }: { children: ReactNode; url:
     const ws = useRef<WebSocket | null>(null);
     const [lastMessage, setLastMessage] = useState<any | null>(null);
     const [isConnected, setIsConnected] = useState(false);
+    const [publicPlayerId, setPublicPlayerId] = useState<string>("");
 
     useEffect(() => {
         // Create WebSocket connection
@@ -37,6 +39,12 @@ export function WebSocketProvider({ children, url }: { children: ReactNode; url:
             try {
                 console.log("Received message:", event.data);
                 const data = JSON.parse(event.data);
+
+                // This can come in a different message than game id / room state.
+                // Persist it so pages navigated to later can still access it.
+                if (typeof data?.publicPlayerId === "string" && data.publicPlayerId.length > 0) {
+                    setPublicPlayerId(data.publicPlayerId);
+                }
                 setLastMessage(data);
             } catch (err) {
                 console.error("Error parsing incoming message:", err);
@@ -61,7 +69,7 @@ export function WebSocketProvider({ children, url }: { children: ReactNode; url:
     };
 
     return (
-        <WebSocketContext.Provider value={{ sendMessage, lastMessage, isConnected }}>
+        <WebSocketContext.Provider value={{ sendMessage, lastMessage, isConnected, publicPlayerId }}>
             {children}
         </WebSocketContext.Provider>
     );
