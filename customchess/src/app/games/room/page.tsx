@@ -19,7 +19,7 @@ export default function Room() {
 
     const { sendMessage, lastMessage, isConnected } = useWebSocketContext();
     const [currentRoom, setCurrentRoom] = useState<RoomData | null>(null);
-    const [gameId , setGameId] = useState<number>(0);
+    const [publicId , setPublicId] = useState<string>("");
 
     useEffect(() => {
         if (!roomName || !username) {
@@ -29,16 +29,27 @@ export default function Room() {
     }, [isConnected, roomName, username]);
 
     useEffect(() => {
-        console.log('Last message:', lastMessage);
-        if (lastMessage && lastMessage.roomName && lastMessage.players) {
+        if (!lastMessage) return;
+
+        if (lastMessage.roomName && lastMessage.players) {
             setCurrentRoom(lastMessage as RoomData);
         }
 
+        const nextPublicId =
+            typeof lastMessage.publicPlayerId === "string" ? lastMessage.publicPlayerId : null;
+
+        if (nextPublicId) {
+            setPublicId(nextPublicId)
+            console.log("websocket public id", lastMessage?.publicPlayerId);
+        }
+
+        console.log("publicId state", publicId);
+
         if (lastMessage.id && typeof lastMessage.id === 'number') {
             // @ts-ignore
-            router.push(`/games/room/play?username=${encodeURIComponent(username)}&game=${encodeURIComponent(String(lastMessage.id))}`);
+            router.push(`/games/room/play?username=${encodeURIComponent(username)}&game=${encodeURIComponent(String(lastMessage.id))}&publicId=${encodeURIComponent(publicId)}`);
         }
-    }, [lastMessage]);
+    }, [lastMessage, publicId]);
 
 
     function handleLeaveRoom() {

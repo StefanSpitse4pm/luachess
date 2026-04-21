@@ -47,9 +47,8 @@ std::string utils::id_to_hex(std::array<uint8_t, 16> id)
 {
     std::ostringstream oss;
     for (auto b : id) {
-        oss << std::hex << std::setw(2) << std::setfill('0') << (int)b;
+        oss << std::hex << std::uppercase << std::setw(2) << std::setfill('0') << (int)b;
     }
-    std::uppercase(oss);
     return oss.str();
 }
 
