@@ -120,7 +120,7 @@ void on_message(server* s, const websocketpp::connection_hdl& hdl, const server:
             {
                 ctx.gameContext.send = new sendMove{
                     move["fromRow"].get<int>(), move["fromCol"].get<int>(), move["toRow"].get<int>(),
-                    move["toCol"].get<int>()
+                    move["toCol"].get<int>(), j["payload"]["pid"]
                 };
             }
         }

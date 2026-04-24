@@ -4,7 +4,7 @@ import Piece from './piece';
 import {piece} from '../types/piece';
 import {useWebSocketContext} from '../context/WebSocketContext';
 
-export default function Chessboard(gameId: number | undefined) {
+export default function Chessboard(gameId: number | undefined, publicId: string | undefined) {
 
     const { sendMessage, lastMessage } = useWebSocketContext();
     const [possibleMoves, setPossibleMoves] = useState(new Set<string>());
@@ -111,7 +111,7 @@ export default function Chessboard(gameId: number | undefined) {
                 selectedPiece.possibleTakes = selectedPiece.possibleTakes.filter((take) => !(moveTo.row === take.dy) && moveTo.col === take.dx);
             }
 
-            sendMessage({type: "Game", payload:{action: "move", move: {fromRow: row, fromCol: col, toRow: moveTo.row, toCol: moveTo.col, }, "gameId":gameId}})
+            sendMessage({type: "Game", payload:{action: "move", move: {fromRow: row, fromCol: col, toRow: moveTo.row, toCol: moveTo.col, }, "gameId":gameId, "pid":publicId}})
 
             setChessboard(prevBoard => {
                 const newBoard = prevBoard.map(row => [...row]);
