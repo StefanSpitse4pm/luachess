@@ -8,6 +8,8 @@ export default function Play() {
     const searchParams = useSearchParams();
     const username = searchParams.get('username');
     const gameId = searchParams.get('game');
+    const publicId = searchParams.get('publicId')
+
 
     useEffect(() => {
         if (!username) {

@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode } from 'react';
 
 interface WebSocketContextType {
     sendMessage: (data: any) => void;
@@ -10,69 +10,119 @@ interface WebSocketContextType {
 
 const WebSocketContext = createContext<WebSocketContextType | undefined>(undefined);
 
-export function WebSocketProvider({ children, url }: { children: ReactNode; url: string }) {
-    const ws = useRef<WebSocket | null>(null);
-    const [lastMessage, setLastMessage] = useState<any | null>(null);
-    const [isConnected, setIsConnected] = useState(false);
-    const [publicPlayerId, setPublicPlayerId] = useState<string>("");
+type WebSocketProviderProps = {
+    children: ReactNode;
+    url: string;
+};
 
-    useEffect(() => {
+type WebSocketProviderState = {
+    lastMessage: any | null;
+    isConnected: boolean;
+    publicPlayerId: string;
+};
+
+export class WebSocketProvider extends React.Component<WebSocketProviderProps, WebSocketProviderState> {
+    private ws: WebSocket | null = null;
+
+    state: WebSocketProviderState = {
+        lastMessage: null,
+        isConnected: false,
+        publicPlayerId: "",
+    };
+
+    componentDidMount() {
+        this.connect(this.props.url);
+    }
+
+    componentDidUpdate(prevProps: Readonly<WebSocketProviderProps>) {
+        if (prevProps.url !== this.props.url) {
+            this.disconnect();
+            this.connect(this.props.url);
+        }
+    }
+
+    componentWillUnmount() {
+        this.disconnect();
+    }
+
+    private connect(url: string) {
         // Create WebSocket connection
-        ws.current = new WebSocket(url);
+        this.ws = new WebSocket(url);
 
-        ws.current.onopen = () => {
+        this.ws.onopen = () => {
             console.log("Connected to WebSocket");
-            setIsConnected(true);
+            this.setState({ isConnected: true });
         };
 
-        ws.current.onclose = () => {
+        this.ws.onclose = () => {
             console.log("Disconnected from WebSocket");
-            setIsConnected(false);
+            this.setState({ isConnected: false });
         };
 
-        ws.current.onerror = (error) => {
+        this.ws.onerror = (error) => {
             console.error("WebSocket error:", error);
-            setIsConnected(false);
+            this.setState({ isConnected: false });
         };
 
-        ws.current.onmessage = (event) => {
+        this.ws.onmessage = (event) => {
             try {
                 console.log("Received message:", event.data);
                 const data = JSON.parse(event.data);
 
-                // This can come in a different message than game id / room state.
-                // Persist it so pages navigated to later can still access it.
                 if (typeof data?.publicPlayerId === "string" && data.publicPlayerId.length > 0) {
-                    setPublicPlayerId(data.publicPlayerId);
+                    this.setState({ publicPlayerId: data.publicPlayerId });
                 }
-                setLastMessage(data);
+                this.setState({ lastMessage: data });
             } catch (err) {
                 console.error("Error parsing incoming message:", err);
             }
         };
+    }
 
-        // Cleanup on unmount
-        return () => {
-            if (ws.current) {
-                ws.current.close();
-                setIsConnected(false);
+    private disconnect() {
+        if (this.ws) {
+            try {
+                // Clear handlers to avoid setState after unmount.
+                this.ws.onopen = null;
+                this.ws.onclose = null;
+                this.ws.onerror = null;
+                this.ws.onmessage = null;
+                this.ws.close();
+            } catch {
+                // ignore
             }
-        };
-    }, [url]);
+            this.ws = null;
+        }
 
-    const sendMessage = (data: any) => {
-        if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-            ws.current.send(JSON.stringify(data));
+        // Ensure consumers see disconnected state.
+        this.setState({ isConnected: false });
+    }
+
+    private sendMessage = (data: any) => {
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+            this.ws.send(JSON.stringify(data));
         } else {
             console.error("WebSocket is not open");
         }
     };
 
-    return (
-        <WebSocketContext.Provider value={{ sendMessage, lastMessage, isConnected, publicPlayerId }}>
-            {children}
-        </WebSocketContext.Provider>
-    );
+    render() {
+        const { children } = this.props;
+        const { lastMessage, isConnected, publicPlayerId } = this.state;
+
+        return (
+            <WebSocketContext.Provider
+                value={{
+                    sendMessage: this.sendMessage,
+                    lastMessage,
+                    isConnected,
+                    publicPlayerId,
+                }}
+            >
+                {children}
+            </WebSocketContext.Provider>
+        );
+    }
 }
 
 export function useWebSocketContext() {
