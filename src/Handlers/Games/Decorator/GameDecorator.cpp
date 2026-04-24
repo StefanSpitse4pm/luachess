@@ -40,3 +40,8 @@ const std::vector<SessionContext>& GameDecorator::getSessionContexts() const
 {
     return this->wrapped.getSessionContexts();
 }
+
+Player& GameDecorator::getPlayerByPublicID(std::string pid)
+{
+    return this->wrapped.getPlayerByPublicID(pid);
+}

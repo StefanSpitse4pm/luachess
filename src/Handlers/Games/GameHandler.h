@@ -50,7 +50,6 @@ class GameHandler : public Handler
     nlohmann::json getBoardState(ActionContext ctx);
     Game& getGameByGameId(const ActionContext& ctx);
     nlohmann::json onMove(const ActionContext& ctx);
-
   private:
     std::unique_ptr<Game> decorateGame(std::unique_ptr<LuaGame> game) const;
 

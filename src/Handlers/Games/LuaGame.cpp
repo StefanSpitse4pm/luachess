@@ -56,3 +56,16 @@ json LuaGame::toJson() const
 {
     return {{"id", id}};
 }
+
+Player& LuaGame::getPlayerByPublicID(std::string pid)
+{
+    auto sessionContexts = this->getSessionContexts();
+    for (auto ctx : sessionContexts)
+    {
+        if (ctx.player->get_public_id() == pid)
+        {
+            return *ctx.player;
+        }
+    }
+    throw std::invalid_argument("PublicId not found in game");
+}

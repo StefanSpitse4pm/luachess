@@ -28,6 +28,8 @@ class GameDecorator : public Game
     [[nodiscard]] nlohmann::json toJson() const override;
     [[nodiscard]] nlohmann::json getBoardState() const override;
     [[nodiscard]] const std::vector<SessionContext>& getSessionContexts() const override;
+    Player& getPlayerByPublicID(std::string pid) override;
+
   protected:
     Game& wrapped;
 

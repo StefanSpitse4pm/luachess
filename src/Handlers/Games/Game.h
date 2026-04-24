@@ -18,5 +18,6 @@ class Game
         [[nodiscard]] virtual nlohmann::json toJson() const = 0;
         [[nodiscard]] virtual nlohmann::json getBoardState() const = 0;
         [[nodiscard]] virtual const std::vector<SessionContext>& getSessionContexts() const = 0;
+        virtual Player& getPlayerByPublicID(std::string pid) = 0;
 };
 

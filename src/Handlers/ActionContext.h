@@ -56,7 +56,7 @@ struct GameContext
 
 struct SessionContext
 {
-    Player* player = nullptr;
+    mutable Player* player = nullptr;
     websocketpp::connection_hdl hdl;
 };
 

@@ -44,10 +44,16 @@ nlohmann::json RoomHandler::createRoom(const ActionContext& ctx)
     int newRoomId = static_cast<int>(rooms.size()) + 1;
     auto newRoom = std::make_unique<Room>(newRoomId, ctx.roomContext.desiredRoomName);
     newRoom->addUser(ctx.sessionContext);
+    makePendingNotificationRoom(ctx, newRoom);
     rooms.push_back(std::move(newRoom));
+    const nlohmann::json playerPublicID = {{"publicPlayerId", ctx.sessionContext.player->get_public_id()}};
+    return playerPublicID;
+}
 
-    nlohmann::json roomJson = rooms.back()->toJson();
-    return roomJson;
+void RoomHandler::makePendingNotificationRoom(const ActionContext& ctx, const std::unique_ptr<Room>& room) const
+{
+    std::string roomJson = room->toJson().dump();
+    ctx.pendingNotifications.push_back({room->getSessionContexts(), std::move(roomJson)});
 }
 
 nlohmann::json RoomHandler::joinRoom(const ActionContext& ctx) const
@@ -76,8 +82,7 @@ nlohmann::json RoomHandler::joinRoom(const ActionContext& ctx) const
         if (room && room->getRoomName() == ctx.roomContext.desiredRoomName)
         {
             room->addUser(ctx.sessionContext);
-            std::string roomJson = room->toJson().dump();
-            ctx.pendingNotifications.push_back({room->getSessionContexts(), std::move(roomJson)});
+            makePendingNotificationRoom(ctx, room);
             const nlohmann::json playerPublicID = {{"publicPlayerId", ctx.sessionContext.player->get_public_id()}};
 
             return playerPublicID;

@@ -76,6 +76,8 @@ class LuaGame : public Game
         return playerSessionContexts;
     }
 
+    Player& getPlayerByPublicID(std::string pid) override;
+
   protected:
     std::vector<SessionContext> playerSessionContexts;
 
