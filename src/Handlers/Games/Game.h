@@ -3,6 +3,7 @@
 //
 #pragma once
 #include "../ActionContext.h"
+#include "Engine/Engine.h"
 #include <nlohmann/json_fwd.hpp>
 #include <cstdint>
 #define LUACHESS_GAMEDECORATOR_H
@@ -19,5 +20,6 @@ class Game
         [[nodiscard]] virtual nlohmann::json getBoardState() const = 0;
         [[nodiscard]] virtual const std::vector<SessionContext>& getSessionContexts() const = 0;
         virtual Player& getPlayerByPublicID(std::string pid) = 0;
+        [[nodiscard]] virtual Engine& getEngine() const = 0;
 };
 

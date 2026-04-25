@@ -76,6 +76,8 @@ class LuaGame : public Game
         return playerSessionContexts;
     }
 
+    [[nodiscard]] Engine& getEngine() const override { return *engine; }
+
     Player& getPlayerByPublicID(std::string pid) override;
 
   protected:

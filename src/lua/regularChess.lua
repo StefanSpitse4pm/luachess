@@ -191,6 +191,5 @@ function setup(board)
     board:setPieceAt(createPiece("queen", "Chess_qdt45.svg", 3, 0, "black"))
     board:setPieceAt(createPiece("king", "Chess_klt45.svg", 4, 7, "white"))
     board:setPieceAt(createPiece("king", "Chess_kdt45.svg", 4, 0, "black"))
-
     getLegalMoves(board)
 end

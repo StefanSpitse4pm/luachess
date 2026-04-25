@@ -28,6 +28,8 @@ SOFTWARE.
 
 #include "TurnOrderDecorator.h"
 
+#include "../Engine/Engine.h"
+#include "../Engine/LuaEngine.h"
 #include <nlohmann/json.hpp>
 
 #include <sol/function_types_templated.hpp>
@@ -39,6 +41,8 @@ void TurnOrderDecorator::start()
     {
         createTurnOrderFromSessionContexts();
     }
+    Engine& base = wrapped.getEngine();
+    base.addTurnOrder(*turnOrder);
     GameDecorator::start();
 }
 

@@ -26,6 +26,7 @@
 
 #include "LuaEngine.h"
 #include "../../../Chess/chessboard.h"
+#include "../TurnOrder.h"
 
 void LuaEngine::setup(Chessboard& board)
 {
@@ -87,4 +88,9 @@ void LuaEngine::executeScript(std::string& functionName, Chessboard& board)
     {
         throw std::invalid_argument("Lua function '" + functionName + "' not found.");
     }
+}
+
+void LuaEngine::addTurnOrder(TurnOrder& turnOrder)
+{
+    luaState.new_usertype<TurnOrder>("TurnOrder","defaultTurnOrder",&TurnOrder::defaultTurnOrder);
 }
