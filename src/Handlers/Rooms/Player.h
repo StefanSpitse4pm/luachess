@@ -39,6 +39,17 @@ class Player
     {
     }
 
+    // clone constructor
+    Player(std::string username, uint32_t id, std::string publicId)
+        : username(std::move(username)), id(id), publicId(std::move(publicId))
+    {
+    }
+
+    Player(const Player&) = default;
+    Player& operator=(const Player&) = default;
+    Player(Player&&) noexcept = default;
+    Player& operator=(Player&&) noexcept = default;
+
     [[nodiscard]] std::string get_username() const
     {
         return username;
@@ -53,6 +64,8 @@ class Player
     {
         return publicId;
     }
+
+
 
   private:
     std::string username{};

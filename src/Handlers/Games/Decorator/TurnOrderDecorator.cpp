@@ -64,29 +64,39 @@ nlohmann::json TurnOrderDecorator::applyMove(const sendMove& move) const
 
 void TurnOrderDecorator::createTurnOrderFromSessionContexts()
 {
+    // Allow safe re-initialization without leaking.
+    if (turnOrder != nullptr)
+    {
+        delete turnOrder;
+        turnOrder = nullptr;
+    }
+
+    const auto& sessions = getSessionContexts();
+    if (sessions.empty())
+    {
+        throw std::invalid_argument("Cannot create TurnOrder: no session contexts available");
+    }
+
     std::vector<std::unique_ptr<Player>> players;
-    Player* firstPlayer = nullptr;
-    for (const auto& [player, hdl] : getSessionContexts())
-    {
-        if (player == nullptr)
-        {
-            throw std::invalid_argument("Player in session context is null");
-        }
+    players.reserve(sessions.size());
 
-        auto created = std::make_unique<Player>(player->get_username());
-        if (firstPlayer == nullptr)
+    for (const auto& session : sessions)
+    {
+        if (session.player == nullptr)
         {
-            firstPlayer = created.get();
+            continue;
         }
-        players.push_back(std::move(created));
+        players.push_back(std::make_unique<Player>(
+            session.player->get_username(), session.player->get_id(), session.player->get_public_id()
+        ));
     }
 
-    if (firstPlayer == nullptr)
+    if (players.empty())
     {
-        throw std::invalid_argument("No players found in session contexts");
+        throw std::invalid_argument("Cannot create TurnOrder: no valid players in session contexts");
     }
 
-    turnOrder = new TurnOrder(players, *firstPlayer);
+    turnOrder = new TurnOrder(players, *players.front());
 }
 
 
