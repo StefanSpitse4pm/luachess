@@ -47,7 +47,7 @@ void TurnOrderDecorator::start()
 }
 
 nlohmann::json TurnOrderDecorator::applyMove(const sendMove& move) const
-{
+z{
     if (turnOrder == nullptr)
     {
         const_cast<TurnOrderDecorator*>(this)->createTurnOrderFromSessionContexts();

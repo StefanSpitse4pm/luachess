@@ -23,7 +23,7 @@ TEST_F(TurnOrderTests, TurnOrder_CreateTurnOrder_ShouldNotFail)
 {
     std::unique_ptr<Player> player1;
     players.push_back(std::move(player1));
-    ASSERT_NO_THROW(auto turnOrder = TurnOrder(players, *players[0]));
+    ASSERT_NO_THROW(auto turnOrder = TurnOrder(players, player1Ref));
 }
 
 TEST_F(TurnOrderTests, TurnTo_SwitchActivePlayer_AssertEqualsPlayer2)
