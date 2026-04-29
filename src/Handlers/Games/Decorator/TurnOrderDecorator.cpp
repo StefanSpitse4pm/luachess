@@ -41,13 +41,12 @@ void TurnOrderDecorator::start()
     {
         createTurnOrderFromSessionContexts();
     }
-    Engine& base = wrapped.getEngine();
-    base.addTurnOrder(*turnOrder);
+    wrapped.getEngine().addTurnOrder(*turnOrder);
     GameDecorator::start();
 }
 
 nlohmann::json TurnOrderDecorator::applyMove(const sendMove& move) const
-z{
+{
     if (turnOrder == nullptr)
     {
         const_cast<TurnOrderDecorator*>(this)->createTurnOrderFromSessionContexts();

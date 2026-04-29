@@ -161,6 +161,7 @@ local pieces = {
 }
 
 function getLegalMoves(board)
+    TurnOrder:defaultTurnOrder()
     for x = 0, board.rows - 1 do
         for y = 0, board.cols - 1 do
             if board:getPieceAt(x, y) ~= nil then
@@ -171,7 +172,6 @@ function getLegalMoves(board)
 end
 
 function setup(board)
-    TurnOrder:defaultTurnOrder()
     for x = 0, board.rows - 1 do
         board:setPieceAt(createPiece("pawn", "Chess_plt45.svg", x, 6, "white"))
         board:setPieceAt(createPiece("pawn", "Chess_pdt45.svg", x, 1, "black"))
