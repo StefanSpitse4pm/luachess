@@ -58,6 +58,7 @@ void LuaEngine::setup(Chessboard& board)
 
 void LuaEngine::initialize(const std::filesystem::path scriptPath, Chessboard& board)
 {
+    std::cerr << "Loading lua: " << scriptPath << "\n";
     luaState.script_file(scriptPath);
     const sol::protected_function setupFunc = luaState["setup"];
 
@@ -76,6 +77,7 @@ void LuaEngine::initialize(const std::filesystem::path scriptPath, Chessboard& b
 
 void LuaEngine::executeScript(std::string& functionName, Chessboard& board)
 {
+
     if (const sol::protected_function func = luaState[functionName]; func.valid())
     {
         if (const sol::protected_function_result result = func(board); !result.valid())
@@ -93,4 +95,5 @@ void LuaEngine::executeScript(std::string& functionName, Chessboard& board)
 void LuaEngine::addTurnOrder(TurnOrder& turnOrder)
 {
     luaState.new_usertype<TurnOrder>("TurnOrder","defaultTurnOrder",&TurnOrder::defaultTurnOrder);
+    luaState["TurnOrder"] = &turnOrder;
 }

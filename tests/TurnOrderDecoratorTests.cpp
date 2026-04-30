@@ -19,7 +19,7 @@ class TurnOrderDecoratorTests: public ::testing::Test
         std::unique_ptr<LuaEngine> engine = std::make_unique<LuaEngine>();
         std::unique_ptr<Chessboard> board = std::make_unique<Chessboard>(8, 8);
         std::unique_ptr<LuaGame> newGame = std::make_unique<LuaGame>(
-            std::move(engine), std::move(board), std::filesystem::current_path() / "lua" / "regularChess.lua"
+            std::move(engine), std::move(board), "/home/stefanspitse/CLionProjects/luachess/src/lua/regularChess.lua" // temporary
         );
 };
 

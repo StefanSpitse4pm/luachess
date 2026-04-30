@@ -19,7 +19,7 @@ class GameTests: public ::testing::Test
         :chessboard(std::make_unique<Chessboard>(8,8)), ctx()
         {
             engine = std::make_unique<LuaEngine>();
-            game = std::make_unique<LuaGame>(std::move(engine), std::move(chessboard), std::filesystem::current_path() / "lua" / "regularChess.lua");
+            game = std::make_unique<LuaGame>(std::move(engine), std::move(chessboard), "/home/stefanspitse/CLionProjects/luachess/src/lua/regularChess.lua"); // temporary
             game->start();
         }
 };

@@ -32,7 +32,7 @@ std::unique_ptr<LuaGame> PlayerCreatedLuaGameFactory::createGame(ActionContext c
     auto engine = std::make_unique<LuaEngine>();
     auto board = std::make_unique<Chessboard>(8, 8);
     auto newGame = std::make_unique<LuaGame>(
-        std::move(engine), std::move(board), std::filesystem::current_path() / "lua" / "regularChess.lua"
+        std::move(engine), std::move(board), "/home/stefanspitse/CLionProjects/luachess/src/lua/regularChess.lua" // temporary
     );
 
     return newGame;
