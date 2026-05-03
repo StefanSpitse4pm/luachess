@@ -105,7 +105,6 @@ nlohmann::json GameHandler::startGame(const ActionContext& ctx)
         const json response = game->toJson();
         ctx.pendingNotifications.push_back({game->getSessionContexts(), response.dump()});
         games.push_back(std::move(game));
-        return response;
     }
     throw std::invalid_argument("Unsupported game type: " + ctx.gameContext.gameType);
 }
@@ -128,7 +127,8 @@ nlohmann::json GameHandler::onMove(const ActionContext& ctx)
     ctx.sessionContext.player = &game.getPlayerByPublicID(ctx.gameContext.send->publicPlayerId);
 
     json board = game.applyMove(*ctx.gameContext.send);
-    ctx.pendingNotifications.push_back({game.getSessionContexts(), board.dump()});
-    return board;
+    const json out = game.toJson();
+    ctx.pendingNotifications.push_back({game.getSessionContexts(), out.dump()});
+    return out;
 }
 

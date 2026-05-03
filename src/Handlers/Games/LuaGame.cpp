@@ -54,7 +54,7 @@ json LuaGame::applyMove(const sendMove& move) const
 
 json LuaGame::toJson() const
 {
-    return {{"id", id}};
+    return {{"id", id}, {"board", chessboard->toJson()}};
 }
 
 Player& LuaGame::getPlayerByPublicID(std::string pid)
