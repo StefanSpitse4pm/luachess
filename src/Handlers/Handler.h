@@ -42,7 +42,7 @@ class Handler
 
     using ActionFn = std::function<nlohmann::json(const ActionContext&)>;
     virtual nlohmann::json action(std::string action, const ActionContext& ctx) = 0;
-    ActionFn route(std::unordered_map<std::string, ActionFn> actionMap, std::string action);
+    ActionFn route(std::unordered_map<std::string, ActionFn> actionMap, const std::string& action);
 };
 
 #endif // LUACHESS_ACTION_H

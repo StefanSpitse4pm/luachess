@@ -28,16 +28,31 @@
 #include "../../../Chess/chessboard.h"
 #include "../TurnOrder.h"
 
+
 void LuaEngine::setup(Chessboard& board)
 {
     luaState.open_libraries(sol::lib::base, sol::lib::package, sol::lib::table, sol::lib::string, sol::lib::math);
 
+    addChessboard();
+    addPieces();
+
+    luaState.set_function(
+        "createPiece", [](const std::string& type, const std::string& image, int row, int col, std::string color)
+        { return Piece({col, row}, type, image, std::move(color)); }
+    );
+}
+
+void LuaEngine::addChessboard()
+{
     luaState.new_usertype<Chessboard>(
         "Chessboard", "isOccupied", &Chessboard::isOccupied, "getPieceAt", &Chessboard::getPieceAt, "setPieceAt",
         &Chessboard::setPieceAt, "movePiece", &Chessboard::movePiece, "rows", sol::property(&Chessboard::getRows),
         "cols", sol::property(&Chessboard::getCols), "calculateRepeatMoves", &Chessboard::unrollRepeatMoves
     );
+}
 
+void LuaEngine::addPieces()
+{
     luaState.new_usertype<Piece>(
         "Piece", "position", &Piece::position, "type", &Piece::type, "image", &Piece::image, "canJumpOverPieces",
         &Piece::canJumpOverPieces, "clearMoves", &Piece::clearMoves, "possibleMoves", &Piece::possibleMoves,
@@ -48,13 +63,13 @@ void LuaEngine::setup(Chessboard& board)
     luaState.new_usertype<Move>(
         "Move", "dx", &Move::dx, "dy", &Move::dy, "repeat", &Move::repeat, "basedOnLastMove", &Move::basedOnLastMove
     );
-
-    luaState.set_function(
-        "createPiece", [](const std::string& type, const std::string& image, int row, int col, std::string color)
-        { return Piece({col, row}, type, image, std::move(color)); }
-    );
 }
 
+void LuaEngine::addTurnOrder(TurnOrder& turnOrder)
+{
+    luaState.new_usertype<TurnOrder>("TurnOrder","defaultTurnOrder",&TurnOrder::defaultTurnOrder);
+    luaState["TurnOrder"] = &turnOrder;
+}
 
 void LuaEngine::initialize(const std::filesystem::path scriptPath, Chessboard& board)
 {
@@ -90,10 +105,4 @@ void LuaEngine::executeScript(std::string& functionName, Chessboard& board)
     {
         throw std::invalid_argument("Lua function '" + functionName + "' not found.");
     }
-}
-
-void LuaEngine::addTurnOrder(TurnOrder& turnOrder)
-{
-    luaState.new_usertype<TurnOrder>("TurnOrder","defaultTurnOrder",&TurnOrder::defaultTurnOrder);
-    luaState["TurnOrder"] = &turnOrder;
 }

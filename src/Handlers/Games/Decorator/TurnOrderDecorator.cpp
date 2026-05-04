@@ -63,7 +63,6 @@ nlohmann::json TurnOrderDecorator::applyMove(const sendMove& move) const
 
 void TurnOrderDecorator::createTurnOrderFromSessionContexts()
 {
-    // Allow safe re-initialization without leaking.
     if (turnOrder != nullptr)
     {
         delete turnOrder;
