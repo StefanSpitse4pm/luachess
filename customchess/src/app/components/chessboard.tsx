@@ -1,28 +1,61 @@
 "use client";
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import Piece from './piece';
 import {piece} from '../types/piece';
 import {useWebSocketContext} from '../context/WebSocketContext';
 
-export default function Chessboard(gameId: number | undefined, publicId: string | undefined) {
+type ChessboardProps = {
+    gameId: number | undefined;
+    publicId: string | undefined;
+    username: string | undefined;
+};
+
+export default function Chessboard({ gameId, publicId, username }: ChessboardProps) {
 
     const { sendMessage, lastMessage } = useWebSocketContext();
     const [possibleMoves, setPossibleMoves] = useState(new Set<string>());
-    const [firstLoaded, setFirstLoaded] = useState(false);
     const [isPieceSelected, setIsPieceSelected] = useState(true);
     const [selectedPiece, setSelectedPiece] = useState<piece | null>(null);
+    const [activePlayer, setActivePlayer] = useState<string | null>(null);
     const size = 8;
+
+    // Avoid re-requesting board state on every incoming message.
+    const requestedGameIdRef = useRef<number | null>(null);
 
     const [chessboard, setChessboard] = useState<(piece | null)[][]>(() => {
         const initialBoard = Array.from({ length: size }, () => Array(size).fill(null));
         return initialBoard;
     });
 
+    const movesEnabled = useMemo(() => {
+        if (typeof gameId !== 'number') return false;
+        if (!publicId || publicId.length === 0) return false;
+        if (!username) return false;
+        // Be conservative: if server didn't provide an active player yet, disallow moves.
+        if (!activePlayer) return false;
+        return username === activePlayer;
+    }, [activePlayer, gameId, publicId, username]);
+
 
     useEffect(() => {
-        if (!firstLoaded) {
-            sendMessage({ type: "Game", payload: {"action":"boardState", "gameId":gameId} });
-            setFirstLoaded(true);
+        if (typeof gameId !== 'number') return;
+        if (requestedGameIdRef.current === gameId) return;
+        sendMessage({ type: "Game", payload: {"action":"boardState", "gameId":gameId} });
+        requestedGameIdRef.current = gameId;
+    }, [gameId, sendMessage]);
+
+    useEffect(() => {
+        if (!lastMessage) return;
+
+        // Ignore messages for other games when an id is present.
+        const msgGameId = (lastMessage as any)?.gameId ?? (lastMessage as any)?.id ?? (lastMessage as any)?.payload?.gameId;
+        if (typeof msgGameId === 'number' && typeof gameId === 'number' && msgGameId !== gameId) {
+            return;
+        }
+
+        const nextActivePlayer = (lastMessage as any)?.activePlayer ?? (lastMessage as any)?.payload?.activePlayer;
+        if (typeof nextActivePlayer === 'string') {
+            setActivePlayer(nextActivePlayer);
         }
 
         const boardData = Array.isArray(lastMessage)
@@ -54,11 +87,21 @@ export default function Chessboard(gameId: number | undefined, publicId: string 
             });
             return newBoard;
         });
-    }, [lastMessage])
+    }, [lastMessage, gameId])
+
+    // If the turn changes away from us, clear any in-progress selection/highlights.
+    useEffect(() => {
+        if (!movesEnabled) {
+            setSelectedPiece(null);
+            setPossibleMoves(new Set<string>());
+            setIsPieceSelected(true);
+        }
+    }, [movesEnabled]);
 
 
 
     function handleSquareClick(piecePosition: piece | null) {
+        if (!movesEnabled) return;
         const newPossibleMoves = new Set<string>();
         isPieceSelected ? setIsPieceSelected(false) : setIsPieceSelected(true);
         if (piecePosition && isPieceSelected) {
@@ -102,6 +145,7 @@ export default function Chessboard(gameId: number | undefined, publicId: string 
 
 
     function movePiece(moveTo: { row: number; col: number }) {
+        if (!movesEnabled) return;
         console.log(`Moving piece to: ${moveTo.row}, ${moveTo.col}`);
         if (selectedPiece) {
             const { row, col } = selectedPiece.position;
@@ -128,12 +172,18 @@ export default function Chessboard(gameId: number | undefined, publicId: string 
 
     return (
         <div className="chessboard">
+            {activePlayer && username && (
+                <div className="mb-4 text-gray-200">
+                    Active player: <span className={movesEnabled ? "text-green-400 font-semibold" : "text-yellow-300 font-semibold"}>{activePlayer}</span>
+                    {!movesEnabled && <span className="ml-2 text-sm text-gray-400">(waiting for your turn)</span>}
+                </div>
+            )}
            {Array.from({ length: size }).map((_, row) => (
                 <div key={row} className="flex">
                     {Array.from({ length: size }).map((_, col) => {
                         const isWhite = (row + col) % 2 === 0;
                         const posKey = `${row},${col}`;
-                        const isHighlighted = possibleMoves.has(posKey) && !isPieceSelected;
+                        const isHighlighted = movesEnabled && possibleMoves.has(posKey) && !isPieceSelected;
                         return (
                             <div
                                 key={col}
