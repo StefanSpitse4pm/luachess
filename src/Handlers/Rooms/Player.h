@@ -35,7 +35,8 @@
 class Player
 {
   public:
-    explicit Player(std::string username) : username(std::move(username)), id(nextId++), publicId(utils::generate_hex_id())
+    explicit Player(std::string username)
+        : username(std::move(username)), id(nextId++), publicId(utils::generate_hex_id())
     {
     }
 
@@ -64,8 +65,6 @@ class Player
     {
         return publicId;
     }
-
-
 
   private:
     std::string username{};

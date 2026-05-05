@@ -5,7 +5,7 @@
 struct Chessboard::repeatingMoves
 {
     std::vector<size_t> indices;
-    std::vector<Move>   ToExpand;
+    std::vector<Move> ToExpand;
 };
 
 json Chessboard::toJson()
@@ -72,7 +72,6 @@ void Chessboard::unrollRepeatMoves()
 
 void Chessboard::repeatUntilBlocked(const std::vector<Move>& repeatMovesToExpand, Piece& piece) const
 {
-
     for (const Move& repeatMove : repeatMovesToExpand)
     {
         int step = 1;
@@ -113,7 +112,7 @@ Chessboard::repeatingMoves Chessboard::findRepeatingMoves(const std::vector<Move
 
 std::vector<Move> Chessboard::removeRepeatingMoves(std::vector<Move>& moves, repeatingMoves& repeat)
 {
-    for (const unsigned long & repeatMovesIndice : std::views::reverse(repeat.indices))
+    for (const unsigned long& repeatMovesIndice : std::views::reverse(repeat.indices))
     {
         moves.erase(moves.begin() + repeatMovesIndice);
     }

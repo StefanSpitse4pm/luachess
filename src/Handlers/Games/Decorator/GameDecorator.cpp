@@ -46,7 +46,6 @@ Player& GameDecorator::getPlayerByPublicID(std::string pid)
     return this->wrapped.getPlayerByPublicID(pid);
 }
 
-
 [[nodiscard]] Engine& GameDecorator::getEngine() const
 {
     return this->wrapped.getEngine();

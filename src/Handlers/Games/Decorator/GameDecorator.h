@@ -4,8 +4,8 @@
 
 #ifndef LUACHESS_GAMEDECORATOR_H
 #define LUACHESS_GAMEDECORATOR_H
-#include "../Game.h"
 #include "../../ActionContext.h"
+#include "../Game.h"
 #include <nlohmann/json_fwd.hpp>
 
 class GameDecorator : public Game
@@ -13,7 +13,6 @@ class GameDecorator : public Game
   public:
     explicit GameDecorator(Game& source) : wrapped(source)
     {
-
     }
 
     [[nodiscard]] Game& getWrapped() const
@@ -33,9 +32,6 @@ class GameDecorator : public Game
 
   protected:
     Game& wrapped;
-
 };
 
-#endif //LUACHESS_GAMEDECORATOR_H
-
-
+#endif // LUACHESS_GAMEDECORATOR_H

@@ -53,7 +53,6 @@ void TurnOrder::turnTo(Player& player)
     {
         throw std::invalid_argument("Player is not inside players list");
     }
-
 }
 
 void TurnOrder::defaultTurnOrder()

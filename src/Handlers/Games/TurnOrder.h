@@ -11,12 +11,14 @@
 #include <vector>
 #include <websocketpp/connection.hpp>
 
-class TurnOrder {
+class TurnOrder
+{
   public:
     TurnOrder(std::vector<std::unique_ptr<Player>>& players, Player& player)
         : players(std::move(players)), currentPlayer(&player)
     {
     }
+
     [[nodiscard]] Player& getCurrentPlayer() const
     {
         return *currentPlayer;
@@ -25,20 +27,16 @@ class TurnOrder {
     std::ranges::borrowed_iterator_t<std::vector<std::unique_ptr<Player>>&> isPlayerInTurnOrder(const Player& player);
     void turnTo(Player& player);
     void defaultTurnOrder();
-    [[nodiscard]] nlohmann::json toJson() const ;
-
-
+    [[nodiscard]] nlohmann::json toJson() const;
 
   private:
-        std::vector<std::unique_ptr<Player>> players;
-        Player* currentPlayer;
+    std::vector<std::unique_ptr<Player>> players;
+    Player* currentPlayer;
 
-        void setCurrentPlayer(Player& current_player)
-        {
-            currentPlayer = &current_player;
-        }
+    void setCurrentPlayer(Player& current_player)
+    {
+        currentPlayer = &current_player;
+    }
 };
 
-
-
-#endif //LUACHESS_TURNORDER_H
+#endif // LUACHESS_TURNORDER_H

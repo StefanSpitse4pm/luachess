@@ -28,26 +28,23 @@
 #include "../../../Chess/chessboard.h"
 #include "../TurnOrder.h"
 
-
-void LuaEngine::setup(Chessboard& board)
+void LuaEngine::setup()
 {
     luaState.open_libraries(sol::lib::base, sol::lib::package, sol::lib::table, sol::lib::string, sol::lib::math);
-
-    addChessboard();
     addPieces();
-
-    luaState.set_function(
-        "createPiece", [](const std::string& type, const std::string& image, int row, int col, std::string color)
-        { return Piece({col, row}, type, image, std::move(color)); }
-    );
 }
 
-void LuaEngine::addChessboard()
+void LuaEngine::addChessboard(Chessboard& board)
 {
     luaState.new_usertype<Chessboard>(
         "Chessboard", "isOccupied", &Chessboard::isOccupied, "getPieceAt", &Chessboard::getPieceAt, "setPieceAt",
         &Chessboard::setPieceAt, "movePiece", &Chessboard::movePiece, "rows", sol::property(&Chessboard::getRows),
         "cols", sol::property(&Chessboard::getCols), "calculateRepeatMoves", &Chessboard::unrollRepeatMoves
+    );
+
+    luaState.set_function(
+        "createPiece", [](const std::string& type, const std::string& image, int row, int col, std::string color)
+        { return Piece({col, row}, type, image, std::move(color)); }
     );
 }
 
@@ -67,7 +64,7 @@ void LuaEngine::addPieces()
 
 void LuaEngine::addTurnOrder(TurnOrder& turnOrder)
 {
-    luaState.new_usertype<TurnOrder>("TurnOrder","defaultTurnOrder",&TurnOrder::defaultTurnOrder);
+    luaState.new_usertype<TurnOrder>("TurnOrder", "defaultTurnOrder", &TurnOrder::defaultTurnOrder);
     luaState["TurnOrder"] = &turnOrder;
 }
 
@@ -92,7 +89,6 @@ void LuaEngine::initialize(const std::filesystem::path scriptPath, Chessboard& b
 
 void LuaEngine::executeScript(std::string& functionName, Chessboard& board)
 {
-
     if (const sol::protected_function func = luaState[functionName]; func.valid())
     {
         if (const sol::protected_function_result result = func(board); !result.valid())

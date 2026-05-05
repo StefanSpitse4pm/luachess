@@ -84,9 +84,11 @@ void TurnOrderDecorator::createTurnOrderFromSessionContexts()
         {
             continue;
         }
-        players.push_back(std::make_unique<Player>(
-            session.player->get_username(), session.player->get_id(), session.player->get_public_id()
-        ));
+        players.push_back(
+            std::make_unique<Player>(
+                session.player->get_username(), session.player->get_id(), session.player->get_public_id()
+            )
+        );
     }
 
     if (players.empty())
@@ -96,7 +98,6 @@ void TurnOrderDecorator::createTurnOrderFromSessionContexts()
 
     turnOrder = new TurnOrder(players, *players.front());
 }
-
 
 void TurnOrderDecorator::isPlayersTurn(const sendMove& move) const
 {

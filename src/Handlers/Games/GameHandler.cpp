@@ -30,10 +30,10 @@ std::unique_ptr<Game> GameHandler::decorateGame(std::unique_ptr<LuaGame> game) c
 {
     struct OwnedDecorator : public TurnOrderDecorator
     {
-        explicit OwnedDecorator(std::unique_ptr<LuaGame> g)
-            : TurnOrderDecorator(*g), owned(std::move(g))
+        explicit OwnedDecorator(std::unique_ptr<LuaGame> g) : TurnOrderDecorator(*g), owned(std::move(g))
         {
         }
+
         std::unique_ptr<LuaGame> owned;
     };
 
@@ -58,11 +58,7 @@ Game& GameHandler::getGameByGameId(const ActionContext& ctx)
     }
 
     const auto it = std::ranges::find_if(
-        games,
-        [&ctx](const std::unique_ptr<Game>& game)
-        {
-            return game->getId() == ctx.gameContext.gameId;
-        }
+        games, [&ctx](const std::unique_ptr<Game>& game) { return game->getId() == ctx.gameContext.gameId; }
     );
 
     if (it == games.end())
@@ -131,4 +127,3 @@ nlohmann::json GameHandler::onMove(const ActionContext& ctx)
     ctx.pendingNotifications.push_back({game.getSessionContexts(), out.dump()});
     return out;
 }
-

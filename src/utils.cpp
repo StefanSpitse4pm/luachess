@@ -37,7 +37,8 @@ std::array<uint8_t, 16> utils::generate_id()
     thread_local std::mt19937_64 rng(std::random_device{}());
     std::array<uint8_t, 16> id{};
 
-    for (auto &b : id) {
+    for (auto& b : id)
+    {
         b = static_cast<uint8_t>(rng() & 0xFF);
     }
     return id;
@@ -46,7 +47,8 @@ std::array<uint8_t, 16> utils::generate_id()
 std::string utils::id_to_hex(std::array<uint8_t, 16> id)
 {
     std::ostringstream oss;
-    for (auto b : id) {
+    for (auto b : id)
+    {
         oss << std::hex << std::uppercase << std::setw(2) << std::setfill('0') << (int)b;
     }
     return oss.str();

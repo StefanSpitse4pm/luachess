@@ -26,11 +26,11 @@
 
 #include "LuaGame.h"
 
-
-
 void LuaGame::start()
 {
-    engine->setup(*chessboard);
+    engine->setup();
+    engine->addChessboard(*chessboard);
+    engine->addPieces();
     engine->initialize(filepath, *chessboard);
 }
 

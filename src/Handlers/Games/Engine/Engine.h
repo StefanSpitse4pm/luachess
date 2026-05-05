@@ -26,17 +26,20 @@
 
 #ifndef LUACHESS_ENGINE_H
 #define LUACHESS_ENGINE_H
-#include <filesystem>
 #include "../TurnOrder.h"
+#include <filesystem>
 class Chessboard;
 
 class Engine
 {
   public:
     virtual ~Engine() = default;
-    virtual void setup(Chessboard& board) = 0;
+    virtual void setup() = 0;
     virtual void initialize(std::filesystem::path scriptPath, Chessboard& board) = 0;
     virtual void executeScript(std::string& functionName, Chessboard& board) = 0;
+    virtual void addChessboard(Chessboard& board) = 0;
+    virtual void addPieces() = 0;
+    virtual void addTurnOrder(TurnOrder& turnOrder) = 0;
 };
 
 #endif // LUACHESS_ENGINE_H

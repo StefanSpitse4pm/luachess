@@ -2,15 +2,16 @@
 // Created by stefanspitse on 4/12/26.
 //
 #pragma once
+#include "../../Rooms/Player.h"
 #include "../TurnOrder.h"
 #include "GameDecorator.h"
-#include "../../Rooms/Player.h"
 
 #ifndef LUACHESS_TURNORDERDECORATOR_H
 #define LUACHESS_TURNORDERDECORATOR_H
 
-class TurnOrderDecorator: public GameDecorator {
-    public:
+class TurnOrderDecorator : public GameDecorator
+{
+  public:
     explicit TurnOrderDecorator(Game& source) : GameDecorator(source)
     {
     }
@@ -26,14 +27,14 @@ class TurnOrderDecorator: public GameDecorator {
     void start() override;
     [[nodiscard]] nlohmann::json applyMove(const sendMove& move) const override;
     [[nodiscard]] nlohmann::json toJson() const override;
+
     [[nodiscard]] TurnOrder& getTurnOrder() const
     {
         return *turnOrder;
     }
-    protected:
-        TurnOrder *turnOrder = nullptr;
+
+  protected:
+    TurnOrder* turnOrder = nullptr;
 };
 
-
-
-#endif //LUACHESS_TURNORDERDECORATOR_H
+#endif // LUACHESS_TURNORDERDECORATOR_H

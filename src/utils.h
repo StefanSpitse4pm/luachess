@@ -8,13 +8,12 @@
 #include <cstdint>
 #include <string>
 
-class utils {
-    public:
-        static std::array<uint8_t, 16> generate_id();
-        static std::string id_to_hex(std::array<uint8_t, 16> id);
-        static std::string generate_hex_id();
+class utils
+{
+  public:
+    static std::array<uint8_t, 16> generate_id();
+    static std::string id_to_hex(std::array<uint8_t, 16> id);
+    static std::string generate_hex_id();
 };
 
-
-
-#endif //LUACHESS_UTILS_H
+#endif // LUACHESS_UTILS_H
