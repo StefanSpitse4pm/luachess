@@ -29,7 +29,6 @@ add_executable(luachess
         src/Handlers/ActionContext.h
         src/Handlers/Games/GameHandler.cpp
         src/Handlers/Games/GameHandler.h
-        src/Chess/Piece.cpp
         src/Chess/Piece.h
         src/Chess/Move.h
         src/Handlers/Rooms/Player.h
@@ -77,7 +76,6 @@ add_executable(tests
         src/Handlers/ActionContext.h
         src/Handlers/Games/GameHandler.cpp
         src/Handlers/Games/GameHandler.h
-        src/Chess/Piece.cpp
         src/Chess/Piece.h
         src/Chess/Move.h
         src/Handlers/Rooms/Player.h
