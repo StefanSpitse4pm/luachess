@@ -34,13 +34,13 @@ std::ranges::borrowed_iterator_t<std::vector<std::unique_ptr<Player>>&>
 TurnOrder::isPlayerInTurnOrder(const Player& player)
 {
     return std::ranges::find_if(
-        this->players, [&](const std::unique_ptr<Player>& uPlayer) { return uPlayer->get_id() == player.get_id(); }
+        this->players, [&](const std::unique_ptr<Player>& uPlayer) { return uPlayer->getId() == player.getId(); }
     );
 }
 
 void TurnOrder::turnTo(Player& player)
 {
-    if (player.get_id() == getCurrentPlayer().get_id())
+    if (player.getId() == getCurrentPlayer().getId())
     {
         return;
     }
@@ -74,5 +74,5 @@ void TurnOrder::defaultTurnOrder()
 
 nlohmann::json TurnOrder::toJson() const
 {
-    return {{"activePlayer", getCurrentPlayer().get_username()}};
+    return {{"activePlayer", getCurrentPlayer().getUsername()}};
 }

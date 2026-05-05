@@ -30,7 +30,7 @@
 
 void Room::addUser(const SessionContext& sessionContext)
 {
-    if (sessionContext.player->get_username().empty())
+    if (sessionContext.player->getUsername().empty())
     {
         throw std::invalid_argument("username is empty");
     }
@@ -47,7 +47,7 @@ void Room::removeUser(SessionContext userContext)
 {
     auto it = std::find_if(
         sessionContexts.begin(), sessionContexts.end(), [&userContext](const SessionContext& ctx)
-        { return ctx.player->get_username() == userContext.player->get_username(); }
+        { return ctx.player->getUsername() == userContext.player->getUsername(); }
     );
     if (it != sessionContexts.end())
     {
@@ -62,8 +62,8 @@ nlohmann::json Room::toJson() const
     usernames.reserve(sessionContexts.size());
     for (const auto& [player, hdl] : sessionContexts)
     {
-        usernames.push_back(player->get_username());
-        playersArray.push_back({{"username", player->get_username()}, {"playerId", player->get_id()}});
+        usernames.push_back(player->getUsername());
+        playersArray.push_back({{"username", player->getUsername()}, {"playerId", player->getId()}});
     }
     return {
         {"roomName", roomName},

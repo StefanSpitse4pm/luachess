@@ -38,7 +38,7 @@ TEST_F(TurnOrderTests, TurnTo_SwitchActivePlayer_AssertEqualsPlayer2)
     auto turnOrder = TurnOrder(players, player1Ref);
 
     turnOrder.turnTo(player2Ref);
-    ASSERT_EQ(player2Ref.get_id(), turnOrder.getCurrentPlayer().get_id());
+    ASSERT_EQ(player2Ref.getId(), turnOrder.getCurrentPlayer().getId());
 }
 
 TEST_F(TurnOrderTests, TurnTo_PlayerAlreadyActivePlayer_ShouldNotTurn)
@@ -52,7 +52,7 @@ TEST_F(TurnOrderTests, TurnTo_PlayerAlreadyActivePlayer_ShouldNotTurn)
     auto turnOrder = TurnOrder(players, player1Ref);
 
     turnOrder.turnTo(player1Ref);
-    ASSERT_EQ(player1Ref.get_id(), turnOrder.getCurrentPlayer().get_id());
+    ASSERT_EQ(player1Ref.getId(), turnOrder.getCurrentPlayer().getId());
 }
 
 TEST_F(TurnOrderTests, TurnTo_PlayerNotInsidePlayers_ShouldThrowInvalidArgument)
@@ -81,7 +81,7 @@ TEST_F(TurnOrderTests, DefaultTurnOrder_TurnToNextPlayer_ShouldNotWrap)
     auto turnOrder = TurnOrder(players, player1Ref);
 
     ASSERT_NO_THROW(turnOrder.defaultTurnOrder());
-    ASSERT_EQ(player2Ref.get_id(), turnOrder.getCurrentPlayer().get_id());
+    ASSERT_EQ(player2Ref.getId(), turnOrder.getCurrentPlayer().getId());
 }
 
 TEST_F(TurnOrderTests, DefaultTurnOrder_TurnToNextPlayer_ShouldWrap)
@@ -97,5 +97,5 @@ TEST_F(TurnOrderTests, DefaultTurnOrder_TurnToNextPlayer_ShouldWrap)
     auto turnOrder = TurnOrder(players, player2Ref);
 
     ASSERT_NO_THROW(turnOrder.defaultTurnOrder());
-    ASSERT_EQ(player1Ref.get_id(), turnOrder.getCurrentPlayer().get_id());
+    ASSERT_EQ(player1Ref.getId(), turnOrder.getCurrentPlayer().getId());
 }

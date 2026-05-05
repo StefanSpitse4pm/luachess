@@ -46,22 +46,17 @@ class Player
     {
     }
 
-    Player(const Player&) = default;
-    Player& operator=(const Player&) = default;
-    Player(Player&&) noexcept = default;
-    Player& operator=(Player&&) noexcept = default;
-
-    [[nodiscard]] std::string get_username() const
+    [[nodiscard]] std::string getUsername() const
     {
         return username;
     }
 
-    [[nodiscard]] uint32_t get_id() const
+    [[nodiscard]] uint32_t getId() const
     {
         return id;
     }
 
-    [[nodiscard]] std::string get_public_id() const
+    [[nodiscard]] std::string getPublicId() const
     {
         return publicId;
     }

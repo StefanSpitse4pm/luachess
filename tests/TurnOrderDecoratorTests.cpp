@@ -34,9 +34,9 @@ TEST_F(TurnOrderDecoratorTests, createTurnOrderFromSessionContexts_ShouldReturnP
 
     ASSERT_NO_THROW(turnOrderNewGame->createTurnOrderFromSessionContexts());
 
-    ASSERT_EQ(turnOrderNewGame->getTurnOrder().getCurrentPlayer().get_username(), "Player1");
+    ASSERT_EQ(turnOrderNewGame->getTurnOrder().getCurrentPlayer().getUsername(), "Player1");
 
     turnOrderNewGame->getTurnOrder().defaultTurnOrder();
-    ASSERT_EQ(turnOrderNewGame->getTurnOrder().getCurrentPlayer().get_username(), "Player2");
+    ASSERT_EQ(turnOrderNewGame->getTurnOrder().getCurrentPlayer().getUsername(), "Player2");
 
 }

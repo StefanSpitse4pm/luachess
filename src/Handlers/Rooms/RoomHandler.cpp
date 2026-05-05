@@ -46,7 +46,7 @@ nlohmann::json RoomHandler::createRoom(const ActionContext& ctx)
     newRoom->addUser(ctx.sessionContext);
     makePendingNotificationRoom(ctx, newRoom);
     rooms.push_back(std::move(newRoom));
-    const nlohmann::json playerPublicID = {{"publicPlayerId", ctx.sessionContext.player->get_public_id()}};
+    const nlohmann::json playerPublicID = {{"publicPlayerId", ctx.sessionContext.player->getPublicId()}};
     return playerPublicID;
 }
 
@@ -63,7 +63,7 @@ nlohmann::json RoomHandler::joinRoom(const ActionContext& ctx) const
         throw std::invalid_argument("Missing Room name");
     }
 
-    if (ctx.sessionContext.player->get_username().empty())
+    if (ctx.sessionContext.player->getUsername().empty())
     {
         throw std::invalid_argument("Missing username");
     }
@@ -83,7 +83,7 @@ nlohmann::json RoomHandler::joinRoom(const ActionContext& ctx) const
         {
             room->addUser(ctx.sessionContext);
             makePendingNotificationRoom(ctx, room);
-            const nlohmann::json playerPublicID = {{"publicPlayerId", ctx.sessionContext.player->get_public_id()}};
+            const nlohmann::json playerPublicID = {{"publicPlayerId", ctx.sessionContext.player->getPublicId()}};
 
             return playerPublicID;
         }
@@ -114,7 +114,7 @@ nlohmann::json RoomHandler::leaveRoom(const ActionContext& ctx)
         throw std::invalid_argument("Missing Room name");
     }
 
-    if (ctx.sessionContext.player->get_username().empty())
+    if (ctx.sessionContext.player->getUsername().empty())
     {
         throw std::invalid_argument("Missing username");
     }

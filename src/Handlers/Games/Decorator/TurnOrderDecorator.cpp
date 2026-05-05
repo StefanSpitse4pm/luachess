@@ -86,7 +86,7 @@ void TurnOrderDecorator::createTurnOrderFromSessionContexts()
         }
         players.push_back(
             std::make_unique<Player>(
-                session.player->get_username(), session.player->get_id(), session.player->get_public_id()
+                session.player->getUsername(), session.player->getId(), session.player->getPublicId()
             )
         );
     }
@@ -101,7 +101,7 @@ void TurnOrderDecorator::createTurnOrderFromSessionContexts()
 
 void TurnOrderDecorator::isPlayersTurn(const sendMove& move) const
 {
-    if (turnOrder->getCurrentPlayer().get_public_id() != move.publicPlayerId)
+    if (turnOrder->getCurrentPlayer().getPublicId() != move.publicPlayerId)
     {
         throw std::invalid_argument("It's not this player's turn");
     }

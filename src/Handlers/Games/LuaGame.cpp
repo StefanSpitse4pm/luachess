@@ -62,7 +62,7 @@ Player& LuaGame::getPlayerByPublicID(std::string pid)
     auto sessionContexts = this->getSessionContexts();
     for (auto ctx : sessionContexts)
     {
-        if (ctx.player->get_public_id() == pid)
+        if (ctx.player->getPublicId() == pid)
         {
             return *ctx.player;
         }
