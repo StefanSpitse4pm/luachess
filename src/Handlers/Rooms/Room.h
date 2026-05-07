@@ -70,6 +70,7 @@ class Room
 
     void addUser(const SessionContext& sessionContext);
     void removeUser(SessionContext userContext);
+    std::vector<std::string> sessionCtxToUsernames(nlohmann::json& playersArray) const;
     bool isReady() const;
     [[nodiscard]] nlohmann::json toJson() const;
 

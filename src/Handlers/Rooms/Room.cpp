@@ -55,16 +55,23 @@ void Room::removeUser(SessionContext userContext)
     }
 }
 
-nlohmann::json Room::toJson() const
+std::vector<std::string> Room::sessionCtxToUsernames(nlohmann::json& playersArray) const
 {
     std::vector<std::string> usernames;
-    nlohmann::json playersArray = nlohmann::json::array();
+    playersArray = nlohmann::json::array();
     usernames.reserve(sessionContexts.size());
     for (const auto& [player, hdl] : sessionContexts)
     {
         usernames.push_back(player->getUsername());
         playersArray.push_back({{"username", player->getUsername()}, {"playerId", player->getId()}});
     }
+    return usernames;
+}
+
+nlohmann::json Room::toJson() const
+{
+    nlohmann::json playersArray;
+    std::vector<std::string> usernames = sessionCtxToUsernames(playersArray);
     return {
         {"roomName", roomName},
         {"roomSize", MAX_PLAYER_COUNT},
