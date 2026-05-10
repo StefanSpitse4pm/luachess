@@ -56,7 +56,13 @@ void RoomHandler::makePendingNotificationRoom(const ActionContext& ctx, const st
     ctx.pendingNotifications.push_back({room->getSessionContexts(), std::move(roomJson)});
 }
 
-nlohmann::json RoomHandler::joinRoom(const ActionContext& ctx) const
+void RoomHandler::notifyAllRoomUsers(const ActionContext& ctx, Room* room)
+{
+    std::string roomJson = room->toJson().dump();
+    ctx.pendingNotifications.push_back({room->getSessionContexts(), std::move(roomJson)});
+}
+
+nlohmann::json RoomHandler::joinRoom(const ActionContext& ctx)
 {
     if (ctx.roomContext.desiredRoomName.empty())
     {
@@ -72,9 +78,7 @@ nlohmann::json RoomHandler::joinRoom(const ActionContext& ctx) const
     {
         Room* room = ctx.roomContext.room;
         room->addUser(ctx.sessionContext);
-
-        std::string roomJson = room->toJson().dump();
-        ctx.pendingNotifications.push_back({room->getSessionContexts(), std::move(roomJson)});
+        notifyAllRoomUsers(ctx, room);
     }
 
     for (const auto& room : rooms)
@@ -107,6 +111,7 @@ nlohmann::json RoomHandler::listRooms(const ActionContext& ctx) const
     return response;
 }
 
+
 nlohmann::json RoomHandler::leaveRoom(const ActionContext& ctx)
 {
     if (ctx.roomContext.desiredRoomName.empty())
@@ -124,9 +129,7 @@ nlohmann::json RoomHandler::leaveRoom(const ActionContext& ctx)
         Room* room = ctx.roomContext.room;
         room->removeUser(ctx.sessionContext);
 
-        std::string roomJson = room->toJson().dump();
-        ctx.pendingNotifications.push_back({room->getSessionContexts(), std::move(roomJson)});
-        return room->toJson();
+        notifyAllRoomUsers(ctx, room);
     }
 
     for (const auto& room : rooms)
@@ -135,8 +138,7 @@ nlohmann::json RoomHandler::leaveRoom(const ActionContext& ctx)
         {
             room->removeUser(ctx.sessionContext);
 
-            std::string roomJson = room->toJson().dump();
-            ctx.pendingNotifications.push_back({room->getSessionContexts(), std::move(roomJson)});
+            makePendingNotificationRoom(ctx, room);
             return room->toJson();
         }
     }
