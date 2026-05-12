@@ -52,6 +52,8 @@ class RoomHandler : public Handler
     [[nodiscard]] Room findRoomByName(const std::string& roomName) const;
 
   private:
+    static void assertRoomName(const ActionContext& ctx);
+    static void assertPlayer(const ActionContext& ctx);
     std::vector<std::unique_ptr<Room>> rooms{};
 };
 

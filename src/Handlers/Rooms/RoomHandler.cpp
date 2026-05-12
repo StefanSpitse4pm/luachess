@@ -64,15 +64,8 @@ void RoomHandler::notifyAllRoomUsers(const ActionContext& ctx, Room* room)
 
 nlohmann::json RoomHandler::joinRoom(const ActionContext& ctx)
 {
-    if (ctx.roomContext.desiredRoomName.empty())
-    {
-        throw std::invalid_argument("Missing Room name");
-    }
-
-    if (ctx.sessionContext.player->getUsername().empty())
-    {
-        throw std::invalid_argument("Missing username");
-    }
+    assertRoomName(ctx);
+    assertPlayer(ctx);
 
     if (ctx.roomContext.room != nullptr)
     {
@@ -111,18 +104,26 @@ nlohmann::json RoomHandler::listRooms(const ActionContext& ctx) const
     return response;
 }
 
-
-nlohmann::json RoomHandler::leaveRoom(const ActionContext& ctx)
+void RoomHandler::assertRoomName(const ActionContext& ctx)
 {
     if (ctx.roomContext.desiredRoomName.empty())
     {
         throw std::invalid_argument("Missing Room name");
     }
+}
 
+void RoomHandler::assertPlayer(const ActionContext& ctx)
+{
     if (ctx.sessionContext.player->getUsername().empty())
     {
         throw std::invalid_argument("Missing username");
     }
+}
+
+nlohmann::json RoomHandler::leaveRoom(const ActionContext& ctx)
+{
+    assertRoomName(ctx);
+    assertPlayer(ctx);
 
     if (ctx.roomContext.room != nullptr)
     {
