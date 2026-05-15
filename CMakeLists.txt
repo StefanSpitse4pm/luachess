@@ -49,6 +49,7 @@ add_executable(luachess
         src/Handlers/Games/TurnOrder.h
         src/utils.cpp
         src/utils.h
+        src/Chess/Piece.cpp
 )
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/extern/sol2)
