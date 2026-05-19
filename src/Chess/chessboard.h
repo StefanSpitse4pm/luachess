@@ -7,6 +7,7 @@
 #include <functional>
 #include <nlohmann/json.hpp>
 #include <optional>
+#include <sol/error.hpp>
 #include <string>
 #include <vector>
 
@@ -32,13 +33,20 @@ class Chessboard
         return board[row][col].has_value();
     }
 
-    std::optional<Piece>& getPieceAt(int row, int col)
+    Piece& getPieceAt(int row, int col)
     {
         if (row < 0 || row >= rows_ || col < 0 || col >= cols_)
         {
             throw std::out_of_range("Position out of bounds");
         }
-        return board[row][col];
+
+        auto& cell = board[row][col];
+        if (!cell.has_value())
+        {
+            throw sol::error("Chessboard:getPieceAt: No piece at (" +
+                             std::to_string(row) + ", " + std::to_string(col) + ")");
+        }
+        return board[row][col].value();
     }
 
     void setPieceAt(const Piece& piece)

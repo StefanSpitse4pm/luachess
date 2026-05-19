@@ -31,7 +31,6 @@
 void LuaEngine::setup()
 {
     luaState.open_libraries(sol::lib::base, sol::lib::package, sol::lib::table, sol::lib::string, sol::lib::math);
-    addPieces();
 }
 
 void LuaEngine::addChessboard(Chessboard& board)

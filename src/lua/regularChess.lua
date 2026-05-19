@@ -164,8 +164,9 @@ function getLegalMoves(board)
     TurnOrder:defaultTurnOrder()
     for x = 0, board.rows - 1 do
         for y = 0, board.cols - 1 do
-            if board:getPieceAt(x, y) ~= nil then
-                pieces[board:getPieceAt(x, y).type].get_moves(board:getPieceAt(x, y), board)
+            if board:isOccupied(x, y) then
+                local p = board:getPieceAt(x, y)
+                pieces[p.type].get_moves(p, board)
             end
         end
     end
