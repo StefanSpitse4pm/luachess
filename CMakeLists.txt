@@ -51,7 +51,8 @@ add_executable(luachess
         src/utils.h
         src/Chess/Piece.cpp
         src/Luachess.h
-        src/websocket.h
+        src/Websocket.h
+        src/Websocket.cpp
 )
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/extern/sol2)

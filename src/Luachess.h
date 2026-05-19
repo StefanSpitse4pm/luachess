@@ -4,12 +4,17 @@
 
 #ifndef LUACHESS_LUACHESS_H
 #define LUACHESS_LUACHESS_H
+#include "Websocket.h"
 
 #endif // LUACHESS_LUACHESS_H
 
 
-class Luachess
+template <std::ranges::range R> requires std::same_as<std::ranges::range_value_t<R>, SessionContext>
+
+class Luachess : Websocket
 {
     public:
-    virtual ~Luachess() = default;
-};
+        void onMessage(server* s, const websocketpp::connection_hdl& hdl, const server::message_ptr& msg) override;
+        void notify(const R& sessions, const std::string& message, server* serverPtr);
+
+    };

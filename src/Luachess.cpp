@@ -24,7 +24,6 @@
 #include "Handlers/Games/GameHandler.h"
 #include "Handlers/Rooms/RoomHandler.h"
 #include <iostream>
-#include <map>
 #include <nlohmann/json.hpp>
 #include <sol/sol.hpp>
 #include <vector>
@@ -61,7 +60,7 @@ void notify(const R& sessions, const std::string& message, server* serverPtr)
     }
 }
 
-void on_message(server* s, const websocketpp::connection_hdl& hdl, const server::message_ptr& msg)
+void onMessage(server* s, const websocketpp::connection_hdl& hdl, const server::message_ptr& msg)
 {
     std::string payload = msg->get_payload();
     json j = json::parse(payload);
@@ -198,7 +197,7 @@ int main()
         );
 
         chessServer.set_message_handler([&](const websocketpp::connection_hdl& hdl, const server::message_ptr& msg)
-                                        { on_message(&chessServer, hdl, msg); });
+                                        { onMessage(&chessServer, hdl, msg); });
 
         chessServer.set_reuse_addr(true);
         chessServer.listen(9002);
