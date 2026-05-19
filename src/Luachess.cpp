@@ -29,6 +29,7 @@
 #include <vector>
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/server.hpp>
+#include "Luachess.h"
 
 typedef websocketpp::server<websocketpp::config::asio> server;
 using json = nlohmann::json;
@@ -37,7 +38,7 @@ GameHandler gameHandler(roomHandler);
 
 template <std::ranges::range R>
     requires std::same_as<std::ranges::range_value_t<R>, SessionContext>
-void notify(const R& sessions, const std::string& message, server* serverPtr)
+void Luachess::notify(const R& sessions, const std::string& message, server* serverPtr)
 {
     for (const auto& session : sessions)
     {
@@ -60,7 +61,7 @@ void notify(const R& sessions, const std::string& message, server* serverPtr)
     }
 }
 
-void onMessage(server* s, const websocketpp::connection_hdl& hdl, const server::message_ptr& msg)
+void Luachess::onMessage(server* s, const websocketpp::connection_hdl& hdl, const server::message_ptr& msg)
 {
     std::string payload = msg->get_payload();
     json j = json::parse(payload);
@@ -177,6 +178,7 @@ void onMessage(server* s, const websocketpp::connection_hdl& hdl, const server::
 
 int main()
 {
+    Luachess luachess;
     server chessServer;
     try
     {
@@ -197,7 +199,7 @@ int main()
         );
 
         chessServer.set_message_handler([&](const websocketpp::connection_hdl& hdl, const server::message_ptr& msg)
-                                        { onMessage(&chessServer, hdl, msg); });
+                                        { luachess.onMessage(&chessServer, hdl, msg); });
 
         chessServer.set_reuse_addr(true);
         chessServer.listen(9002);
