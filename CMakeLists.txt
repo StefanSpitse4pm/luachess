@@ -19,7 +19,7 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 add_executable(luachess
-        src/websocket.cpp
+        src/luachess.cpp
         src/Chess/chessboard.cpp
         src/Handlers/Handler.h
         src/Handlers/Rooms/RoomHandler.cpp
