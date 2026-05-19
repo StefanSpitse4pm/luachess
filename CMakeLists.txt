@@ -19,7 +19,7 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 add_executable(luachess
-        src/luachess.cpp
+        src/Luachess.cpp
         src/Chess/chessboard.cpp
         src/Handlers/Handler.h
         src/Handlers/Rooms/RoomHandler.cpp
@@ -50,6 +50,8 @@ add_executable(luachess
         src/utils.cpp
         src/utils.h
         src/Chess/Piece.cpp
+        src/Luachess.h
+        src/websocket.h
 )
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/extern/sol2)
