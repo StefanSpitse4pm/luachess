@@ -25,6 +25,7 @@ class Piece
         : position(position), type(std::move(type)), image(std::move(image)), color(std::move(color))
     {
     }
+
     void addMove(int dx, int dy, bool repeat = false, bool basedOnLastMove = false);
     void addTake(int dx, int dy, bool repeat = false, bool basedOnLastMove = false);
     void clearMoves();

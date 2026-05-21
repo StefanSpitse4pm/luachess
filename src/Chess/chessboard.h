@@ -43,8 +43,9 @@ class Chessboard
         auto& cell = board[row][col];
         if (!cell.has_value())
         {
-            throw sol::error("Chessboard:getPieceAt: No piece at (" +
-                             std::to_string(row) + ", " + std::to_string(col) + ")");
+            throw sol::error(
+                "Chessboard:getPieceAt: No piece at (" + std::to_string(row) + ", " + std::to_string(col) + ")"
+            );
         }
         return board[row][col].value();
     }

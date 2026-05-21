@@ -44,7 +44,7 @@ class RoomHandler : public Handler
     nlohmann::json action(std::string action, const ActionContext& ctx) override;
     nlohmann::json createRoom(const ActionContext& ctx);
     void makePendingNotificationRoom(const ActionContext& ctx, const std::unique_ptr<Room>& room) const;
-    nlohmann::json joinRoom(const ActionContext& ctx) ;
+    nlohmann::json joinRoom(const ActionContext& ctx);
     [[nodiscard]] nlohmann::json listRooms(const ActionContext& ctx) const;
     void notifyAllRoomUsers(const ActionContext& ctx, Room* room);
     nlohmann::json leaveRoom(const ActionContext& ctx);

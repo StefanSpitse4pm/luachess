@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 //
+#include "Luachess.h"
 #include "Chess/chessboard.h"
 #include "Handlers/Games/GameHandler.h"
 #include "Handlers/Rooms/RoomHandler.h"
@@ -29,7 +30,6 @@
 #include <vector>
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/server.hpp>
-#include "Luachess.h"
 
 typedef websocketpp::server<websocketpp::config::asio> server;
 using json = nlohmann::json;

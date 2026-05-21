@@ -112,7 +112,7 @@ Chessboard::repeatingMoves Chessboard::findRepeatingMoves(const std::vector<Move
 
 std::vector<Move> Chessboard::removeRepeatingMoves(std::vector<Move>& moves, repeatingMoves& repeat)
 {
-    for (const unsigned long& repeatMovesIndice : std::views::reverse(repeat.indices))
+    for (const auto& repeatMovesIndice : std::views::reverse(repeat.indices))
     {
         moves.erase(moves.begin() + repeatMovesIndice);
     }

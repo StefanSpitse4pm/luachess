@@ -109,7 +109,7 @@ void TurnOrderDecorator::isPlayersTurn(const sendMove& move) const
 
 nlohmann::json TurnOrderDecorator::toJson() const
 {
-    nlohmann::json game = GameDecorator::toJson();
+    auto game = GameDecorator::toJson();
     game.merge_patch(getTurnOrder().toJson());
     return game;
 }
