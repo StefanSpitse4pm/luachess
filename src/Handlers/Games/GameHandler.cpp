@@ -26,6 +26,17 @@
 
 #include "GameHandler.h"
 
+
+nlohmann::json GameHandler::action(std::string action, const ActionContext& ctx)
+{
+    static const std::unordered_map<std::string, ActionFn> actionMap = {
+        {"startGame", [this](const ActionContext& a_ctx) -> nlohmann::json { return startGame(a_ctx); }},
+        {"boardState", [this](const ActionContext& a_ctx) -> nlohmann::json { return getBoardState(a_ctx); }},
+        {"move", [this](const ActionContext& a_ctx) -> nlohmann::json { return onMove(a_ctx); }},
+    };
+    return route(actionMap, action)(ctx);
+}
+
 std::unique_ptr<Game> GameHandler::decorateGame(std::unique_ptr<LuaGame> game) const
 {
     struct OwnedDecorator : public TurnOrderDecorator
@@ -38,16 +49,6 @@ std::unique_ptr<Game> GameHandler::decorateGame(std::unique_ptr<LuaGame> game) c
     };
 
     return std::make_unique<OwnedDecorator>(std::move(game));
-}
-
-nlohmann::json GameHandler::action(std::string action, const ActionContext& ctx)
-{
-    static const std::unordered_map<std::string, ActionFn> actionMap = {
-        {"startGame", [this](const ActionContext& a_ctx) -> nlohmann::json { return startGame(a_ctx); }},
-        {"boardState", [this](const ActionContext& a_ctx) -> nlohmann::json { return getBoardState(a_ctx); }},
-        {"move", [this](const ActionContext& a_ctx) -> nlohmann::json { return onMove(a_ctx); }},
-    };
-    return route(actionMap, action)(ctx);
 }
 
 Game& GameHandler::getGameByGameId(const ActionContext& ctx)
