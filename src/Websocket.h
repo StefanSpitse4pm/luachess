@@ -18,14 +18,9 @@ typedef websocketpp::server<websocketpp::config::asio> server;
 
 class Websocket
 {
-  public:
-    Websocket()
-    {
-        RoomHandler roomHandler;
-        GameHandler gameHandler(roomHandler);
-    };
-
+    public:
+    Websocket() ;
     virtual ~Websocket() = default;
-    virtual void onMessage(server* s, const websocketpp::connection_hdl& hdl, const server::message_ptr& msg) = 0;
-    std::unique_ptr<Handler> findHandler(std::string type);
+        virtual void onMessage(server* s, const websocketpp::connection_hdl& hdl, const server::message_ptr& msg) = 0;
+        std::unique_ptr<Handler> findHandler(std::string type);
 };
