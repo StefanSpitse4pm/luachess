@@ -28,7 +28,7 @@ class Websocket
     }()}{};
     virtual ~Websocket() = default;
         virtual void onMessage(server* s, const websocketpp::connection_hdl& hdl, const server::message_ptr& msg) = 0;
-        std::unique_ptr<Handler> findHandler(std::string type);
+        std::unique_ptr<Handler> findHandler(std::string typeOfHandler);
     private:
         std::unordered_map<std::string, std::unique_ptr<Handler>> handlerMap;
         RoomHandler roomHandler;
