@@ -53,6 +53,8 @@ add_executable(luachess
         src/Luachess.h
         src/Websocket.h
         src/Websocket.cpp
+        src/actionHandler.cpp
+        src/actionHandler.h
 )
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/extern/sol2)

@@ -12,3 +12,4 @@ std::unique_ptr<Handler> Websocket::findHandler(std::string typeOfHandler)
     }
     throw std::invalid_argument("Unknown type of handler: " + typeOfHandler);
 }
+

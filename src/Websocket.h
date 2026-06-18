@@ -26,9 +26,8 @@ class Websocket
         m.emplace("Game", std::make_unique<GameHandler>(roomHandler));
         return m;
     }()}{};
-    virtual ~Websocket() = default;
-        virtual void onMessage(server* s, const websocketpp::connection_hdl& hdl, const server::message_ptr& msg) = 0;
-        std::unique_ptr<Handler> findHandler(std::string typeOfHandler);
+    ~Websocket() = default;
+    std::unique_ptr<Handler> findHandler(std::string typeOfHandler);
     private:
         std::unordered_map<std::string, std::unique_ptr<Handler>> handlerMap;
         RoomHandler roomHandler;
